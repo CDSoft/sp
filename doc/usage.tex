@@ -1,0 +1,26 @@
+\section{Package content}
+
+SP is a package which main function is to provide basic objects to build a complete parser.
+
+The grammar is a Python object (see figure~\ref{usage:embed}).
+
+\begin{code}
+\caption{Grammar embeding example}                          \label{usage:embed}
+\begin{verbatimtab}[4]
+    def Foo():
+        bar = Token('bar')
+        return bar
+\end{verbatimtab}
+\end{code}
+
+Then you can use the new generated parser. The parser is simply a Python object (see figure~\ref{usage:inst}).
+
+\begin{code}
+\caption{Parser usage example}                              \label{usage:inst}
+\begin{verbatimtab}[4]
+    test = "bar"
+    my_parser = Foo()
+    x = my_parser(test)               # Parses "bar"
+    print x
+\end{verbatimtab}
+\end{code}

@@ -1,0 +1,41 @@
+\section{SP grammar structure}
+
+SP grammars are Python objects.
+SP grammars may contain two parts:
+
+\begin{description}
+    \item [Tokens]
+        are built by the \emph{Token} or \emph{Drop} keyword (see~\ref{lexer:token_def}).
+    \item [Rules]
+        are described after tokens (see~\ref{grammar:struct}) in a \emph{Separator context}.
+\end{description}
+
+See figure~\ref{grammar:struct} for a generic SP grammar.
+
+\begin{code}
+\caption{SP grammar structure}                             \label{grammar:struct}
+\begin{verbatimtab}[4]
+def Foo:
+
+    # Tokens
+    number = Token(r'\d+') / int
+
+    # Rules
+    with Separator(r'\s+'):
+        S = number[:]
+
+    return S
+
+foo = Foo()
+result = foo("42 43 44") # return [42, 43, 44]
+\end{verbatimtab}
+\end{code}
+
+\section{Comments}
+
+Comments in SP start with \emph{\#} and run until the end of the line, as in Python.
+
+\begin{verbatimtab}[4]
+    # This is a comment
+\end{verbatimtab}
+
