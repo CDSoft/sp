@@ -45,25 +45,21 @@ Example: a simple 4 operation calculator
 
 """
 
-__license__ = """Mini Parser is available under the GNU Lesser General Public.
+__license__ = """
+This file is part of Simple Parser.
 
-Mini Parser: A Python parser generator
+Simple Parser is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-Copyright (C) 2007 Christophe Delord
-
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful,
+Simple Parser is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+You should have received a copy of the GNU Lesser General Public License
+along with Simple Parser.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import re
@@ -601,4 +597,5 @@ class ApplyStar(Apply):
 
 if __name__ == '__main__':
     import doctest
+    print(__license__.strip())
     doctest.testmod()
