@@ -18,20 +18,20 @@ Example: a simple 4 operation calculator
 ...     def applyall(x, fs):
 ...         for f in fs: x = f(x)
 ...         return x
-...     num = Token(r'\d+') / int
+...     num = R(r'\d+') / int
 ...     with Separator(r'\s+'):
 ...         expr = Rule()
-...         atom = num | Drop(r'\(') & expr & Drop(r'\)')
+...         atom = num | '(' & expr & ')'
 ...         fact = Rule()
 ...         fact |= atom
-...         fact |= (r'\+' & fact) * (lambda _, x: +x)
-...         fact |= (r'\-' & fact) * (lambda _, x: -x)
-...         term = ( fact & ( (r'\*' & fact) * (lambda _, y: lambda x: x*y)
-...                         | (r'\/' & fact) * (lambda _, y: lambda x: x/y)
+...         fact |= ('+' & fact) / (lambda x: +x)
+...         fact |= ('-' & fact) / (lambda x: -x)
+...         term = ( fact & ( ('*' & fact) / (lambda y: lambda x: x*y)
+...                         | ('/' & fact) / (lambda y: lambda x: x/y)
 ...                         )[:]
 ...                ) * applyall
-...         expr |= ( term & ( (r'\+' & term) * (lambda _, y: lambda x: x+y)
-...                          | (r'\-' & term) * (lambda _, y: lambda x: x-y)
+...         expr |= ( term & ( ('+' & term) / (lambda y: lambda x: x+y)
+...                          | ('-' & term) / (lambda y: lambda x: x-y)
 ...                          )[:]
 ...                 ) * applyall
 ...     return expr
@@ -68,16 +68,21 @@ def _p(obj):
     """ converts 'obj' to a parser object
 
     A parser is not changed:
-    >>> word = Token('Ham') | Token('Spam')
+    >>> word = K('Ham') | K('Spam')
     >>> id(_p(word)) == id(word)
     True
 
-    A string is translated into a single Token parser
-    >>> num = _p(r'\d+')
+    A string is translated into a single Keyword parser.
+    >>> num = _p(r'\d+') & C('pattern of a number')
     >>> num.parse("42 43", "")
-    ('42', ' 43', '')
-    >>> num.parse("spam 42", "")
-    (None, 'spam 42', '')
+    (None, '42 43', '')
+    >>> num.parse(r"\d+ 42 43", "")
+    ('pattern of a number', ' 42 43', '')
+    >>> kw = _p('foo') & C('foo found')
+    >>> kw.parse("foo bar", "")
+    ('foo found', ' bar', '')
+    >>> kw.parse("foobar", "")
+    (None, 'foobar', '')
 
     Other types raise an exception:
     >>> _p(None)
@@ -86,7 +91,7 @@ def _p(obj):
     TypeError: None is not a valid parser
     """
     if isinstance(obj, Parser): return obj
-    if isinstance(obj, str): return Token(obj)
+    if isinstance(obj, str): return K(obj)
     raise TypeError("%s is not a valid parser"%obj)
 
 class Parser:
@@ -106,7 +111,7 @@ class Parser:
         """ removes separators before and after parsing and returns the object parsed
 
         >>> with Separator(r'\s+'):
-        ...     num = Token('\d+') / int
+        ...     num = R('\d+') / int
         ...     num[:]("   42  43     ")
         [42, 43]
 
@@ -146,7 +151,7 @@ class Parser:
     def __and__(self, other):
         """ returns a sequence parser
 
-        >>> ab = Token("a") & "b"
+        >>> ab = R("a") & R("b")
         >>> ab.parse("abc", "")
         (('a', 'b'), 'c', '')
         >>> ab.parse("bac", "")
@@ -157,7 +162,7 @@ class Parser:
     def __rand__(self, other):
         """ returns a sequence parser
 
-        >>> ab = "a" & Token("b")
+        >>> ab = R("a") & R("b")
         >>> ab.parse("abc", "")
         (('a', 'b'), 'c', '')
         >>> ab.parse("bac", "")
@@ -168,7 +173,7 @@ class Parser:
     def __or__(self, other):
         """ returns an alternative parser
 
-        >>> ab = Token("a") | "b"
+        >>> ab = R("a") | R("b")
         >>> ab.parse("abc", "")
         ('a', 'bc', '')
         >>> ab.parse("bac", "")
@@ -181,7 +186,7 @@ class Parser:
     def __ror__(self, other):
         """ returns an alternative parser
 
-        >>> ab = "a" | Token("b")
+        >>> ab = R("a") | R("b")
         >>> ab.parse("abc", "")
         ('a', 'bc', '')
         >>> ab.parse("bac", "")
@@ -200,7 +205,7 @@ class Parser:
             - step is the separator between each object (default is no separator)
 
         >>> with Separator('\s'):
-        ...     item = Token(r'\d+') / int
+        ...     item = R(r'\d+') / int
         >>> item[:].parse("1 2 3 4", "")
         ([1, 2, 3, 4], '', '')
         >>> item[:2].parse("1 2 3 4", "")
@@ -216,8 +221,8 @@ class Parser:
         The argument of the function is a single object.
 
         >>> sum = lambda xy: xy[0]+xy[1]
-        >>> num = Token(r'\d+') / int               # parses an integer
-        >>> add = (num & Drop(r'\+') & num) / sum   # returns the sum of two integers
+        >>> num = R(r'\d+') / int               # parses an integer
+        >>> add = (num & K('+') & num) / sum    # returns the sum of two integers
         >>> add.parse("1+2+4", "")
         (3, '+4', '')
         """
@@ -230,8 +235,8 @@ class Parser:
         each item being given to the function as a separate argument.
 
         >>> sum = lambda x,y: x+y
-        >>> num = Token(r'\d+') / int               # parses an integer
-        >>> add = (num & Drop(r'\+') & num) * sum   # returns the sum of two integers
+        >>> num = R(r'\d+') / int               # parses an integer
+        >>> add = (num & K('+') & num) * sum    # returns the sum of two integers
         >>> add.parse("1+2+4", "")
         (3, '+4', '')
         """
@@ -246,7 +251,7 @@ class Separator:
 
     It is designed to be used within a 'with' block:
 
-    >>> num = Token(r'\d+')
+    >>> num = R(r'\d+')
     >>> nums = num[:]
     >>> nums.parse(" 42 43 ", "") # matches nothing at the very beginning of the input
     ([], ' 42 43 ', '')
@@ -257,6 +262,7 @@ class Separator:
     """
 
     def __init__(self, parser):
+        if isinstance(parser, str): parser = R(parser)
         self.parser = _p(parser)
 
     def __enter__(self):
@@ -270,13 +276,13 @@ class Separator:
 
 _separator = None
 
-class Token(Parser):
+class R(Parser):
     """ is a single token parser
 
     The token is defined by a regular expression.
     The token returns the string matched by the regular expression.
 
-    >>> t = Token(r'ham|spam')
+    >>> t = R(r'ham|spam')
     >>> with Separator(r'\s'): t[:]("ham ham spam")
     ['ham', 'ham', 'spam']
     """
@@ -293,12 +299,39 @@ class Token(Parser):
         rest, m = self.skipsep(s1[len(token):], m[len(token):])
         return token, rest, m
 
-class Const(Parser):
+class K(R):
+    """ is a keyword parser
+
+    Works a bit as R.
+    
+    If the pattern is a keyword (\w+)
+    word boundaries are expected around the token.
+    >>> t = K('ham') / 'ham'
+    >>> with Separator(r'\s'): t[:].parse("ham ham hammm", "")
+    (['ham', 'ham'], 'hammm', '')
+
+    Otherwise the pattern is escaped.
+    >>> t = K('++') / '++'
+    >>> with Separator(r'\s'): t[:].parse("++ ++ +++", "")
+    (['++', '++', '++'], '+', '')
+    """
+
+    def __init__(self, pattern, flags=0):
+        if re.match(r"^\w+$", pattern, flags): pattern = r"\b%s\b"%pattern
+        else: pattern = re.escape(pattern)
+        R.__init__(self, pattern, flags)
+
+    def parse(self, s, m):
+        obj, rest, m = R.parse(self, s, m)
+        if obj is None: return None, rest, m
+        else: return nil, rest, m
+
+class C(Parser):
     """ is a constant parser
 
-    Const parses nothing, simply returns a constant.
+    C parses nothing, simply returns a constant.
 
-    >>> c = Const('foo')
+    >>> c = C('foo')
     >>> c.parse("spam", "")
     ('foo', 'spam', '')
     """
@@ -311,18 +344,18 @@ class Const(Parser):
         s, m = self.skipsep(s, m)
         return self.val, s, m
 
-class Drop(Parser):
+class D(Parser):
     """ parses something and replaces the value by 'nil'
 
     Used to discard some items returned by a sequence parser.
     The sequence parser will ignore 'nil' items.
 
-    >>> num = Token(r'\d+') / int
-    >>> expr = r'\(' & num & r'\)'
+    >>> num = R(r'\d+') / int
+    >>> expr = R(r'\(') & num & R(r'\)')
     >>> expr("(42)")
     ('(', 42, ')')
 
-    >>> expr = Drop(r'\(') & num & Drop(r'\)')
+    >>> expr = D(R(r'\(')) & num & D(R(r'\)'))
     >>> expr("(42)")
     42
     """
@@ -347,17 +380,23 @@ class And(Parser):
     or (x & y) & z <=> x & (y & z) <=> x & y & z
 
     The sequence returns a tuple containing the values returned by the subparsers.
-    >>> s = Token('a') & 'b' & 'c'
+    >>> s = R('a') & R('b') & R('c')
+    >>> s("abc")
+    ('a', 'b', 'c')
+    >>> s = (R('a') & R('b')) & R('c')
+    >>> s("abc")
+    ('a', 'b', 'c')
+    >>> s = R('a') & (R('b') & R('c'))
     >>> s("abc")
     ('a', 'b', 'c')
 
     Arguments may return 'nil'. Their values will be ignored.
-    >>> s = Token('a') & Drop('b') & 'c'
+    >>> s = R('a') & D(R('b')) & R('c')
     >>> s("abc")
     ('a', 'c')
 
     If the sequence returns only one argument, it is not returned in a tuple.
-    >>> s = Drop('a') & Drop('b') & 'c'
+    >>> s = D(R('a')) & D(R('b')) & R('c')
     >>> s("abc")
     'c'
     """
@@ -393,7 +432,13 @@ class Or(Parser):
     or (x | y) | z <=> x | (y | z) <=> x | y | z
 
     The alternative returns the value returns by the first matching subparser.
-    >>> s = Token('a') | 'b' | 'c'
+    >>> s = R('a') | R('b') | R('c')
+    >>> s("b")
+    'b'
+    >>> s = (R('a') | R('b')) | R('c')
+    >>> s("b")
+    'b'
+    >>> s = R('a') | (R('b') | R('c'))
     >>> s("b")
     'b'
     """
@@ -422,9 +467,9 @@ class Rule(Parser):
     Alternatives are added by the |= operator.
 
     >>> As = Rule()
-    >>> A = Token('A')
+    >>> A = R('A')
     >>> As |= A & As
-    >>> As |= Const(())
+    >>> As |= C(())
     >>> As("AAA")
     ('A', ('A', ('A', ())))
     """
@@ -458,7 +503,7 @@ class Rep(Parser):
         A+ <=> A[1:] (one or more A)
         A? <=> A[:1] (zero or one A)
 
-    >>> A = Token('A')
+    >>> A = R('A')
     >>> As = A[:]
     >>> As('')
     []
@@ -488,7 +533,7 @@ class Rep(Parser):
     SyntaxError: Parse error at line 1
 
     The separator provides a convenient way to parse comma separated lists for instance.
-    >>> t = Token(r'\w')
+    >>> t = R(r'\w')
     >>> lst = t[::',']
     >>> lst("a,b,c")
     ['a', 'b', 'c']
@@ -550,12 +595,12 @@ class Apply(Parser):
 
     The function has one argument.
 
-    >>> num = Apply(Token(r'\d+'), int)
+    >>> num = Apply(R(r'\d+'), int)
     >>> a = Apply(num, int)
     >>> a("42")
     42
 
-    >>> a = Apply(num&Drop(',')&num&Drop(',')&num, (lambda xs: xs[0]+xs[1]+xs[2]))
+    >>> a = Apply(num&','&num&','&num, (lambda xs: xs[0]+xs[1]+xs[2]))
     >>> a("1,2,3")
     6
     """
@@ -578,8 +623,8 @@ class ApplyStar(Apply):
 
     The function may have several arguments.
 
-    >>> num = Apply(Token(r'\d+'), int)
-    >>> a = ApplyStar(num&Drop(',')&num&Drop(',')&num, (lambda x,y,z: x+y+z))
+    >>> num = Apply(R(r'\d+'), int)
+    >>> a = ApplyStar(num&','&num&','&num, (lambda x,y,z: x+y+z))
     >>> a("1,2,3")
     6
 

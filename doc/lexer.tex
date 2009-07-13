@@ -76,12 +76,17 @@ Here is a summary\footnote{From the Python documentation : \url{http://docs.pyth
 
 \subsection{Predefined tokens}
 
-Tokens can be explicitely defined by the \emph{Token}, \emph{Drop} and \emph{Separator} keywords.
+Tokens can be explicitely defined by the \emph{R}, \emph{K} and \emph{Separator} keywords.
 
 \begin{description}
-    \item [Token] defines a regular token (which returns a string).
-    \item [Drop] defines a token that returns nothing (usefull for keywords for instance).
+    \item [R] defines a regular token.
+        The token is defined with a regular expression and returns a string.
+    \item [K] defines a token that returns nothing (usefull for keywords for instance).
+        The keyword is defined by an identifier (in this case word boundaries are expected around the keyword)
+        or another string (in this case the pattern is not considered as a regular expression).
+        The token just recognizes a keyword and returns nothing.
     \item [Separator] if a context manager used to define separators for the rules defined in the context.
+        The token is defined with a regular expression and returns nothing.
 \end{description}
 
 A token can be defined by:
@@ -98,19 +103,20 @@ See figure~\ref{lexer:tokens} for examples.
 \begin{code}
 \caption{Token definition examples}                         \label{lexer:tokens}
 \begin{verbatimtab}[4]
-    integer = Token(r'\d+') / int
-    identifier = Token(r'[a-zA-Z]\w*\b')
-    boolean = Token(r'(True|False)\b') / (lambda b: b=='True')
+    integer = R(r'\d+') / int
+    identifier = R(r'[a-zA-Z]\w*\b')
+    boolean = R(r'(True|False)\b') / (lambda b: b=='True')
 
-    spaces = Drop(r'\s+')
-    comments = Drop(r'#.*')
+    spaces = K(r'\s+')
+    comments = K(r'#.*')
 
     with Separator(spaces|comments):
         # rules defined here will use spaces and comments as separators
+        atom = '(' & expr & ')'
 \end{verbatimtab}
 \end{code}
 
-There are two kinds of tokens. Tokens defined by the \emph{token} keyword are parsed by the parser and tokens defined by the \emph{separator} keyword are considered as separators (white spaces or comments for example) and are wiped out by the lexer.
+There are two kinds of tokens. Tokens defined by the \emph{T} or \emph{K} keywords are parsed by the parser and tokens defined by the \emph{Separator} keyword are considered as separators (white spaces or comments for example) and are wiped out by the lexer.
 
 The word boundary \emph{$\backslash b$} can be used to avoid recognizing "True" at the beginning of "Truexyz".
 
@@ -119,14 +125,16 @@ The word boundary \emph{$\backslash b$} can be used to avoid recognizing "True" 
 Tokens can also be defined on the fly. Their definition are then inlined in the grammar rules.
 This feature may be useful for keywords or punctuation signs.
 
+In this case tokens can be written without the \emph{R} or \emph{K} keywords. They are considered as keywords (as defiend by \emph{K}).
+
 See figure~\ref{lexer:inline_tokens} for examples.
 
 \begin{code}
 \caption{Inline token definition examples}                  \label{lexer:inline_tokens}
 \begin{verbatimtab}[4]
-    IfThenElse = Drop(r'if\b') & Cond &
-                 Drop(r'then\b') & Statement &
-                 Drop(r'else\b') & Statement
+    IfThenElse = 'if' & Cond &
+                 'then' & Statement &
+                 'else' & Statement
         ;
 \end{verbatimtab}
 \end{code}

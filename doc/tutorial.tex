@@ -59,16 +59,16 @@ This is sufficient to define our parser with SP. The grammar of the expressions 
 \begin{verbatimtab}[4]
 def Calc():
 
-    number = Token(r'[0-9]+')
-    addop = Token('[+-]')
-    mulop = Token('[*/]')
+    number = R(r'[0-9]+')
+    addop = R('[+-]')
+    mulop = R('[*/]')
 
     with Separator(r'\s+'):
 
         expr = Rule()
         fact = Rule()
         fact |= addop & fact
-        fact |= Drop(r'\(') & expr & Drop(r'\)')
+        fact |= '(' & expr & ')'
         fact |= number
         term = fact & ( mulop & fact )[:]
         expr |= term & ( addop & term )[:]
@@ -114,13 +114,13 @@ To associate a function to a token or a rule it must be applyed using \emph{/} o
 \begin{code}
 \caption{Token and rule definitions with functions}                  \label{tut:tokens}
 \begin{verbatimtab}[4]
-    number = Token(r'[0-9]+') / int
+    number = R(r'[0-9]+') / int
 
     fact |= (addop & fact) * op1
     term = (fact & ( (mulop & fact) * op2 )[:]) * red
 
-    # Token(r'[0-9]+') applyed on "42" will return "42".
-    # Token(r'[0-9]+') / int will return int("42")
+    # R(r'[0-9]+') applyed on "42" will return "42".
+    # R(r'[0-9]+') / int will return int("42")
 
     # addop & fact applyied on "+ 42" will return ('+', 42)
     # (addop & fact) * op1 will return op1(*('+', 42)), i.e. op1('+', 42)
@@ -155,16 +155,16 @@ def Calc():
         for f in fs: x = f(x)
         return x
 
-    number = Token(r'[0-9]+') / int
-    addop = Token('[+-]')
-    mulop = Token('[*/]')
+    number = R(r'[0-9]+') / int
+    addop = R('[+-]')
+    mulop = R('[*/]')
 
     with Separator(r'\s+'):
 
         expr = Rule()
         fact = Rule()
         fact |= (addop & fact) * op1
-        fact |= Drop(r'\(') & expr & Drop(r'\)')
+        fact |= '(' & expr & ')'
         fact |= number
         term = (fact & ( (mulop & fact) * op2 )[:]) * red
         expr |= (term & ( (addop & term) * op2 )[:]) * red
@@ -214,16 +214,16 @@ def Calc():
         for f in fs: x = f(x)
         return x
 
-    number = Token(r'[0-9]+') / int
-    addop = Token('[+-]')
-    mulop = Token('[*/]')
+    number = R(r'[0-9]+') / int
+    addop = R('[+-]')
+    mulop = R('[*/]')
 
     with Separator(r'\s+'):
 
         expr = Rule()
         fact = Rule()
         fact |= (addop & fact) * op1
-        fact |= Drop(r'\(') & expr & Drop(r'\)')
+        fact |= '(' & expr & ')'
         fact |= number
         term = (fact & ( (mulop & fact) * op2 )[:]) * red
         expr |= (term & ( (addop & term) * op2 )[:]) * red

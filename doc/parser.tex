@@ -41,7 +41,7 @@ Empty choices in other positions will be reported as syntax errors.
 For example to say that an \emph{atom} is an \emph{integer} or an \emph{expression in paranthesis}
 you can write:
 \begin{verbatimtab}[4]
-    Atom = integer | r'\(' & Expr & r'\)'
+    Atom = integer | '(' & Expr & ')'
 \end{verbatimtab}
 
 \section{Repetitions}                                           \label{parser:repetitions}
@@ -112,7 +112,7 @@ class Couple:
         self.b = b
 
 def Foo():
-    couple = (Drop(r'\(') & item & Drop(',') & item & Drop(r'\)')) * Couple
+    couple = ('(' & item & ',' & item & ')') * Couple
     return couple
 \end{verbatimtab}
 \end{code}

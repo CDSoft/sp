@@ -5,7 +5,7 @@ SP grammars may contain two parts:
 
 \begin{description}
     \item [Tokens]
-        are built by the \emph{Token} or \emph{Drop} keyword (see~\ref{lexer:token_def}).
+        are built by the \emph{R} or \emph{K} keywords (see~\ref{lexer:token_def}).
     \item [Rules]
         are described after tokens (see~\ref{grammar:struct}) in a \emph{Separator context}.
 \end{description}
@@ -15,10 +15,10 @@ See figure~\ref{grammar:struct} for a generic SP grammar.
 \begin{code}
 \caption{SP grammar structure}                             \label{grammar:struct}
 \begin{verbatimtab}[4]
-def Foo:
+def Foo():
 
     # Tokens
-    number = Token(r'\d+') / int
+    number = R(r'\d+') / int
 
     # Rules
     with Separator(r'\s+'):

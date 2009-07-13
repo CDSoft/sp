@@ -207,14 +207,14 @@ class Calc:
             n = n.replace('_', '')
             return int(n)
 
-        bin = (Token(r'b[_0-1]+\b') | Token(r'[_0-1]+b\b')) / bin2int
-        oct = (Token(r'o[_0-7]+\b') | Token(r'[_0-7]+o\b')) / oct2int
-        hex = ( Token(r'h[_0-9a-fA-F]+\b') |
-                Token(r'[_0-9a-fA-F]+h\b') |
-                Token(r'0x[_0-9a-fA-F]+\b')) / hex2int
-        real = Token(r'(\d+\.\d*|\d*\.\d+)([eE][-+]?\d+)?|\d+[eE][-+]?\d+') / real2float
-        dec = Token(r'\d+') / dec2int
-        var = Token(r'[a-zA-Z_]\w*\b')
+        bin = (R(r'b[_0-1]+\b') | R(r'[_0-1]+b\b')) / bin2int
+        oct = (R(r'o[_0-7]+\b') | R(r'[_0-7]+o\b')) / oct2int
+        hex = ( R(r'h[_0-9a-fA-F]+\b') |
+                R(r'[_0-9a-fA-F]+h\b') |
+                R(r'0x[_0-9a-fA-F]+\b')) / hex2int
+        real = R(r'(\d+\.\d*|\d*\.\d+)([eE][-+]?\d+)?|\d+[eE][-+]?\d+') / real2float
+        dec = R(r'\d+') / dec2int
+        var = R(r'[a-zA-Z_]\w*')
 
         from operator import pos, neg, invert, add, sub, or_, xor, \
                              mul, mod, truediv, floordiv, and_, \
@@ -234,30 +234,30 @@ class Calc:
 
             expr = Rule()
 
-            calc = ( Token(r'\?') / __doc__.strip()
-                   | Token('num') / self.mode(Num)
-                   | Token('int8') / self.mode(Int8)
-                   | Token('int16') / self.mode(Int16)
-                   | Token('int32') / self.mode(Int32)
-                   | Token('int64') / self.mode(Int64)
-                   | Token('int') / self.mode(Int)
-                   | Token('flt32') / self.mode(Float)
-                   | Token('flt64') / self.mode(Double)
-                   | Token('rat') / self.mode(Rat)
-                   | (((var & Drop('=')) | Const('_')) & expr) * self.assign
+            calc = ( K('?') / __doc__.strip()
+                   | K('num') / self.mode(Num)
+                   | K('int8') / self.mode(Int8)
+                   | K('int16') / self.mode(Int16)
+                   | K('int32') / self.mode(Int32)
+                   | K('int64') / self.mode(Int64)
+                   | K('int') / self.mode(Int)
+                   | K('flt32') / self.mode(Float)
+                   | K('flt64') / self.mode(Double)
+                   | K('rat') / self.mode(Rat)
+                   | (((var & '=') | C('_')) & expr) * self.assign
                    )
 
             fact = Rule()
-            atom = ( Drop(r'\(') & expr & Drop(r'\)')
-                   | ('rev|factor' & Drop(r'\(') & expr & Drop(r'\)')) 
-                     * (lambda f,x: getattr(x, f)())
+            atom = ( '(' & expr & ')'
+                   | (K('rev') & '(' & expr & ')') / (lambda x: x.rev())
+                   | (K('factor') & '(' & expr & ')') / (lambda x: x.factor())
                    | (bin | oct | hex | real | dec | var / self.val)
                      / self.convert
                    )
-            pow = (atom & ((r'\*\*' & fact) * op)[:1]) * red
-            fact |= (r'\+|-|~' & fact) * op1 | pow
-            term = (fact & ((r'\*|%|/|&|>>|<<' & fact) * op)[:]) * red
-            expr |= (term & ((r'\+|-|\||\^' & term) * op)[:]) * red
+            pow = (atom & ((R(r'\*\*') & fact) * op)[:1]) * red
+            fact |= (R(r'\+|-|~') & fact) * op1 | pow
+            term = (fact & ((R(r'\*|%|/|&|>>|<<') & fact) * op)[:]) * red
+            expr |= (term & ((R(r'\+|-|\||\^') & term) * op)[:]) * red
 
         self.calc = calc
         self.var = {}
