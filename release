@@ -1,8 +1,0 @@
-if [ -z "$1" ]
-then
-    echo "Usage: $0 version"
-    exit -1
-fi
-mkdir -p dist
-git tag v$1
-git archive --format=tar --prefix=sp-v$1/ v$1 | gzip -9 > dist/sp-v$1.tgz

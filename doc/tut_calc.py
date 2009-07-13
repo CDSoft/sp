@@ -1,5 +1,22 @@
 #!/usr/bin/env python3
 
+__license__ = """
+This file is part of Simple Parser.
+
+Simple Parser is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Simple Parser is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with Simple Parser.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
 from sp import *
 
 def Calc():
@@ -13,22 +30,24 @@ def Calc():
         for f in fs: x = f(x)
         return x
 
-    number = Token(r'[0-9]+') / int
-    addop = Token('[+-]')
-    mulop = Token('[*/]')
+    number = R('[0-9]+') / int
+    addop = R('[+-]')
+    mulop = R('[*/]')
 
     with Separator(r'\s+'):
 
         expr = Rule()
         fact = Rule()
         fact |= (addop & fact) * op1
-        fact |= Drop(r'\(') & expr & Drop(r'\)')
+        fact |= '(' & expr & ')'
         fact |= number
         term = (fact & ( (mulop & fact) * op2 )[:]) * red
         expr |= (term & ( (addop & term) * op2 )[:]) * red
 
     return expr
 
+print(__license__.strip())
+print("*"*70)
 calc = Calc()
 while True:
     expr = input('Enter an expression: ')

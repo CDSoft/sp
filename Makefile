@@ -1,7 +1,22 @@
-all: sp.tgz
+# This file is part of Simple Parser.
+#
+# Simple Parser is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Simple Parser is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with Simple Parser.  If not, see <http://www.gnu.org/licenses/>.
 
-sp.tgz: sp.py COPYING COPYING.LESSER $(wildcard doc/*.tex) doc/tut_calc.py examples/calc.py sp.pdf Makefile
-	tar czvf $@ $^
+all: sp.pdf
+
+# Only the PDF documentation is generated.
+# The archive is built by the release script.
 
 sp.pdf: doc/*.tex doc/*.py
 	(cd doc; pdflatex sp && pdflatex sp && pdflatex sp)

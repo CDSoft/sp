@@ -73,16 +73,16 @@ def _p(obj):
     True
 
     A string is translated into a single Keyword parser.
-    >>> num = _p(r'\d+') & C('pattern of a number')
+    >>> num = _p(r'\d+')
     >>> num.parse("42 43", "")
-    (None, '42 43', '')
+    (fail, '42 43', '')
     >>> num.parse(r"\d+ 42 43", "")
-    ('pattern of a number', ' 42 43', '')
-    >>> kw = _p('foo') & C('foo found')
+    (nil, ' 42 43', '')
+    >>> kw = _p('foo')
     >>> kw.parse("foo bar", "")
-    ('foo found', ' bar', '')
+    (nil, ' bar', '')
     >>> kw.parse("foobar", "")
-    (None, 'foobar', '')
+    (fail, 'foobar', '')
 
     Other types raise an exception:
     >>> _p(None)
@@ -100,7 +100,8 @@ class Parser:
             separators in a single parser)
         - recursively calls the child parsers
         - returns a tuple (value, "rest to parse", "min rest to parse") in case of success
-        - returns a tuple (None, "initial value", "min rest to parse") in case of failure
+            if value is nil, it will be later ignored
+        - returns a tuple (fail, "initial value", "min rest to parse") in case of failure
     """
 
     def __init__(self):
@@ -130,7 +131,7 @@ class Parser:
         s1, m = self.skipsep(s, s)
         x, s1, m = self.parse(s1, m)
         s1, m = self.skipsep(s1, m)
-        if x is None or s1 != "":
+        if x is fail or s1 != "":
             line = s.count('\n')-m.count('\n')+1
             raise SyntaxError("Parse error at line %d"%(line))
         return x
@@ -146,7 +147,7 @@ class Parser:
         if self.separator is None: return s, m
         while True:
             sep, s, m = self.separator.parse(s, m)
-            if sep is None: return s, m
+            if sep is fail: return s, m
 
     def __and__(self, other):
         """ returns a sequence parser
@@ -155,7 +156,7 @@ class Parser:
         >>> ab.parse("abc", "")
         (('a', 'b'), 'c', '')
         >>> ab.parse("bac", "")
-        (None, 'bac', '')
+        (fail, 'bac', '')
         """
         return And(self, other)
 
@@ -166,7 +167,7 @@ class Parser:
         >>> ab.parse("abc", "")
         (('a', 'b'), 'c', '')
         >>> ab.parse("bac", "")
-        (None, 'bac', '')
+        (fail, 'bac', '')
         """
         return And(other, self)
 
@@ -179,7 +180,7 @@ class Parser:
         >>> ab.parse("bac", "")
         ('b', 'ac', '')
         >>> ab.parse("cab", "")
-        (None, 'cab', '')
+        (fail, 'cab', '')
         """
         return Or(self, other)
 
@@ -192,7 +193,7 @@ class Parser:
         >>> ab.parse("bac", "")
         ('b', 'ac', '')
         >>> ab.parse("cab", "")
-        (None, 'cab', '')
+        (fail, 'cab', '')
         """
         return Or(other, self)
 
@@ -294,7 +295,7 @@ class R(Parser):
     def parse(self, s, m):
         s1, m = self.skipsep(s, m)
         token = self.pattern.match(s1)
-        if not token: return None, s, m
+        if not token: return fail, s, m
         token = token.group(0)
         rest, m = self.skipsep(s1[len(token):], m[len(token):])
         return token, rest, m
@@ -306,24 +307,24 @@ class K(R):
     
     If the pattern is a keyword (\w+)
     word boundaries are expected around the token.
-    >>> t = K('ham') / 'ham'
+    >>> t = K('ham') & C('ok')
     >>> with Separator(r'\s'): t[:].parse("ham ham hammm", "")
-    (['ham', 'ham'], 'hammm', '')
+    (['ok', 'ok'], 'hammm', '')
 
     Otherwise the pattern is escaped.
-    >>> t = K('++') / '++'
+    >>> t = K('++') & C('pp')
     >>> with Separator(r'\s'): t[:].parse("++ ++ +++", "")
-    (['++', '++', '++'], '+', '')
+    (['pp', 'pp', 'pp'], '+', '')
     """
 
     def __init__(self, pattern, flags=0):
-        if re.match(r"^\w+$", pattern, flags): pattern = r"\b%s\b"%pattern
+        if pattern.isalnum(): pattern = r"\b%s\b"%pattern
         else: pattern = re.escape(pattern)
         R.__init__(self, pattern, flags)
 
     def parse(self, s, m):
         obj, rest, m = R.parse(self, s, m)
-        if obj is None: return None, rest, m
+        if obj is fail: return fail, rest, m
         else: return nil, rest, m
 
 class C(Parser):
@@ -367,7 +368,7 @@ class D(Parser):
     def parse(self, s, m):
         rest, m = self.skipsep(s, m)
         x, rest, m = self.parser.parse(rest, m)
-        if x is None: return None, s, m
+        if x is fail: return fail, s, m
         rest, m = self.skipsep(rest, m)
         return nil, rest, m
 
@@ -413,15 +414,17 @@ class And(Parser):
         rest, m = self.skipsep(s, m)
         for item in self.items:
             token, rest, m = item.parse(rest, m)
-            if token is None: return None, s, m
+            if token is fail: return fail, s, m
             if token is not nil: tokens.append(token)
             rest, m = self.skipsep(rest, m)
         if len(tokens) == 1: return tokens[0], rest, m
         return tuple(tokens), rest, m
 
-class _Nil:
-    pass
-nil = _Nil()
+class _Singleton:
+    def __init__(self, name): self.name = name
+    def __repr__(self): return self.name
+nil = _Singleton("nil")
+fail = _Singleton("fail")
 
 class Or(Parser):
     """ parses an alternative.
@@ -454,10 +457,10 @@ class Or(Parser):
         s1, m = self.skipsep(s, m)
         for item in self.items:
             token, rest, m = item.parse(s1, m)
-            if token is not None:
+            if token is not fail:
                 rest, m = self.skipsep(rest, m)
                 return token, rest, m
-        return None, s, m
+        return fail, s, m
 
 class Rule(Parser):
     """ returns an empty parser that can be later enriched.
@@ -486,7 +489,7 @@ class Rule(Parser):
     def parse(self, s, m):
         s1, m = self.skipsep(s, m)
         x, rest, m = self.parser.parse(s1, m)
-        if x is None: return None, s, m
+        if x is fail: return fail, s, m
         rest, m = self.skipsep(rest, m)
         return x, rest, m
 
@@ -558,8 +561,8 @@ class Rep(Parser):
         while i != self.max:
             i += 1
             item, rest, m = self.parser.parse(rest, m)
-            if item is None:
-                if i <= self.min: return None, s, m
+            if item is fail:
+                if i <= self.min: return fail, s, m
                 return items, rest, m
             items.append(item)
             rest, m = self.skipsep(rest, m)
@@ -568,8 +571,8 @@ class Rep(Parser):
     def _parse_with_sep(self, s, m):
         rest, m = self.skipsep(s, m)
         item, rest, m = self.parser.parse(rest, m)
-        if item is None:
-            if 1 <= self.min: return None, s, m
+        if item is fail:
+            if 1 <= self.min: return fail, s, m
             rest, m = self.skipsep(rest, m)
             return [], rest, m
         items = [item]
@@ -578,13 +581,13 @@ class Rep(Parser):
         while i != self.max:
             i += 1
             sep, rest, m = self.sep.parse(rest, m)
-            if sep is None:
-                if i <= self.min: return None, s, m
+            if sep is fail:
+                if i <= self.min: return fail, s, m
                 return items, rest, m
             rest, m = self.skipsep(rest, m)
             item, rest, m = self.parser.parse(rest, m)
-            if item is None:
-                if i <= self.min: return None, s, m
+            if item is fail:
+                if i <= self.min: return fail, s, m
                 return items, rest, m
             items.append(item)
             rest, m = self.skipsep(rest, m)
@@ -608,13 +611,12 @@ class Apply(Parser):
     def __init__(self, parser, func):
         Parser.__init__(self)
         self.parser = _p(parser)
-        if isinstance(func, str): self.func = lambda _: func
-        else: self.func = func
+        self.func = func
 
     def parse(self, s, m):
         s1, m = self.skipsep(s, m)
         token, rest, m = self.parser.parse(s1, m)
-        if token is None: return None, s, m
+        if token is fail: return fail, s, m
         rest, m = self.skipsep(rest, m)
         return self.func(token), rest, m
 
@@ -636,11 +638,14 @@ class ApplyStar(Apply):
     def parse(self, s, m):
         s1, m = self.skipsep(s, m)
         token, rest, m = self.parser.parse(s1, m)
-        if token is None: return None, s, m
+        if token is fail: return fail, s, m
         rest, m = self.skipsep(rest, m)
         return self.func(*token), rest, m
 
 if __name__ == '__main__':
     import doctest
     print(__license__.strip())
-    doctest.testmod()
+    failure_count, test_count = doctest.testmod()
+    if failure_count == 0:
+        print("*"*70)
+        print("All %d tests succeeded"%test_count)
