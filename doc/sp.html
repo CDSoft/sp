@@ -1,0 +1,1327 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.5: http://docutils.sourceforge.net/" />
+<title>Simple Parser</title>
+<meta name="author" content="Christophe Delord" />
+<meta name="date" content="Saturday 18 July 2009" />
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id: html4css1.css 5196 2007-06-03 20:25:28Z wiemann $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+
+See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left {
+  clear: left }
+
+img.align-right {
+  clear: right }
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font-family: serif ;
+  font-size: 100% }
+
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document" id="simple-parser">
+<h1 class="title">Simple Parser</h1>
+<h2 class="subtitle" id="how-to-easily-write-parsers-in-python">How to easily write parsers in Python</h2>
+<table class="docinfo" frame="void" rules="none">
+<col class="docinfo-name" />
+<col class="docinfo-content" />
+<tbody valign="top">
+<tr><th class="docinfo-name">Author:</th>
+<td>Christophe Delord</td></tr>
+<tr><th class="docinfo-name">Contact:</th>
+<td><a class="first last reference external" href="mailto:christophe&#46;delord&#37;&#52;&#48;free&#46;fr">christophe<span>&#46;</span>delord<span>&#64;</span>free<span>&#46;</span>fr</a></td></tr>
+<tr class="field"><th class="docinfo-name">Web site:</th><td class="field-body"><a class="reference external" href="http://christophe.delord.free.fr/sp">http://christophe.delord.free.fr/sp</a></td>
+</tr>
+<tr><th class="docinfo-name">Date:</th>
+<td>Saturday 18 July 2009</td></tr>
+<tr class="field"><th class="docinfo-name">License:</th><td class="field-body">This software is released under the LGPL license.</td>
+</tr>
+</tbody>
+</table>
+<!-- This file is part of Simple Parser. -->
+<!-- Simple Parser is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version. -->
+<!-- Simple Parser is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details. -->
+<!-- You should have received a copy of the GNU Lesser General Public License
+along with Simple Parser.  If not, see <http://www.gnu.org/licenses/>. -->
+<div class="contents topic" id="table-of-contents">
+<p class="topic-title first">Table of Contents</p>
+<ul class="auto-toc simple">
+<li><a class="reference internal" href="#introduction-and-tutorial" id="id10">1&nbsp;&nbsp;&nbsp;Introduction and tutorial</a><ul class="auto-toc">
+<li><a class="reference internal" href="#introduction" id="id11">1.1&nbsp;&nbsp;&nbsp;Introduction</a></li>
+<li><a class="reference internal" href="#installation" id="id12">1.2&nbsp;&nbsp;&nbsp;Installation</a></li>
+<li><a class="reference internal" href="#tutorial" id="id13">1.3&nbsp;&nbsp;&nbsp;Tutorial</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sp-reference" id="id14">2&nbsp;&nbsp;&nbsp;SP reference</a><ul class="auto-toc">
+<li><a class="reference internal" href="#usage" id="id15">2.1&nbsp;&nbsp;&nbsp;Usage</a></li>
+<li><a class="reference internal" href="#grammar-structure" id="id16">2.2&nbsp;&nbsp;&nbsp;Grammar structure</a></li>
+<li><a class="reference internal" href="#lexer" id="id17">2.3&nbsp;&nbsp;&nbsp;Lexer</a></li>
+<li><a class="reference internal" href="#parser" id="id18">2.4&nbsp;&nbsp;&nbsp;Parser</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#some-examples-to-illustrate-sp" id="id19">3&nbsp;&nbsp;&nbsp;Some examples to illustrate SP</a><ul class="auto-toc">
+<li><a class="reference internal" href="#complete-interactive-calculator" id="id20">3.1&nbsp;&nbsp;&nbsp;Complete interactive calculator</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="introduction-and-tutorial">
+<h1><a class="toc-backref" href="#id10">1&nbsp;&nbsp;&nbsp;Introduction and tutorial</a></h1>
+<div class="section" id="introduction">
+<h2><a class="toc-backref" href="#id11">1.1&nbsp;&nbsp;&nbsp;Introduction</a></h2>
+<p>SP (Simple Parser) is a Python <a class="footnote-reference" href="#id2" id="id1">[1]</a> parser generator.
+It is aimed at easy usage rather than performance.</p>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Python is a wonderful object oriented programming language available at <a class="reference external" href="http://www.python.org">http://www.python.org</a></td></tr>
+</tbody>
+</table>
+<div class="section" id="license">
+<h3>License</h3>
+<p>SP is available under the GNU Lesser General Public:</p>
+<pre class="literal-block">
+Simple Parser: A Python parser generator
+
+Copyright (C) 2009 Christophe Delord
+
+Simple Parser is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Simple Parser is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with Simple Parser.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+</pre>
+</div>
+<div class="section" id="structure-of-the-document">
+<h3>Structure of the document</h3>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name" colspan="2"><a class="reference internal" href="#introduction-and-tutorial">Introduction and tutorial</a>:</th></tr>
+<tr><td>&nbsp;</td><td class="field-body">starts smoothly with a gentle tutorial as an introduction.
+I think this tutorial may be sufficent to start with SP.</td>
+</tr>
+<tr class="field"><th class="field-name"><a class="reference internal" href="#sp-reference">SP reference</a>:</th><td class="field-body">is a reference documentation. It will detail SP as much as possible.</td>
+</tr>
+<tr class="field"><th class="field-name" colspan="2"><a class="reference internal" href="#some-examples-to-illustrate-sp">Some examples to illustrate SP</a>:</th></tr>
+<tr><td>&nbsp;</td><td class="field-body">gives the reader some examples to illustrate SP.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="installation">
+<h2><a class="toc-backref" href="#id12">1.2&nbsp;&nbsp;&nbsp;Installation</a></h2>
+<div class="section" id="getting-sp">
+<h3>Getting SP</h3>
+<p>SP is freely available on its web page (<a class="reference external" href="http://christophe.delord.free.fr/sp">http://christophe.delord.free.fr/sp</a>).</p>
+</div>
+<div class="section" id="requirements">
+<h3>Requirements</h3>
+<p>SP is a <em>pure Python</em> package.
+It may run on <em>any platform</em> supported by Python.
+The only requirement of SP is <em>Python 3.0</em> or newer.
+Python can be downloaded at <a class="reference external" href="http://www.python.org">http://www.python.org</a>.</p>
+</div>
+</div>
+<div class="section" id="tutorial">
+<h2><a class="toc-backref" href="#id13">1.3&nbsp;&nbsp;&nbsp;Tutorial</a></h2>
+<div class="section" id="id3">
+<h3>Introduction</h3>
+<p>This short tutorial presents how to make a simple calculator.
+The calculator will compute basic mathematical expressions (+, -, *, |) possibly nested in parenthesis.
+We assume the reader is familiar with regular expressions.</p>
+</div>
+<div class="section" id="defining-the-grammar">
+<h3>Defining the grammar</h3>
+<p>Expressions are defined with a grammar.
+For example an expression is a sum of terms and a term is a product of factors.
+A factor is either a number or a complete expression in parenthesis.</p>
+<p>We describe such grammars with rules.
+A rule describes the composition of an item of the language.
+In our grammar we have 3 items (expr, term, factor).
+We will call these items <em>symbols</em> or <em>non terminal symbols</em>.
+The decomposition of a symbol is symbolized with <em>-&gt;</em>.</p>
+<p>Grammar for expressions:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="37%" />
+<col width="63%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Grammar rule</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>expr -&gt; term (('+'|'-') term)*</td>
+<td>An expression is a term eventually followed
+with a plus ('+') or a minus ('-') sign
+and an other term any number of times
+(* is a repetition of an expression 0 or more times).</td>
+</tr>
+<tr><td>term -&gt; fact (('*'|'/') fact)*</td>
+<td>A term is a factor eventually followed
+with a '*' or '/' sign
+and an other factor any number of times.</td>
+</tr>
+<tr><td><dl class="first last docutils">
+<dt>fact -&gt; ('+'|'-') fact</dt>
+<dd><div class="first last line-block">
+<div class="line">| number</div>
+<div class="line">| '(' expr ')'</div>
+</div>
+</dd>
+</dl>
+</td>
+<td><div class="first last line-block">
+<div class="line">A factor is either a factor precedeed by a sign,</div>
+<div class="line">a number</div>
+<div class="line">or an expression in parenthesis.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>We have defined here the grammar rules (i.e. the sentences of the language).
+We now need to describe the lexical items (i.e. the words of the language).
+These words - also called <em>terminal symbols</em> - are described using regular expressions.
+In the rules we have written some of these terminal symbols (<em>+, -, *, /, (, )</em>).
+We have to define <em>number</em>.
+For sake of simplicity numbers are integers composed of digits (the corresponding regular expression can be <em>[0-9]+</em>).
+To simplify the grammar and then the Python script we define two terminal symbols to group the operators (additive and multiplicative operators).
+We can also define a special symbol that is ignored by SP.
+This symbol is used as a separator.
+This is generaly usefull for white spaces and comments.</p>
+<p>Terminal symbol definition for expressions:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="31%" />
+<col width="37%" />
+<col width="32%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Terminal symbol</th>
+<th class="head">Regular expression</th>
+<th class="head">Comment</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>number</td>
+<td>[0-9]+ or \d+</td>
+<td>One or more digits</td>
+</tr>
+<tr><td>addop</td>
+<td>[+-]</td>
+<td>a <em>+</em> or a <em>-</em></td>
+</tr>
+<tr><td>mulop</td>
+<td>[*/]</td>
+<td>a <em>*</em> or a <em>/</em></td>
+</tr>
+<tr><td>spaces</td>
+<td>\s+</td>
+<td>One or more spaces</td>
+</tr>
+</tbody>
+</table>
+<p>This is sufficient to define our parser with SP.</p>
+<p>Grammar of the expression recognizer:</p>
+<pre class="literal-block">
+def Calc():
+
+    number = R(r'[0-9]+')
+    addop = R('[+-]')
+    mulop = R('[*/]')
+
+    with Separator(r'\s+'):
+
+        expr = Rule()
+        fact = Rule()
+        fact |= addop &amp; fact
+        fact |= '(' &amp; expr &amp; ')'
+        fact |= number
+        term = fact &amp; ( mulop &amp; fact )[:]
+        expr |= term &amp; ( addop &amp; term )[:]
+
+    return expr
+</pre>
+<p><em>Calc</em> is the name of the Python function that returns a parser.
+This function returns <em>expr</em> which is the <em>axiom</em> <a class="footnote-reference" href="#id5" id="id4">[2]</a> of the grammer.</p>
+<p><em>expr</em> and <em>fact</em> are recursive rules.
+They are first declared as empty rules (<em>expr = Rule()</em>) and alternatives are later added (<em>expr |= ...</em>).</p>
+<p>Slices are used to implement repetitions.
+<em>foo[:]</em> parses <em>foo</em> zero or more times, which is equivalent to <em>foo*</em> is a classical grammar notation.</p>
+<p>With this small grammar we can only recognize a correct expression.
+We will see in the next sections how to read the actual expression and to compute its value.</p>
+<table class="docutils footnote" frame="void" id="id5" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[2]</a></td><td>The axiom is the symbol from which the parsing starts</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="reading-the-input-and-returning-values">
+<h3>Reading the input and returning values</h3>
+<p>The input of the grammar is a string.
+To do something useful we need to read this string in order to transform it into an expected result.</p>
+<p>This string can be read by catching the return value of terminal symbols.
+By default any terminal symbol returns a string containing the current token.
+So the token <em>'('</em> always returns the string <em>'('</em>.
+For some tokens it may be useful to compute a Python object from the token.
+For example <em>number</em> should return an integer instead of a string,
+<em>addop</em> and <em>mulop</em>, followed by a number, should return a function corresponding to the operator.
+That's why we will add a function to the token and rule definitions.
+So we associate <em>int</em> to <em>number</em> and <em>op1</em> and <em>op2</em> to unary and binary operators.</p>
+<p><em>int</em> is a Python function converting objects to integers and <em>op1</em> and <em>op2</em> are user defined functions.</p>
+<p><em>op1</em> and <em>op2</em> functions:</p>
+<pre class="literal-block">
+op1 = lambda f,x: {'+':pos, '-':neg}[f](x)
+op2 = lambda f,y: lambda x: {'+': add, '-': sub, '*': mul, '/': div}[f](x,y)
+
+# red applyies functions to a number
+def red(x, fs):
+    for f in fs: x = f(x)
+    return x
+</pre>
+<dl class="docutils">
+<dt>To associate a function to a token or a rule it must be applyed using / or * operators:</dt>
+<dd><ul class="first last simple">
+<li>/ applyies a function to an object returned by a (sub)parser.</li>
+<li>* applyies a function to an tuple of objects returned by a sequence of (sub) parsers.</li>
+</ul>
+</dd>
+</dl>
+<p>Token and rule definitions with functions:</p>
+<pre class="literal-block">
+number = R(r'[0-9]+') / int
+
+fact |= (addop &amp; fact) * op1
+term = (fact &amp; ( (mulop &amp; fact) * op2 )[:]) * red
+
+# R(r'[0-9]+') applyed on &quot;42&quot; will return &quot;42&quot;.
+# R(r'[0-9]+') / int will return int(&quot;42&quot;)
+
+# addop &amp; fact applyied on &quot;+ 42&quot; will return ('+', 42)
+# (addop &amp; fact) * op1 will return op1(*('+', 42)), i.e. op1('+', 42)
+# so (addop &amp; fact) * op1 returns +42
+
+# (addop &amp; fact) * op2 will return op2(*('+', 42)), i.e. op2('+', 42)
+# so (addop &amp; fact) * op2 returns lambda x: add(x, 42)
+
+# fact &amp; ( (mulop &amp; fact) * op2 )[:] returns a number and a list of functions
+# for instance (42, [(lambda x:mul(x, 43)), (lambda x:mul(x, 44))])
+# so (fact &amp; ( (mulop &amp; fact) * op2 )[:]) * red applyied on &quot;42*43*44&quot;
+# will return red(42, [(lambda x:mul(x, 43)), (lambda x:mul(x, 44))])
+# i.e. 42*43*44
+</pre>
+<p>Here is finally the complete parser.</p>
+<p>Expression recognizer and evaluator:</p>
+<pre class="literal-block">
+from sp import *
+
+def Calc():
+
+    from operator import pos, neg, add, sub, mul, truediv as div
+
+    op1 = lambda f,x: {'+':pos, '-':neg}[f](x)
+    op2 = lambda f,y: lambda x: {'+': add, '-': sub, '*': mul, '/': div}[f](x,y)
+
+    def red(x, fs):
+        for f in fs: x = f(x)
+        return x
+
+    number = R(r'[0-9]+') / int
+    addop = R('[+-]')
+    mulop = R('[*/]')
+
+    with Separator(r'\s+'):
+
+        expr = Rule()
+        fact = Rule()
+        fact |= (addop &amp; fact) * op1
+        fact |= '(' &amp; expr &amp; ')'
+        fact |= number
+        term = (fact &amp; ( (mulop &amp; fact) * op2 )[:]) * red
+        expr |= (term &amp; ( (addop &amp; term) * op2 )[:]) * red
+
+    return expr
+</pre>
+</div>
+<div class="section" id="embeding-the-parser-in-a-script">
+<h3>Embeding the parser in a script</h3>
+<p>A parser is a simple Python object.
+This example show how to write a function that returns a parser.
+The parser can be applyied to strings just by calling the parser.</p>
+<p>Writting SP grammars in Python:</p>
+<pre class="literal-block">
+from sp import *
+
+def MyParser():
+
+    parser = ...
+
+    return parser
+
+# You can instanciate your parser here
+my_parser = MyParser()
+
+# and use it
+parsed_object = my_parser(string_to_be_parsed)
+</pre>
+<p>To use this parser you now just need to instanciate an object.</p>
+<p>Complete Python script with expression parser:</p>
+<pre class="literal-block">
+from sp import *
+
+def Calc():
+
+    from operator import pos, neg, add, sub, mul, truediv as div
+
+    op1 = lambda f,x: {'+':pos, '-':neg}[f](x)
+    op2 = lambda f,y: lambda x: {'+': add, '-': sub, '*': mul, '/': div}[f](x,y)
+
+    def red(x, fs):
+        for f in fs: x = f(x)
+        return x
+
+    number = R(r'[0-9]+') / int
+    addop = R('[+-]')
+    mulop = R('[*/]')
+
+    with Separator(r'\s+'):
+
+        expr = Rule()
+        fact = Rule()
+        fact |= (addop &amp; fact) * op1
+        fact |= '(' &amp; expr &amp; ')'
+        fact |= number
+        term = (fact &amp; ( (mulop &amp; fact) * op2 )[:]) * red
+        expr |= (term &amp; ( (addop &amp; term) * op2 )[:]) * red
+
+    return expr
+
+calc = Calc()
+while True:
+    expr = input('Enter an expression: ')
+    try: print(expr, '=', calc(expr))
+    except Exception as e: print(&quot;%s:&quot;%e.__class__.__name__, e)
+</pre>
+</div>
+<div class="section" id="conclusion">
+<h3>Conclusion</h3>
+<p>This tutorial shows some of the possibilities of SP.
+If you have read it carefully you may be able to start with SP.
+The next chapters present SP more precisely.
+They contain more examples to illustrate all the features of SP.</p>
+<p>Happy SP'ing!</p>
+</div>
+</div>
+</div>
+<div class="section" id="sp-reference">
+<h1><a class="toc-backref" href="#id14">2&nbsp;&nbsp;&nbsp;SP reference</a></h1>
+<div class="section" id="usage">
+<h2><a class="toc-backref" href="#id15">2.1&nbsp;&nbsp;&nbsp;Usage</a></h2>
+<p>SP is a package which main function is to provide basic objects to build a complete parser.</p>
+<p>The grammar is a Python object.</p>
+<p>Grammar embeding example:</p>
+<pre class="literal-block">
+def Foo():
+    bar = R('bar')
+    return bar
+</pre>
+<p>Then you can use the new generated parser.
+The parser is simply a Python object.</p>
+<p>Parser usage example:</p>
+<pre class="literal-block">
+test = &quot;bar&quot;
+my_parser = Foo()
+x = my_parser(test)               # Parses &quot;bar&quot;
+print x
+</pre>
+</div>
+<div class="section" id="grammar-structure">
+<h2><a class="toc-backref" href="#id16">2.2&nbsp;&nbsp;&nbsp;Grammar structure</a></h2>
+<p>SP grammars are Python objects.
+SP grammars may contain two parts:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Tokens:</th><td class="field-body">are built by the <em>R</em> or <em>K</em> keywords.</td>
+</tr>
+<tr class="field"><th class="field-name">Rules:</th><td class="field-body">are described after tokens in a <em>Separator</em> context.</td>
+</tr>
+</tbody>
+</table>
+<p>Example of SP grammar structure:</p>
+<pre class="literal-block">
+def Foo():
+
+    # Tokens
+    number = R(r'\d+') / int
+
+    # Rules
+    with Separator(r'\s+'):
+        S = number[:]
+
+    return S
+
+foo = Foo()
+result = foo(&quot;42 43 44&quot;) # return [42, 43, 44]
+</pre>
+</div>
+<div class="section" id="lexer">
+<h2><a class="toc-backref" href="#id17">2.3&nbsp;&nbsp;&nbsp;Lexer</a></h2>
+<div class="section" id="regular-expression-syntax">
+<h3>Regular expression syntax</h3>
+<p>The lexer is based on the <em>re</em> <a class="footnote-reference" href="#id8" id="id6">[3]</a> module.
+SP profits from the power of Python regular expressions.
+This document assumes the reader is familiar with regular expressions.</p>
+<p>You can use the syntax of regular expressions as expected by the <em>re</em> <a class="footnote-reference" href="#id9" id="id7">[4]</a> module.</p>
+<table class="docutils footnote" frame="void" id="id8" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id6">[3]</a></td><td><em>re</em> is a standard Python module.
+It handles regular expressions.
+For further information about <em>re</em> you can read <a class="reference external" href="http://docs.python.org/lib/module-re.html">http://docs.python.org/lib/module-re.html</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id9" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id7">[4]</a></td><td>From the Python documentation: <a class="reference external" href="http://docs.python.org/lib/re-syntax.html">http://docs.python.org/lib/re-syntax.html</a></td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="predefined-tokens">
+<h3>Predefined tokens</h3>
+<p>Tokens can be explicitely defined by the <em>R</em>, <em>K</em> and <em>Separator</em> keywords.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">R:</th><td class="field-body">defines a regular token.
+The token is defined with a regular expression and returns a string.</td>
+</tr>
+<tr class="field"><th class="field-name">K:</th><td class="field-body">defines a token that returns nothing (usefull for keywords for instance).
+The keyword is defined by an identifier (in this case word boundaries are expected around the keyword)
+or another string (in this case the pattern is not considered as a regular expression).
+The token just recognizes a keyword and returns nothing.</td>
+</tr>
+<tr class="field"><th class="field-name">Separator:</th><td class="field-body">if a context manager used to define separators for the rules defined in the context.
+The token is defined with a regular expression and returns nothing.</td>
+</tr>
+</tbody>
+</table>
+<p>A token can be defined by:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">a name:</th><td class="field-body">which identifies the token.
+This name is used by the parser.</td>
+</tr>
+<tr class="field"><th class="field-name" colspan="2">a regular expression:</th></tr>
+<tr><td>&nbsp;</td><td class="field-body">which describes what to match to recognize the token.</td>
+</tr>
+<tr class="field"><th class="field-name">an action:</th><td class="field-body">which can translate the matched text into a Python object.
+It can be a function of one argument or a non callable object.
+If it is not callable, it will be returned for each token
+otherwise it will be applied to the text of the token and the result will be returned.
+This action is optional. By default the token text is returned.</td>
+</tr>
+</tbody>
+</table>
+<p>Token definition examples:</p>
+<pre class="literal-block">
+integer = R(r'\d+') / int
+identifier = R(r'[a-zA-Z]\w*\b')
+boolean = R(r'(True|False)\b') / (lambda b: b=='True')
+
+spaces = K(r'\s+')
+comments = K(r'#.*')
+
+with Separator(spaces|comments):
+    # rules defined here will use spaces and comments as separators
+    atom = '(' &amp; expr &amp; ')'
+</pre>
+<p>There are two kinds of tokens.
+Tokens defined by the <em>R</em> or <em>K</em> keywords are parsed by the parser
+and tokens defined by the <em>Separator</em> keyword are considered as separators
+(white spaces or comments for example) and are wiped out by the lexer.</p>
+<p>The word boundary <em>\b</em> can be used to avoid recognizing &quot;True&quot; at the beginning of &quot;Truexyz&quot;.</p>
+</div>
+<div class="section" id="inline-tokens">
+<h3>Inline tokens</h3>
+<p>Tokens can also be defined on the fly.
+Their definition are then inlined in the grammar rules.
+This feature may be useful for keywords or punctuation signs.</p>
+<p>In this case tokens can be written without the <em>R</em> or <em>K</em> keywords.
+They are considered as keywords (as defiend by <em>K</em>).</p>
+<p>Inline token definition examples:</p>
+<pre class="literal-block">
+IfThenElse = 'if' &amp; Cond &amp;
+             'then' &amp; Statement &amp;
+             'else' &amp; Statement
+    ;
+</pre>
+</div>
+</div>
+<div class="section" id="parser">
+<h2><a class="toc-backref" href="#id18">2.4&nbsp;&nbsp;&nbsp;Parser</a></h2>
+<div class="section" id="declaration">
+<h3>Declaration</h3>
+<p>A parser is declared as a Python object.</p>
+</div>
+<div class="section" id="grammar-rules">
+<h3>Grammar rules</h3>
+<p>Rule declarations have two parts.
+The left side declares the symbol associated to the rule.
+The right side describes the decomposition of the rule.
+Both parts of the declaration are separated with an equal sign (<em>=</em>).</p>
+<p>Rule declaration example:</p>
+<pre class="literal-block">
+SYMBOL = (A &amp; B) * (lambda a, b: f(a, b))
+</pre>
+</div>
+<div class="section" id="sequences">
+<h3>Sequences</h3>
+<p>Sequences in grammar rules describe in which order symbols should appear in the input string.
+For example the sequence <em>A &amp; B</em> recognizes an <em>A</em> followed by a <em>B</em>.</p>
+<p>For example to say that a <em>sum</em> is a <em>term</em> <em>plus</em> another <em>term</em> you can write:</p>
+<pre class="literal-block">
+Sum = Term &amp; '+' &amp; Term
+</pre>
+</div>
+<div class="section" id="alternatives">
+<h3>Alternatives</h3>
+<p>Alternatives in grammar rules describe several possible decompositions of a symbol.
+The infix pipe operator (<em>|</em>) is used to separate alternatives.
+<em>A | B</em> recognizes either an <em>A</em> or a <em>B</em>.
+If both <em>A</em> and <em>B</em> can be matched only the first match is considered.
+So the order of alternatives is very important.
+If an alternative has an empty choice, it must be the last.
+Empty choices in other positions will be reported as syntax errors.</p>
+<p>For example to say that an <em>atom</em> is an <em>integer</em> or an <em>expression in paranthesis</em>
+you can write:</p>
+<pre class="literal-block">
+Atom = integer | '(' &amp; Expr &amp; ')'
+</pre>
+</div>
+<div class="section" id="repetitions">
+<h3>Repetitions</h3>
+<p>Repetitions in grammar rules describe how many times an expression should be matched.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">A[:1]:</th><td class="field-body">recognizes zero or one <em>A</em>.</td>
+</tr>
+<tr class="field"><th class="field-name">A[:]:</th><td class="field-body">recognizes zero or more <em>A</em>.</td>
+</tr>
+<tr class="field"><th class="field-name">A[1:]:</th><td class="field-body">recognizes one or more <em>A</em>.</td>
+</tr>
+<tr class="field"><th class="field-name">A[m:n]:</th><td class="field-body">recognizes at least m and at most n <em>A</em>.</td>
+</tr>
+</tbody>
+</table>
+<p>Repetitions are greedy.
+Repetitions are implemented as Python loops.
+Thus whatever the length of the repetitions, the Python stack will not overflow.</p>
+</div>
+<div class="section" id="precedence-and-grouping">
+<h3>Precedence and grouping</h3>
+<p>The following table lists the different structures in increasing precedence order.
+To override the default precedence you can group expressions with parenthesis.</p>
+<p>Precedence in SP expressions:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="55%" />
+<col width="45%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Structure</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td rowspan="2">Alternative</td>
+<td rowspan="2"><em>A | B</em></td>
+</tr>
+<tr></tr>
+<tr><td rowspan="2">Sequence</td>
+<td rowspan="2"><em>A &amp; B</em></td>
+</tr>
+<tr></tr>
+<tr><td rowspan="2">Repetitions</td>
+<td rowspan="2"><em>A[x:y]</em></td>
+</tr>
+<tr></tr>
+<tr><td rowspan="2">Symbol and grouping</td>
+<td rowspan="2"><em>A</em> and <em>( ... )</em></td>
+</tr>
+<tr></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="actions">
+<h3>Actions</h3>
+<p>Grammar rules can contain actions as Python functions.</p>
+<p>Functions are applyied to parsed objects using / or *.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name" colspan="2">parser / function:</th></tr>
+<tr><td>&nbsp;</td><td class="field-body">returns <em>function(result of parser)</em>.</td>
+</tr>
+<tr class="field"><th class="field-name" colspan="2">parser * function:</th></tr>
+<tr><td>&nbsp;</td><td class="field-body">returns <em>function(*result of parser)</em>.</td>
+</tr>
+</tbody>
+</table>
+<p>* can be used to analyse the result of a sequence.</p>
+</div>
+<div class="section" id="abstract-syntax-trees">
+<h3>Abstract syntax trees</h3>
+<p>An abstract syntax tree (AST) is an abstract representation of the structure of the input.
+A node of an AST is a Python object (there is no constraint about its class).
+AST nodes are completely defined by the user.</p>
+<p>AST example (parsing a couple):</p>
+<pre class="literal-block">
+class Couple:
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+def Foo():
+    couple = ('(' &amp; item &amp; ',' &amp; item &amp; ')') * Couple
+    return couple
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="some-examples-to-illustrate-sp">
+<h1><a class="toc-backref" href="#id19">3&nbsp;&nbsp;&nbsp;Some examples to illustrate SP</a></h1>
+<div class="section" id="complete-interactive-calculator">
+<h2><a class="toc-backref" href="#id20">3.1&nbsp;&nbsp;&nbsp;Complete interactive calculator</a></h2>
+<p>This chapter presents an extention of the calculator described in the tutorial (see~ref{sp:tutorial}).
+This calculator has more functions and a memory.</p>
+<div class="section" id="new-functions">
+<h3>New functions</h3>
+<p>The calculator has memories.
+A memory cell is identified by a name.
+For example, if the user types <em>pi = 3.14</em>},
+the memory cell named <em>pi</em> will contain the value of <em>pi</em>
+and <em>2*pi</em> will return <em>6.28</em>.</p>
+<p>The variables are saved in a dictionnary.</p>
+<p>Source code</p>
+<p>Here is the complete source code (<em>calc.py</em>):</p>
+<pre class="literal-block">
+#!/usr/bin/env python3
+
+# This file is part of Simple Parser.
+# 
+# Simple Parser is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# Simple Parser is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public License
+# along with Simple Parser.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+
+&quot;&quot;&quot; Calc
+
+num  : generic numerical calculus   | assignment: name = expression
+int  : integral calculus            | binary    : b... or ...b
+int8 : integral calculus on 8 bits  | octal     : o... or ...o
+int16: integral calculus on 16 bits | hexa      : h... or ...h or 0x...
+int32: integral calculus on 32 bits | operators : + - | ^ * % / &amp; &gt;&gt; &lt;&lt; ~ **
+int64: integral calculus on 64 bits | functions : rev factor
+flt32: 32 bit float calculus        |
+flt64: 64 bit float calculus        |
+rat  : rational calculus            | this help : ?
+&quot;&quot;&quot;
+
+import struct
+import sys
+
+from sp import *
+from fractions import Fraction
+
+try:
+    import readline
+except ImportError:
+    pass
+
+class Num:
+    name, descr = &quot;num&quot;, &quot;Number&quot;
+    def __init__(self, val):
+        if isinstance(val, Num): self.val = val.val
+        else: self.val = val
+    def __int__(self):      return int(self.val)
+    def __float__(self):    return float(self.val)
+    def __str__(self):      return str(self.val)
+    def __add__(x, y):      return x.__class__(x.val + y.val)
+    def __sub__(x, y):      return x.__class__(x.val - y.val)
+    def __or__(x, y):       return x.__class__(x.val | y.val)
+    def __xor__(x, y):      return x.__class__(x.val ^ y.val)
+    def __mul__(x, y):      return x.__class__(x.val * y.val)
+    def __mod__(x, y):      return x.__class__(x.val % y.val)
+    def __truediv__(x, y):  return x.__class__(x.val / y.val)
+    def __and__(x, y):      return x.__class__(x.val &amp; y.val)
+    def __rshift__(x, y):   return x.__class__(x.val &gt;&gt; y.val)
+    def __lshift__(x, y):   return x.__class__(x.val &lt;&lt; y.val)
+    def __pos__(x):         return x.__class__(+x.val)
+    def __neg__(x):         return x.__class__(-x.val)
+    def __invert__(x):      return x.__class__(~x.val)
+    def __pow__(x, y):      return x.__class__(x.val ** y.val)
+    def rev(self):
+        raise TypeError(&quot;%s can not be bit reversed&quot;%self.__class__.__name__)
+    def factor(self):
+        n = int(self.val)
+        if n != self.val: raise TypeError(&quot;%s is not integer&quot;%self.val)
+        if n &lt; 0: ds = [-1]; n = -n
+        else: ds = []
+        rn = n**0.5
+        while n &gt; 1 and n%2==0: ds.append(2); n //= 2
+        d = 3
+        while d &lt;= rn:
+            while n%d==0: ds.append(d); n //= d
+            d += 2
+        if n &gt; 1: ds.append(n)
+        return &quot; &quot;.join(map(str, ds))
+
+class Float(Num):
+    name, descr = &quot;flt32&quot;, &quot;32 bit Float&quot;
+    def __init__(self, val): self.val = float(val)
+    def __str__(self): return &quot;&quot;&quot;%s
+    ieee: 0x%08X&quot;&quot;&quot;%(   self.val,
+        ieee_int32(self.val),
+    )
+
+class Double(Num):
+    name, descr = &quot;flt64&quot;, &quot;64 bit Float&quot;
+    def __init__(self, val): self.val = float(val)
+    def __str__(self): return &quot;&quot;&quot;%s
+    ieee: 0x%16X&quot;&quot;&quot;%(   self.val,
+                        ieee_int64(self.val),
+    )
+
+class Rat(Num):
+    name, descr = &quot;rat&quot;, &quot;Rational&quot;
+    def __init__(self, val):
+        if isinstance(val, float):
+            self.val = Fraction(&quot;%.53f&quot;%(val)).limit_denominator(1000000000)
+        elif isinstance(val, Num): self.val = val.val
+        else: self.val = Fraction(val)
+    def __int__(self): return self.val.numerator//self.val.denominator
+    def __float__(self): return self.val.numerator/self.val.denominator
+    def __str__(self): return str(self.val)
+
+class Int(Num):
+    name, descr = &quot;int&quot;, &quot;Integer&quot;
+    def __init__(self, val): self.val = int(val)
+    def __truediv__(x, y): return x.__class__(x.val // y.val)
+    def __str__(self): return base(self.val, radix=10, group=3, width=None)
+
+class Int8(Num):
+    name, descr = &quot;int8&quot;, &quot;8 bit Integer&quot;
+    width = 8
+    def __init__(self, val): self.val = int(val) &amp; (2**self.width-1)
+    def __truediv__(x, y): return x.__class__(x.val // y.val)
+    def __str__(self): return &quot;&quot;&quot;%s
+    hex: %s
+    oct: %s
+    bin: %s&quot;&quot;&quot;%(    base(self.val, radix=10, group=3, width=None),
+                    base(self.val, radix=16, group=4, width=self.width),
+                    base(self.val, radix=8,  group=3, width=self.width),
+                    base(self.val, radix=2,  group=4, width=self.width),
+    )
+    def rev(self):
+        &quot;&quot;&quot; reverse bit order &quot;&quot;&quot;
+        return self.__class__(
+            sum(    ((self.val&gt;&gt;i)&amp;0x1)&lt;&lt;(self.width-1-i)
+                    for i in range(self.width)
+            )
+        )
+
+class Int16(Int8):
+    name, descr = &quot;int16&quot;, &quot;16 bit Integer&quot;
+    width = 16
+    def __str__(self): return &quot;&quot;&quot;%s
+    hex: %s
+    bin: %s&quot;&quot;&quot;%(    base(self.val, radix=10, group=3, width=None),
+                    base(self.val, radix=16, group=4, width=self.width),
+                    base(self.val, radix=2,  group=4, width=self.width),
+    )
+
+class Int32(Int8):
+    name, descr = &quot;int32&quot;, &quot;32 bit Integer&quot;
+    width = 32
+    def __str__(self): return &quot;&quot;&quot;%s
+    hex: %s
+    bin: %s
+    flt: %s&quot;&quot;&quot;%(    base(self.val, radix=10, group=3, width=None),
+                    base(self.val, radix=16, group=4, width=self.width),
+                    base(self.val, radix=2,  group=4, width=self.width),
+                    ieee_float(self.val),
+    )
+
+class Int64(Int32):
+    name, descr = &quot;int64&quot;, &quot;64 bit Integer&quot;
+    width = 64
+    def __str__(self): return &quot;&quot;&quot;%s
+    hex: %s
+    bin: %s
+    flt: %s&quot;&quot;&quot;%(    base(self.val, radix=10, group=3, width=None),
+                    base(self.val, radix=16, group=4, width=self.width),
+                    base(self.val, radix=2,  group=4, width=self.width),
+                    ieee_double(self.val),
+    )
+
+def ieee_int32(x):
+    return struct.unpack(&quot;I&quot;, struct.pack(&quot;f&quot;, x))[0]
+
+def ieee_int64(x):
+    return struct.unpack(&quot;Q&quot;, struct.pack(&quot;d&quot;, x))[0]
+
+def ieee_float(n):
+    return struct.unpack(&quot;f&quot;, struct.pack(&quot;I&quot;, n))[0]
+
+def ieee_double(n):
+    return struct.unpack(&quot;d&quot;, struct.pack(&quot;Q&quot;, n))[0]
+
+class Calc:
+
+    def __init__(self):
+
+        self.number = Num
+
+        def bin2int(n):
+            n = n.replace('_', '')
+            n = n.replace('b', '')
+            return int(n, 2)
+
+        def oct2int(n):
+            n = n.replace('_', '')
+            n = n.replace('o', '')
+            return int(n, 8)
+
+        def hex2int(n):
+            n = n.replace('_', '')
+            n = n.replace('h', '')
+            if n.startswith('0x'): n = n[2:]
+            return int(n, 16)
+
+        def real2float(n):
+            n = n.replace('_', '')
+            return float(n)
+
+        def dec2int(n):
+            n = n.replace('_', '')
+            return int(n)
+
+        bin = (R(r'b[_0-1]+\b') | R(r'[_0-1]+b\b')) / bin2int
+        oct = (R(r'o[_0-7]+\b') | R(r'[_0-7]+o\b')) / oct2int
+        hex = ( R(r'h[_0-9a-fA-F]+\b') |
+                R(r'[_0-9a-fA-F]+h\b') |
+                R(r'0x[_0-9a-fA-F]+\b')) / hex2int
+        real = R(r'(\d+\.\d*|\d*\.\d+)([eE][-+]?\d+)?|\d+[eE][-+]?\d+') / real2float
+        dec = R(r'\d+') / dec2int
+        var = R(r'[a-zA-Z_]\w*')
+
+        from operator import pos, neg, invert, add, sub, or_, xor, \
+                             mul, mod, truediv, floordiv, and_, \
+                             rshift, lshift, pow as pow_
+        op1 = lambda f,x: {'+':pos, '-':neg, '~':invert}[f](x)
+        op = lambda f,y: lambda x: {'+':add, '-':sub,
+                                    '*':mul, '%':mod, '/':truediv,
+                                    '**':pow_,
+                                    '&amp;':and_, '|':or_, '^':xor,
+                                    '&gt;&gt;':rshift, '&lt;&lt;':lshift,
+                                   }[f](x,y)
+        def red(x, fs):
+            for f in fs: x = f(x)
+            return x
+
+        with Separator(r'\s+'):
+
+            expr = Rule()
+
+            calc = ( K('?') / __doc__.strip()
+                   | K('num') / self.mode(Num)
+                   | K('int8') / self.mode(Int8)
+                   | K('int16') / self.mode(Int16)
+                   | K('int32') / self.mode(Int32)
+                   | K('int64') / self.mode(Int64)
+                   | K('int') / self.mode(Int)
+                   | K('flt32') / self.mode(Float)
+                   | K('flt64') / self.mode(Double)
+                   | K('rat') / self.mode(Rat)
+                   | (((var &amp; '=') | C('_')) &amp; expr) * self.assign
+                   )
+
+            fact = Rule()
+            atom = ( '(' &amp; expr &amp; ')'
+                   | (K('rev') &amp; '(' &amp; expr &amp; ')') / (lambda x: x.rev())
+                   | (K('factor') &amp; '(' &amp; expr &amp; ')') / (lambda x: x.factor())
+                   | (bin | oct | hex | real | dec | var / self.val)
+                     / self.convert
+                   )
+            pow = (atom &amp; ((R(r'\*\*') &amp; fact) * op)[:1]) * red
+            fact |= (R(r'\+|-|~') &amp; fact) * op1 | pow
+            term = (fact &amp; ((R(r'\*|%|/|&amp;|&gt;&gt;|&lt;&lt;') &amp; fact) * op)[:]) * red
+            expr |= (term &amp; ((R(r'\+|-|\||\^') &amp; term) * op)[:]) * red
+
+        self.calc = calc
+        self.var = {}
+
+    def mode(self, m):
+        def setmode(_):
+            self.number = m
+            return &quot;%s mode&quot;%self.number.descr
+        return setmode
+
+    def convert(self, x):
+        return self.number(x)
+
+    def assign(self, var, val):
+        self.var[var] = val
+        return str(val)
+
+    def val(self, var):
+        return self.var[var]
+
+    def __call__(self, s):
+        return self.calc(s)
+
+def base(N, radix=10, group=3, width=None):
+    if width:
+        N %= 2**width
+        bits_per_digit = {16:4, 8:3, 2:1}[radix]
+        min_len = width//bits_per_digit
+    s = &quot;&quot;
+    while N:
+        N, d = divmod(N, radix)
+        s = s + &quot;0123456789ABCDEF&quot;[d]
+    s = s or &quot;0&quot;
+    if width:
+        s = s + &quot;0&quot;*(min_len-len(s))
+    s = &quot; &quot;.join(s[i:i+group] for i in range(0, len(s), group))
+    return s[::-1]
+
+if __name__ == '__main__':
+    print(__doc__.strip())
+    print()
+    calc = Calc()
+    for cmd in sys.argv[1:]:
+        try:
+            calc(cmd)
+        except Exception as e:
+            print(&quot;%s: %s&quot;%(e.__class__.__name__, e))
+    while True:
+        expr = input(&quot;(%s) &quot;%calc.number.name)
+        if not expr: continue
+        try:
+            val = calc(expr)
+        except Exception as e:
+            print(&quot;%s: %s&quot;%(e.__class__.__name__, e))
+        else:
+            print(&quot;=&quot;, val)
+        print()
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

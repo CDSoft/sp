@@ -13,12 +13,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Simple Parser.  If not, see <http://www.gnu.org/licenses/>.
 
-all: sp.pdf
+all: doc/sp.html
 
-# Only the PDF documentation is generated.
+# Only the documentation is generated.
 # The archive is built by the release script.
 
-sp.pdf: doc/*.tex doc/*.py
-	(cd doc; pdflatex sp && pdflatex sp && pdflatex sp)
-	cp doc/$@ $@
-
+doc/sp.html: doc/sp.rst doc/*.py
+	LANG=en rst2html --section-numbering --language=en --cloak-email-addresses $< > $@
