@@ -71,12 +71,12 @@ SP is available under the GNU Lesser General Public::
 Structure of the document
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:`Introduction and tutorial`_:
+`Introduction and tutorial`_
     starts smoothly with a gentle tutorial as an introduction.
     I think this tutorial may be sufficent to start with SP.
-:`SP reference`_:
+`SP reference`_
     is a reference documentation. It will detail SP as much as possible.
-:`Some examples to illustrate SP`_:
+`Some examples to illustrate SP`_
     gives the reader some examples to illustrate SP.
 
 Installation
@@ -102,7 +102,7 @@ Introduction
 ~~~~~~~~~~~~
 
 This short tutorial presents how to make a simple calculator.
-The calculator will compute basic mathematical expressions (+, -, \*, \|) possibly nested in parenthesis.
+The calculator will compute basic mathematical expressions (``+``, ``-``, ``*``, ``|``) possibly nested in parenthesis.
 We assume the reader is familiar with regular expressions.
 
 Defining the grammar
@@ -116,33 +116,32 @@ We describe such grammars with rules.
 A rule describes the composition of an item of the language.
 In our grammar we have 3 items (expr, term, factor).
 We will call these items *symbols* or *non terminal symbols*.
-The decomposition of a symbol is symbolized with *->*.
+The decomposition of a symbol is symbolized with ``->``.
 
 Grammar for expressions:
 
-+-------------------------------------+---------------------------------------------------------------+
-| Grammar rule                        | Description                                                   |
-+=====================================+===============================================================+
-| expr -> term (('+'|'-') term)\*     | An expression is a term eventually followed                   |
-|                                     | with a plus ('\+') or a minus ('-') sign                      |
-|                                     | and an other term any number of times                         |
-|                                     | (\* is a repetition of an expression 0 or more times).        |
-+-------------------------------------+---------------------------------------------------------------+
-| term -> fact (('*'|'/') fact)\*     | A term is a factor eventually followed                        |
-|                                     | with a '*' or '/' sign                                        |
-|                                     | and an other factor any number of times.                      |
-+-------------------------------------+---------------------------------------------------------------+
-| fact -> ('+'|'-') fact              | | A factor is either a factor precedeed by a sign,            |
-|      | \| number                    | | a number                                                    |
-|      | \| '(' expr ')'              | | or an expression in parenthesis.                            |
-+-------------------------------------+---------------------------------------------------------------+
++----------------------------------------------------+---------------------------------------------------------------+
+| Grammar rule                                       | Description                                                   |
++====================================================+===============================================================+
+| ``expr -> term (('+'|'-') term)*``                 | An expression is a term eventually followed                   |
+|                                                    | with a plus (``+``) or a minus (``-``) sign                   |
+|                                                    | and an other term any number of times                         |
+|                                                    | (``*`` is a repetition of an expression 0 or more times).     |
++----------------------------------------------------+---------------------------------------------------------------+
+| ``term -> fact (('*'|'/') fact)*``                 | A term is a factor eventually followed                        |
+|                                                    | with a ``*`` or ``/`` sign                                    |
+|                                                    | and an other factor any number of times.                      |
++----------------------------------------------------+---------------------------------------------------------------+
+| ``fact -> ('+'|'-') fact | number | '(' expr ')'`` | A factor is either a factor precedeed by a sign, a number     |
+|                                                    | or an expression in parenthesis.                              |
++----------------------------------------------------+---------------------------------------------------------------+
 
 We have defined here the grammar rules (i.e. the sentences of the language).
 We now need to describe the lexical items (i.e. the words of the language).
 These words - also called *terminal symbols* - are described using regular expressions.
-In the rules we have written some of these terminal symbols (*+, -, \*, /, (, )*).
-We have to define *number*.
-For sake of simplicity numbers are integers composed of digits (the corresponding regular expression can be *[0-9]+*).
+In the rules we have written some of these terminal symbols (``+``, ``-``, ``*``, ``/``, ``(``, ``)``).
+We have to define ``number``.
+For sake of simplicity numbers are integers composed of digits (the corresponding regular expression can be ``[0-9]+``).
 To simplify the grammar and then the Python script we define two terminal symbols to group the operators (additive and multiplicative operators).
 We can also define a special symbol that is ignored by SP.
 This symbol is used as a separator.
@@ -153,13 +152,13 @@ Terminal symbol definition for expressions:
 +-------------------+-----------------------+--------------------+
 | Terminal symbol   | Regular expression    | Comment            |
 +===================+=======================+====================+
-| number            | [0-9]+ or \\d+        | One or more digits |
+| ``number``        | ``[0-9]+ or \d+``     | One or more digits |
 +-------------------+-----------------------+--------------------+
-| addop             | [+-]                  | a *+* or a *-*     |
+| ``addop``         | ``[+-]``              | a ``+`` or a ``-`` |
 +-------------------+-----------------------+--------------------+
-| mulop             | [\*/]                 | a *\** or a */*    |
+| ``mulop``         | ``[*/]``              | a ``*`` or a ``/`` |
 +-------------------+-----------------------+--------------------+
-| spaces            | \\s+                  | One or more spaces |
+| ``spaces``        | ``\s+``               | One or more spaces |
 +-------------------+-----------------------+--------------------+
 
 This is sufficient to define our parser with SP.
@@ -184,14 +183,14 @@ Grammar of the expression recognizer::
 
         return expr
 
-*Calc* is the name of the Python function that returns a parser.
-This function returns *expr* which is the *axiom* [#]_ of the grammer.
+``Calc`` is the name of the Python function that returns a parser.
+This function returns ``expr`` which is the *axiom* [#]_ of the grammer.
 
-*expr* and *fact* are recursive rules.
-They are first declared as empty rules (*expr = Rule()*) and alternatives are later added (*expr |= ...*).
+``expr`` and ``fact`` are recursive rules.
+They are first declared as empty rules (``expr = Rule()``) and alternatives are later added (``expr |= ...``).
 
 Slices are used to implement repetitions.
-*foo[:]* parses *foo* zero or more times, which is equivalent to *foo** is a classical grammar notation.
+``foo[:]`` parses ``foo`` zero or more times, which is equivalent to ``foo*`` is a classical grammar notation.
 
 With this small grammar we can only recognize a correct expression.
 We will see in the next sections how to read the actual expression and to compute its value.
@@ -206,16 +205,16 @@ To do something useful we need to read this string in order to transform it into
 
 This string can be read by catching the return value of terminal symbols.
 By default any terminal symbol returns a string containing the current token.
-So the token *'('* always returns the string *'('*.
+So the token ``'('`` always returns the string ``'('``.
 For some tokens it may be useful to compute a Python object from the token.
-For example *number* should return an integer instead of a string,
-*addop* and *mulop*, followed by a number, should return a function corresponding to the operator.
+For example ``number`` should return an integer instead of a string,
+``addop`` and ``mulop``, followed by a number, should return a function corresponding to the operator.
 That's why we will add a function to the token and rule definitions.
-So we associate *int* to *number* and *op1* and *op2* to unary and binary operators.
+So we associate ``int`` to ``number`` and ``op1`` and ``op2`` to unary and binary operators.
 
-*int* is a Python function converting objects to integers and *op1* and *op2* are user defined functions.
+``int`` is a Python function converting objects to integers and ``op1`` and ``op2`` are user defined functions.
 
-*op1* and *op2* functions::
+``op1`` and ``op2`` functions::
 
     op1 = lambda f,x: {'+':pos, '-':neg}[f](x)
     op2 = lambda f,y: lambda x: {'+': add, '-': sub, '*': mul, '/': div}[f](x,y)
@@ -225,9 +224,9 @@ So we associate *int* to *number* and *op1* and *op2* to unary and binary operat
         for f in fs: x = f(x)
         return x
 
-To associate a function to a token or a rule it must be applyed using / or * operators:
-    * / applyies a function to an object returned by a (sub)parser.
-    * \* applyies a function to an tuple of objects returned by a sequence of (sub) parsers.
+To associate a function to a token or a rule it must be applyed using ``/`` or ``*`` operators:
+    * ``/`` applyies a function to an object returned by a (sub)parser.
+    * ``*`` applyies a function to an tuple of objects returned by a sequence of (sub) parsers.
 
 Token and rule definitions with functions::
 
@@ -290,7 +289,7 @@ Embeding the parser in a script
 
 A parser is a simple Python object.
 This example show how to write a function that returns a parser.
-The parser can be applyied to strings just by calling the parser.
+The parser can be applyied to strings by simply calling the parser.
 
 Writting SP grammars in Python::
 
@@ -389,10 +388,10 @@ Grammar structure
 SP grammars are Python objects.
 SP grammars may contain two parts:
 
-:Tokens:
-    are built by the *R* or *K* keywords.
-:Rules:
-    are described after tokens in a *Separator* context.
+Tokens
+    are built by the ``R`` or ``K`` keywords.
+Rules
+    are described after tokens in a ``Separator`` context.
 
 Example of SP grammar structure::
 
@@ -425,33 +424,39 @@ You can use the syntax of regular expressions as expected by the *re* [#]_ modul
 .. [#] *re* is a standard Python module.
        It handles regular expressions.
        For further information about *re* you can read http://docs.python.org/lib/module-re.html
-.. [#] From the Python documentation: http://docs.python.org/lib/re-syntax.html
+
+.. [#] Read the Python documentation for further information: http://docs.python.org/lib/re-syntax.html
 
 Predefined tokens
 ~~~~~~~~~~~~~~~~~
 
-Tokens can be explicitely defined by the *R*, *K* and *Separator* keywords.
+Tokens can be explicitely defined by the ``R``, ``K`` and ``Separator`` keywords.
 
-:R:
-    defines a regular token.
-    The token is defined with a regular expression and returns a string.
-:K:
-    defines a token that returns nothing (usefull for keywords for instance).
-    The keyword is defined by an identifier (in this case word boundaries are expected around the keyword)
-    or another string (in this case the pattern is not considered as a regular expression).
-    The token just recognizes a keyword and returns nothing.
-:Separator:
-    if a context manager used to define separators for the rules defined in the context.
-    The token is defined with a regular expression and returns nothing.
++---------------+---------------------------------------------------------------------------+
+| Expression    | Usage                                                                     |
++===============+===========================================================================+
+| ``R``         | defines a regular token.                                                  |
+|               | The token is defined with a regular expression and returns a string.      |
++---------------+---------------------------------------------------------------------------+
+| ``K``         | defines a token that returns nothing (usefull for keywords for instance). |
+|               | The keyword is defined by an identifier (in this case word boundaries     |
+|               | are expected around the keyword) or another string (in this case the      |
+|               | pattern is not considered as a regular expression).                       |
+|               | The token just recognizes a keyword and returns nothing.                  |
++---------------+---------------------------------------------------------------------------+
+| ``Separator`` | if a context manager used to define separators for the rules defined      |
+|               | in the context.                                                           |
+|               | The token is defined with a regular expression and returns nothing.       |
++---------------+---------------------------------------------------------------------------+
 
 A token can be defined by:
 
-:a name:
+a name
     which identifies the token.
     This name is used by the parser.
-:a regular expression:
+a regular expression
     which describes what to match to recognize the token.
-:an action:
+an action
     which can translate the matched text into a Python object.
     It can be a function of one argument or a non callable object.
     If it is not callable, it will be returned for each token
@@ -472,11 +477,11 @@ Token definition examples::
         atom = '(' & expr & ')'
 
 There are two kinds of tokens.
-Tokens defined by the *R* or *K* keywords are parsed by the parser
-and tokens defined by the *Separator* keyword are considered as separators
+Tokens defined by the ``R`` or ``K`` keywords are parsed by the parser
+and tokens defined by the ``Separator`` keyword are considered as separators
 (white spaces or comments for example) and are wiped out by the lexer.
 
-The word boundary *\\b* can be used to avoid recognizing "True" at the beginning of "Truexyz".
+The word boundary ``\b`` can be used to avoid recognizing "True" at the beginning of "Truexyz".
 
 Inline tokens
 ~~~~~~~~~~~~~
@@ -485,15 +490,15 @@ Tokens can also be defined on the fly.
 Their definition are then inlined in the grammar rules.
 This feature may be useful for keywords or punctuation signs.
 
-In this case tokens can be written without the *R* or *K* keywords.
-They are considered as keywords (as defiend by *K*).
+In this case tokens can be written without the ``R`` or ``K`` keywords.
+They are considered as keywords (as defined by ``K``).
 
 Inline token definition examples::
 
     IfThenElse = 'if' & Cond &
                  'then' & Statement &
                  'else' & Statement
-        ;
+    ;
 
 Parser
 ------
@@ -509,7 +514,7 @@ Grammar rules
 Rule declarations have two parts.
 The left side declares the symbol associated to the rule.
 The right side describes the decomposition of the rule.
-Both parts of the declaration are separated with an equal sign (*=*).
+Both parts of the declaration are separated with an equal sign (``=``).
 
 Rule declaration example::
 
@@ -519,9 +524,9 @@ Sequences
 ~~~~~~~~~
 
 Sequences in grammar rules describe in which order symbols should appear in the input string.
-For example the sequence *A & B* recognizes an *A* followed by a *B*.
+For example the sequence ``A & B`` recognizes an ``A`` followed by a ``B``.
 
-For example to say that a *sum* is a *term* *plus* another *term* you can write::
+For example to say that a ``sum`` is a ``term`` plus another ``term`` you can write::
 
     Sum = Term & '+' & Term
 
@@ -529,14 +534,14 @@ Alternatives
 ~~~~~~~~~~~~
 
 Alternatives in grammar rules describe several possible decompositions of a symbol.
-The infix pipe operator (*|*) is used to separate alternatives.
-*A | B* recognizes either an *A* or a *B*.
-If both *A* and *B* can be matched only the first match is considered.
+The infix pipe operator (``|``) is used to separate alternatives.
+``A | B`` recognizes either an ``A`` or a ``B``.
+If both ``A`` and ``B`` can be matched only the first match is considered.
 So the order of alternatives is very important.
 If an alternative has an empty choice, it must be the last.
 Empty choices in other positions will be reported as syntax errors.
 
-For example to say that an *atom* is an *integer* or an *expression in paranthesis*
+For example to say that an ``atom`` is an *integer* or an *expression in paranthesis*
 you can write::
 
     Atom = integer | '(' & Expr & ')'
@@ -546,10 +551,17 @@ Repetitions
 
 Repetitions in grammar rules describe how many times an expression should be matched.
 
-:A[\:1]:    recognizes zero or one *A*.
-:A[\:]:     recognizes zero or more *A*.
-:A[1\:]:    recognizes one or more *A*.
-:A[m\:n]:   recognizes at least m and at most n *A*.
++---------------+---------------------------------------------------------------------------+
+| Expression    | Usage                                                                     |
++===============+===========================================================================+
+| ``A[:1]``     | recognizes zero or one ``A``.                                             |
++---------------+---------------------------------------------------------------------------+
+| ``A[:]``      | recognizes zero or more ``A``.                                            |
++---------------+---------------------------------------------------------------------------+
+| ``A[1:]``     | recognizes one or more ``A``.                                             |
++---------------+---------------------------------------------------------------------------+
+| ``A[m:n]``    | recognizes at least m and at most n ``A``.                                |
++---------------+---------------------------------------------------------------------------+
 
 Repetitions are greedy.
 Repetitions are implemented as Python loops.
@@ -563,29 +575,34 @@ To override the default precedence you can group expressions with parenthesis.
 
 Precedence in SP expressions:
 
-+-----------------------+-------------------+
-| Structure             | Example           |
-+=======================+===================+
-+ Alternative           | *A | B*           |
-+-----------------------+-------------------+
-+ Sequence              | *A & B*           |
-+-----------------------+-------------------+
-+ Repetitions           | *A[x:y]*          |
-+-----------------------+-------------------+
-+ Symbol and grouping   | *A* and *( ... )* |
-+-----------------------+-------------------+
++-----------------------+-----------------------+
+| Structure             | Example               |
++=======================+=======================+
++ Alternative           | ``A | B``             |
++-----------------------+-----------------------+
++ Sequence              | ``A & B``             |
++-----------------------+-----------------------+
++ Repetitions           | ``A[x:y]``            |
++-----------------------+-----------------------+
++ Symbol and grouping   | ``A`` and ``( ... )`` |
++-----------------------+-----------------------+
 
 Actions
 ~~~~~~~
 
 Grammar rules can contain actions as Python functions.
 
-Functions are applyied to parsed objects using / or \*.
+Functions are applyied to parsed objects using ``/`` or ``*``.
 
-:parser / function: returns *function(result of parser)*.
-:parser * function: returns *function(\*result of parser)*.
++-----------------------+---------------------------------------------------------------------------+
+| Expression            | Value                                                                     |
++=======================+===========================================================================+
+| ``parser / function`` | returns *function(result of parser)*.                                     |
++-----------------------+---------------------------------------------------------------------------+
+| ``parser * function`` | returns *function(\*result of parser)*.                                   |
++-----------------------+---------------------------------------------------------------------------+
 
-\* can be used to analyse the result of a sequence.
+``*`` can be used to analyse the result of a sequence.
 
 Abstract syntax trees
 ~~~~~~~~~~~~~~~~~~~~~
@@ -619,9 +636,9 @@ New functions
 
 The calculator has memories.
 A memory cell is identified by a name.
-For example, if the user types *pi = 3.14*},
-the memory cell named *pi* will contain the value of *pi*
-and *2*pi* will return *6.28*.
+For example, if the user types ``pi = 3.14``},
+the memory cell named ``pi`` will contain the value of ``pi``
+and ``2*pi`` will return ``6.28``.
 
 The variables are saved in a dictionnary.
 

@@ -18,5 +18,5 @@ all: doc/sp.html
 # Only the documentation is generated.
 # The archive is built by the release script.
 
-doc/sp.html: doc/sp.rst doc/*.py
-	LANG=en rst2html --section-numbering --language=en --cloak-email-addresses $< > $@
+doc/sp.html: doc/sp.rst doc/*.py doc/style.css
+	LANG=en rst2html --stylesheet-path=doc/style.css --section-numbering --language=en --cloak-email-addresses $< > $@

@@ -10,278 +10,265 @@
 <style type="text/css">
 
 /*
-:Author: David Goodger (goodger@python.org)
-:Id: $Id: html4css1.css 5196 2007-06-03 20:25:28Z wiemann $
-:Copyright: This stylesheet has been placed in the public domain.
-
-Default cascading style sheet for the HTML output of Docutils.
-
-See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
-customize this style sheet.
+Author: Frederic Culot
+Date: 2008-05-28
+Copyright: This stylesheet has been placed in the public domain - free to edit and use for all uses.
+*/
+/*
+Modified by C. Delord for Simple Parser
+- some margins and paddings removed
 */
 
-/* used to remove borders from tables and images */
-.borderless, table.borderless td, table.borderless th {
-  border: 0 }
+body {
+  font: 100% sans-serif;
+  color: black;
+  /*padding: 0em 2em;*/
+}
 
-table.borderless td, table.borderless th {
-  /* Override padding for "table.docutils td" with "! important".
-     The right padding separates the table cells. */
-  padding: 0 0.5em 0 0 ! important }
+@media screen {
+  body {
+    background: #003a6b;
+    /*margin: 2em;*/
+  }
+  .document, div.footer {
+    border: 1px solid gray;
+    margin: 0 auto;
+    width: /*90%;*/ 95%;
+    background-color: #ffffff;
+    padding: 1.5em;
+  }
+}
 
-.first {
-  /* Override more specific margin styles with "! important". */
-  margin-top: 0 ! important }
+@media print {
+  body {
+    background: #ffffff;
+    border: 2px solid #003a6b;
+    margin: 0em;
+  }
+}
 
-.last, .with-subtitle {
-  margin-bottom: 0 ! important }
-
-.hidden {
-  display: none }
-
-a.toc-backref {
-  text-decoration: none ;
-  color: black }
-
-blockquote.epigraph {
-  margin: 2em 5em ; }
-
-dl.docutils dd {
-  margin-bottom: 0.5em }
-
-/* Uncomment (and remove this text!) to get bold-faced definition list terms
-dl.docutils dt {
-  font-weight: bold }
-*/
-
-div.abstract {
-  margin: 2em 5em }
-
-div.abstract p.topic-title {
-  font-weight: bold ;
-  text-align: center }
-
-div.admonition, div.attention, div.caution, div.danger, div.error,
-div.hint, div.important, div.note, div.tip, div.warning {
-  margin: 2em ;
-  border: medium outset ;
-  padding: 1em }
-
-div.admonition p.admonition-title, div.hint p.admonition-title,
-div.important p.admonition-title, div.note p.admonition-title,
-div.tip p.admonition-title {
-  font-weight: bold ;
-  font-family: sans-serif }
-
-div.attention p.admonition-title, div.caution p.admonition-title,
-div.danger p.admonition-title, div.error p.admonition-title,
-div.warning p.admonition-title {
-  color: red ;
-  font-weight: bold ;
-  font-family: sans-serif }
-
-/* Uncomment (and remove this text!) to get reduced vertical space in
-   compound paragraphs.
-div.compound .compound-first, div.compound .compound-middle {
-  margin-bottom: 0.5em }
-
-div.compound .compound-last, div.compound .compound-middle {
-  margin-top: 0.5em }
-*/
-
-div.dedication {
-  margin: 2em 5em ;
-  text-align: center ;
-  font-style: italic }
-
-div.dedication p.topic-title {
-  font-weight: bold ;
-  font-style: normal }
-
-div.figure {
-  margin-left: 2em ;
-  margin-right: 2em }
-
-div.footer, div.header {
-  clear: both;
-  font-size: smaller }
-
-div.line-block {
-  display: block ;
-  margin-top: 1em ;
-  margin-bottom: 1em }
-
-div.line-block div.line-block {
-  margin-top: 0 ;
-  margin-bottom: 0 ;
-  margin-left: 1.5em }
-
-div.sidebar {
-  margin: 0 0 0.5em 1em ;
-  border: medium outset ;
-  padding: 1em ;
-  background-color: #ffffee ;
-  width: 40% ;
-  float: right ;
-  clear: right }
-
-div.sidebar p.rubric {
-  font-family: sans-serif ;
-  font-size: medium }
-
-div.system-messages {
-  margin: 5em }
-
-div.system-messages h1 {
-  color: red }
-
-div.system-message {
-  border: medium outset ;
-  padding: 1em }
-
-div.system-message p.system-message-title {
-  color: red ;
-  font-weight: bold }
-
-div.topic {
-  margin: 2em }
-
-h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
-h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
-  margin-top: 0.4em }
-
-h1.title {
-  text-align: center }
-
-h2.subtitle {
-  text-align: center }
-
-hr.docutils {
-  width: 75% }
-
-img.align-left {
-  clear: left }
-
-img.align-right {
-  clear: right }
-
-ol.simple, ul.simple {
-  margin-bottom: 1em }
-
-ol.arabic {
-  list-style: decimal }
-
-ol.loweralpha {
-  list-style: lower-alpha }
-
-ol.upperalpha {
-  list-style: upper-alpha }
-
-ol.lowerroman {
-  list-style: lower-roman }
-
-ol.upperroman {
-  list-style: upper-roman }
-
-p.attribution {
-  text-align: right ;
-  margin-left: 50% }
-
-p.caption {
-  font-style: italic }
-
-p.credits {
-  font-style: italic ;
-  font-size: smaller }
-
-p.label {
-  white-space: nowrap }
-
-p.rubric {
-  font-weight: bold ;
-  font-size: larger ;
-  color: maroon ;
-  text-align: center }
-
-p.sidebar-title {
-  font-family: sans-serif ;
-  font-weight: bold ;
-  font-size: larger }
-
-p.sidebar-subtitle {
-  font-family: sans-serif ;
-  font-weight: bold }
+div.footer {
+  text-align: right;
+}
 
 p.topic-title {
-  font-weight: bold }
-
-pre.address {
-  margin-bottom: 0 ;
-  margin-top: 0 ;
-  font-family: serif ;
-  font-size: 100% }
-
-pre.literal-block, pre.doctest-block {
-  margin-left: 2em ;
-  margin-right: 2em }
-
-span.classifier {
-  font-family: sans-serif ;
-  font-style: oblique }
-
-span.classifier-delimiter {
-  font-family: sans-serif ;
-  font-weight: bold }
-
-span.interpreted {
-  font-family: sans-serif }
-
-span.option {
-  white-space: nowrap }
-
-span.pre {
-  white-space: pre }
-
-span.problematic {
-  color: red }
-
-span.section-subtitle {
-  /* font-size relative to parent (h1..h6 element) */
-  font-size: 80% }
-
-table.citation {
-  border-left: solid 1px gray;
-  margin-left: 1px }
+  font-weight: bold;
+}
 
 table.docinfo {
-  margin: 2em 4em }
+  text-align: left;
+  margin: 2em 0em;
+}
+
+a[href] {
+  color: #436976;
+  background-color: transparent;
+}
+
+a.toc-backref {
+  text-decoration: none;
+}
+
+h1 a[href] {
+  color: #003a6b;
+  text-decoration: none;
+  background-color: transparent;
+}
+
+a.strong {
+  font-weight: bold;
+}
+
+img {
+  margin: 0;
+  border: 0;
+}
+
+p {
+  margin: 0.5em 0 1em 0;
+  line-height: 1.5em;
+}
+
+p a:visited {
+  color: purple;
+  background-color: transparent;
+}
+
+p a:active {
+  color: red;
+  background-color: transparent;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+p img {
+  border: 0;
+  margin: 0;
+}
+
+p.rubric {
+  font-weight: bold;
+  font-style: italic;
+}
+
+h1.title {
+  color: #003a6b;
+  font-size: 250%;
+  margin-bottom: 0em;
+}
+
+h2.subtitle {
+  color: #003a6b;
+  border-bottom: 0px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #555;
+  background-color: transparent;
+  margin: 0em;
+  padding-top: 0.5em;
+}
+
+h1 {
+  font-size: 160%;
+  margin-bottom: 0.5em;
+  border-bottom: 2px solid #aaa;
+}
+
+h2 {
+  font-size: 140%;
+  margin-bottom: 0.5em;
+  border-bottom: 1px solid #aaa;
+}
+
+h3 {
+  font-size: 130%;
+  margin-bottom: 0.5em;
+}
+
+h4 {
+  font-size: 110%;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+
+h5 {
+  font-size: 105%;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+
+h6 {
+  font-size: 100%;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+
+dt {
+  font-style: italic;
+}
+
+dd {
+  margin-bottom: 1.5em;
+}
+
+div.admonition, div.note, div.tip, div.caution, div.important {
+  margin: 2em 2em;
+  padding: 0em 1em;
+  border-top: 1px solid #aaa;
+  border-left: 1px solid #aaa;
+  border-bottom: 2px solid #555;
+  border-right: 2px solid #555;
+}
+
+div.important {
+  background: transparent url('../images/important.png') 10px 2px no-repeat;
+}
+
+div.caution {
+  background: transparent url('../images/caution.png') 10px 2px no-repeat;
+}
+
+div.note {
+  background: transparent url('../images/note.png') 10px 2px no-repeat;
+}
+
+div.tip {
+  background: transparent url('../images/tip.png') 10px 2px no-repeat;
+}
+
+div.admonition-example {
+  background: transparent url('../images/tip.png') 10px 2px no-repeat;
+}
+
+div.admonition-critical-example {
+  background: transparent url('../images/important.png') 10px 2px no-repeat;
+}
+
+p.admonition-title {
+  font-weight: bold;
+  border-bottom: 1px solid #aaa;
+  padding-left: 30px;
+}
 
 table.docutils {
-  margin-top: 0.5em ;
-  margin-bottom: 0.5em }
+  text-align: left;
+  border-left: 1px solid gray;
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0em 0em;
+}
 
-table.footnote {
-  border-left: solid 1px black;
-  margin-left: 1px }
+table.docutils caption {
+  font-style: italic;
+}
 
-table.docutils td, table.docutils th,
-table.docinfo td, table.docinfo th {
-  padding-left: 0.5em ;
-  padding-right: 0.5em ;
-  vertical-align: top }
+table.docutils td, table.docutils th {
+  padding: 0.25em 0.5em;
+}
 
-table.docutils th.field-name, table.docinfo th.docinfo-name {
-  font-weight: bold ;
-  text-align: left ;
-  white-space: nowrap ;
-  padding-left: 0 }
+table.docutils th {
+  background-color: #dddddd;
+}
 
-h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
-h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
-  font-size: 100% }
+div.sidebar {
+  width: 33%;
+  float: right;
+  margin: 0em 2em;
+  padding: 0em 1em;
+  border-top: 1px solid #aaa;
+  border-left: 1px solid #aaa;
+  border-bottom: 2px solid #555;
+  border-right: 2px solid #555;
+}
 
-ul.auto-toc {
-  list-style-type: none }
+p.sidebar-title {
+  margin-bottom: 0em;
+  color: #003a6b;
+  border-bottom: 1px solid #aaa;
+  font-weight: bold;
+}
+
+p.sidebar-subtitle {
+  margin-top: 0em;
+  font-style: italic;
+  color: #003a6b;
+}
+
+pre, .pre {
+  font-family: monospace;
+  font-size: 1.1em;
+  color: #444499;
+}
+
+pre.literal-block, pre.doctest-block {
+  border: 1px solid gray;
+  padding: 5px;
+  background-color: #dddddd;
+  margin: 0 5em 0 5em ;
+}
 
 </style>
 </head>
@@ -374,21 +361,15 @@ along with Simple Parser.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
 </div>
 <div class="section" id="structure-of-the-document">
 <h3>Structure of the document</h3>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name" colspan="2"><a class="reference internal" href="#introduction-and-tutorial">Introduction and tutorial</a>:</th></tr>
-<tr><td>&nbsp;</td><td class="field-body">starts smoothly with a gentle tutorial as an introduction.
-I think this tutorial may be sufficent to start with SP.</td>
-</tr>
-<tr class="field"><th class="field-name"><a class="reference internal" href="#sp-reference">SP reference</a>:</th><td class="field-body">is a reference documentation. It will detail SP as much as possible.</td>
-</tr>
-<tr class="field"><th class="field-name" colspan="2"><a class="reference internal" href="#some-examples-to-illustrate-sp">Some examples to illustrate SP</a>:</th></tr>
-<tr><td>&nbsp;</td><td class="field-body">gives the reader some examples to illustrate SP.</td>
-</tr>
-</tbody>
-</table>
+<dl class="docutils">
+<dt><a class="reference internal" href="#introduction-and-tutorial">Introduction and tutorial</a></dt>
+<dd>starts smoothly with a gentle tutorial as an introduction.
+I think this tutorial may be sufficent to start with SP.</dd>
+<dt><a class="reference internal" href="#sp-reference">SP reference</a></dt>
+<dd>is a reference documentation. It will detail SP as much as possible.</dd>
+<dt><a class="reference internal" href="#some-examples-to-illustrate-sp">Some examples to illustrate SP</a></dt>
+<dd>gives the reader some examples to illustrate SP.</dd>
+</dl>
 </div>
 </div>
 <div class="section" id="installation">
@@ -410,7 +391,7 @@ Python can be downloaded at <a class="reference external" href="http://www.pytho
 <div class="section" id="id3">
 <h3>Introduction</h3>
 <p>This short tutorial presents how to make a simple calculator.
-The calculator will compute basic mathematical expressions (+, -, *, |) possibly nested in parenthesis.
+The calculator will compute basic mathematical expressions (<tt class="docutils literal"><span class="pre">+</span></tt>, <tt class="docutils literal"><span class="pre">-</span></tt>, <tt class="docutils literal"><span class="pre">*</span></tt>, <tt class="docutils literal"><span class="pre">|</span></tt>) possibly nested in parenthesis.
 We assume the reader is familiar with regular expressions.</p>
 </div>
 <div class="section" id="defining-the-grammar">
@@ -422,12 +403,12 @@ A factor is either a number or a complete expression in parenthesis.</p>
 A rule describes the composition of an item of the language.
 In our grammar we have 3 items (expr, term, factor).
 We will call these items <em>symbols</em> or <em>non terminal symbols</em>.
-The decomposition of a symbol is symbolized with <em>-&gt;</em>.</p>
+The decomposition of a symbol is symbolized with <tt class="docutils literal"><span class="pre">-&gt;</span></tt>.</p>
 <p>Grammar for expressions:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="37%" />
-<col width="63%" />
+<col width="45%" />
+<col width="55%" />
 </colgroup>
 <thead valign="bottom">
 <tr><th class="head">Grammar rule</th>
@@ -435,41 +416,29 @@ The decomposition of a symbol is symbolized with <em>-&gt;</em>.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>expr -&gt; term (('+'|'-') term)*</td>
+<tr><td><tt class="docutils literal"><span class="pre">expr</span> <span class="pre">-&gt;</span> <span class="pre">term</span> <span class="pre">(('+'|'-')</span> <span class="pre">term)*</span></tt></td>
 <td>An expression is a term eventually followed
-with a plus ('+') or a minus ('-') sign
+with a plus (<tt class="docutils literal"><span class="pre">+</span></tt>) or a minus (<tt class="docutils literal"><span class="pre">-</span></tt>) sign
 and an other term any number of times
-(* is a repetition of an expression 0 or more times).</td>
+(<tt class="docutils literal"><span class="pre">*</span></tt> is a repetition of an expression 0 or more times).</td>
 </tr>
-<tr><td>term -&gt; fact (('*'|'/') fact)*</td>
+<tr><td><tt class="docutils literal"><span class="pre">term</span> <span class="pre">-&gt;</span> <span class="pre">fact</span> <span class="pre">(('*'|'/')</span> <span class="pre">fact)*</span></tt></td>
 <td>A term is a factor eventually followed
-with a '*' or '/' sign
+with a <tt class="docutils literal"><span class="pre">*</span></tt> or <tt class="docutils literal"><span class="pre">/</span></tt> sign
 and an other factor any number of times.</td>
 </tr>
-<tr><td><dl class="first last docutils">
-<dt>fact -&gt; ('+'|'-') fact</dt>
-<dd><div class="first last line-block">
-<div class="line">| number</div>
-<div class="line">| '(' expr ')'</div>
-</div>
-</dd>
-</dl>
-</td>
-<td><div class="first last line-block">
-<div class="line">A factor is either a factor precedeed by a sign,</div>
-<div class="line">a number</div>
-<div class="line">or an expression in parenthesis.</div>
-</div>
-</td>
+<tr><td><tt class="docutils literal"><span class="pre">fact</span> <span class="pre">-&gt;</span> <span class="pre">('+'|'-')</span> <span class="pre">fact</span> <span class="pre">|</span> <span class="pre">number</span> <span class="pre">|</span> <span class="pre">'('</span> <span class="pre">expr</span> <span class="pre">')'</span></tt></td>
+<td>A factor is either a factor precedeed by a sign, a number
+or an expression in parenthesis.</td>
 </tr>
 </tbody>
 </table>
 <p>We have defined here the grammar rules (i.e. the sentences of the language).
 We now need to describe the lexical items (i.e. the words of the language).
 These words - also called <em>terminal symbols</em> - are described using regular expressions.
-In the rules we have written some of these terminal symbols (<em>+, -, *, /, (, )</em>).
-We have to define <em>number</em>.
-For sake of simplicity numbers are integers composed of digits (the corresponding regular expression can be <em>[0-9]+</em>).
+In the rules we have written some of these terminal symbols (<tt class="docutils literal"><span class="pre">+</span></tt>, <tt class="docutils literal"><span class="pre">-</span></tt>, <tt class="docutils literal"><span class="pre">*</span></tt>, <tt class="docutils literal"><span class="pre">/</span></tt>, <tt class="docutils literal"><span class="pre">(</span></tt>, <tt class="docutils literal"><span class="pre">)</span></tt>).
+We have to define <tt class="docutils literal"><span class="pre">number</span></tt>.
+For sake of simplicity numbers are integers composed of digits (the corresponding regular expression can be <tt class="docutils literal"><span class="pre">[0-9]+</span></tt>).
 To simplify the grammar and then the Python script we define two terminal symbols to group the operators (additive and multiplicative operators).
 We can also define a special symbol that is ignored by SP.
 This symbol is used as a separator.
@@ -488,20 +457,20 @@ This is generaly usefull for white spaces and comments.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>number</td>
-<td>[0-9]+ or \d+</td>
+<tr><td><tt class="docutils literal"><span class="pre">number</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">[0-9]+</span> <span class="pre">or</span> <span class="pre">\d+</span></tt></td>
 <td>One or more digits</td>
 </tr>
-<tr><td>addop</td>
-<td>[+-]</td>
-<td>a <em>+</em> or a <em>-</em></td>
+<tr><td><tt class="docutils literal"><span class="pre">addop</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">[+-]</span></tt></td>
+<td>a <tt class="docutils literal"><span class="pre">+</span></tt> or a <tt class="docutils literal"><span class="pre">-</span></tt></td>
 </tr>
-<tr><td>mulop</td>
-<td>[*/]</td>
-<td>a <em>*</em> or a <em>/</em></td>
+<tr><td><tt class="docutils literal"><span class="pre">mulop</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">[*/]</span></tt></td>
+<td>a <tt class="docutils literal"><span class="pre">*</span></tt> or a <tt class="docutils literal"><span class="pre">/</span></tt></td>
 </tr>
-<tr><td>spaces</td>
-<td>\s+</td>
+<tr><td><tt class="docutils literal"><span class="pre">spaces</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">\s+</span></tt></td>
 <td>One or more spaces</td>
 </tr>
 </tbody>
@@ -527,12 +496,12 @@ def Calc():
 
     return expr
 </pre>
-<p><em>Calc</em> is the name of the Python function that returns a parser.
-This function returns <em>expr</em> which is the <em>axiom</em> <a class="footnote-reference" href="#id5" id="id4">[2]</a> of the grammer.</p>
-<p><em>expr</em> and <em>fact</em> are recursive rules.
-They are first declared as empty rules (<em>expr = Rule()</em>) and alternatives are later added (<em>expr |= ...</em>).</p>
+<p><tt class="docutils literal"><span class="pre">Calc</span></tt> is the name of the Python function that returns a parser.
+This function returns <tt class="docutils literal"><span class="pre">expr</span></tt> which is the <em>axiom</em> <a class="footnote-reference" href="#id5" id="id4">[2]</a> of the grammer.</p>
+<p><tt class="docutils literal"><span class="pre">expr</span></tt> and <tt class="docutils literal"><span class="pre">fact</span></tt> are recursive rules.
+They are first declared as empty rules (<tt class="docutils literal"><span class="pre">expr</span> <span class="pre">=</span> <span class="pre">Rule()</span></tt>) and alternatives are later added (<tt class="docutils literal"><span class="pre">expr</span> <span class="pre">|=</span> <span class="pre">...</span></tt>).</p>
 <p>Slices are used to implement repetitions.
-<em>foo[:]</em> parses <em>foo</em> zero or more times, which is equivalent to <em>foo*</em> is a classical grammar notation.</p>
+<tt class="docutils literal"><span class="pre">foo[:]</span></tt> parses <tt class="docutils literal"><span class="pre">foo</span></tt> zero or more times, which is equivalent to <tt class="docutils literal"><span class="pre">foo*</span></tt> is a classical grammar notation.</p>
 <p>With this small grammar we can only recognize a correct expression.
 We will see in the next sections how to read the actual expression and to compute its value.</p>
 <table class="docutils footnote" frame="void" id="id5" rules="none">
@@ -548,14 +517,14 @@ We will see in the next sections how to read the actual expression and to comput
 To do something useful we need to read this string in order to transform it into an expected result.</p>
 <p>This string can be read by catching the return value of terminal symbols.
 By default any terminal symbol returns a string containing the current token.
-So the token <em>'('</em> always returns the string <em>'('</em>.
+So the token <tt class="docutils literal"><span class="pre">'('</span></tt> always returns the string <tt class="docutils literal"><span class="pre">'('</span></tt>.
 For some tokens it may be useful to compute a Python object from the token.
-For example <em>number</em> should return an integer instead of a string,
-<em>addop</em> and <em>mulop</em>, followed by a number, should return a function corresponding to the operator.
+For example <tt class="docutils literal"><span class="pre">number</span></tt> should return an integer instead of a string,
+<tt class="docutils literal"><span class="pre">addop</span></tt> and <tt class="docutils literal"><span class="pre">mulop</span></tt>, followed by a number, should return a function corresponding to the operator.
 That's why we will add a function to the token and rule definitions.
-So we associate <em>int</em> to <em>number</em> and <em>op1</em> and <em>op2</em> to unary and binary operators.</p>
-<p><em>int</em> is a Python function converting objects to integers and <em>op1</em> and <em>op2</em> are user defined functions.</p>
-<p><em>op1</em> and <em>op2</em> functions:</p>
+So we associate <tt class="docutils literal"><span class="pre">int</span></tt> to <tt class="docutils literal"><span class="pre">number</span></tt> and <tt class="docutils literal"><span class="pre">op1</span></tt> and <tt class="docutils literal"><span class="pre">op2</span></tt> to unary and binary operators.</p>
+<p><tt class="docutils literal"><span class="pre">int</span></tt> is a Python function converting objects to integers and <tt class="docutils literal"><span class="pre">op1</span></tt> and <tt class="docutils literal"><span class="pre">op2</span></tt> are user defined functions.</p>
+<p><tt class="docutils literal"><span class="pre">op1</span></tt> and <tt class="docutils literal"><span class="pre">op2</span></tt> functions:</p>
 <pre class="literal-block">
 op1 = lambda f,x: {'+':pos, '-':neg}[f](x)
 op2 = lambda f,y: lambda x: {'+': add, '-': sub, '*': mul, '/': div}[f](x,y)
@@ -566,10 +535,10 @@ def red(x, fs):
     return x
 </pre>
 <dl class="docutils">
-<dt>To associate a function to a token or a rule it must be applyed using / or * operators:</dt>
+<dt>To associate a function to a token or a rule it must be applyed using <tt class="docutils literal"><span class="pre">/</span></tt> or <tt class="docutils literal"><span class="pre">*</span></tt> operators:</dt>
 <dd><ul class="first last simple">
-<li>/ applyies a function to an object returned by a (sub)parser.</li>
-<li>* applyies a function to an tuple of objects returned by a sequence of (sub) parsers.</li>
+<li><tt class="docutils literal"><span class="pre">/</span></tt> applyies a function to an object returned by a (sub)parser.</li>
+<li><tt class="docutils literal"><span class="pre">*</span></tt> applyies a function to an tuple of objects returned by a sequence of (sub) parsers.</li>
 </ul>
 </dd>
 </dl>
@@ -633,7 +602,7 @@ def Calc():
 <h3>Embeding the parser in a script</h3>
 <p>A parser is a simple Python object.
 This example show how to write a function that returns a parser.
-The parser can be applyied to strings just by calling the parser.</p>
+The parser can be applyied to strings by simply calling the parser.</p>
 <p>Writting SP grammars in Python:</p>
 <pre class="literal-block">
 from sp import *
@@ -725,16 +694,12 @@ print x
 <h2><a class="toc-backref" href="#id16">2.2&nbsp;&nbsp;&nbsp;Grammar structure</a></h2>
 <p>SP grammars are Python objects.
 SP grammars may contain two parts:</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Tokens:</th><td class="field-body">are built by the <em>R</em> or <em>K</em> keywords.</td>
-</tr>
-<tr class="field"><th class="field-name">Rules:</th><td class="field-body">are described after tokens in a <em>Separator</em> context.</td>
-</tr>
-</tbody>
-</table>
+<dl class="docutils">
+<dt>Tokens</dt>
+<dd>are built by the <tt class="docutils literal"><span class="pre">R</span></tt> or <tt class="docutils literal"><span class="pre">K</span></tt> keywords.</dd>
+<dt>Rules</dt>
+<dd>are described after tokens in a <tt class="docutils literal"><span class="pre">Separator</span></tt> context.</dd>
+</dl>
 <p>Example of SP grammar structure:</p>
 <pre class="literal-block">
 def Foo():
@@ -771,49 +736,56 @@ For further information about <em>re</em> you can read <a class="reference exter
 <table class="docutils footnote" frame="void" id="id9" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id7">[4]</a></td><td>From the Python documentation: <a class="reference external" href="http://docs.python.org/lib/re-syntax.html">http://docs.python.org/lib/re-syntax.html</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id7">[4]</a></td><td>Read the Python documentation for further information: <a class="reference external" href="http://docs.python.org/lib/re-syntax.html">http://docs.python.org/lib/re-syntax.html</a></td></tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="predefined-tokens">
 <h3>Predefined tokens</h3>
-<p>Tokens can be explicitely defined by the <em>R</em>, <em>K</em> and <em>Separator</em> keywords.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
+<p>Tokens can be explicitely defined by the <tt class="docutils literal"><span class="pre">R</span></tt>, <tt class="docutils literal"><span class="pre">K</span></tt> and <tt class="docutils literal"><span class="pre">Separator</span></tt> keywords.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="83%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Expression</th>
+<th class="head">Usage</th>
+</tr>
+</thead>
 <tbody valign="top">
-<tr class="field"><th class="field-name">R:</th><td class="field-body">defines a regular token.
+<tr><td><tt class="docutils literal"><span class="pre">R</span></tt></td>
+<td>defines a regular token.
 The token is defined with a regular expression and returns a string.</td>
 </tr>
-<tr class="field"><th class="field-name">K:</th><td class="field-body">defines a token that returns nothing (usefull for keywords for instance).
-The keyword is defined by an identifier (in this case word boundaries are expected around the keyword)
-or another string (in this case the pattern is not considered as a regular expression).
+<tr><td><tt class="docutils literal"><span class="pre">K</span></tt></td>
+<td>defines a token that returns nothing (usefull for keywords for instance).
+The keyword is defined by an identifier (in this case word boundaries
+are expected around the keyword) or another string (in this case the
+pattern is not considered as a regular expression).
 The token just recognizes a keyword and returns nothing.</td>
 </tr>
-<tr class="field"><th class="field-name">Separator:</th><td class="field-body">if a context manager used to define separators for the rules defined in the context.
+<tr><td><tt class="docutils literal"><span class="pre">Separator</span></tt></td>
+<td>if a context manager used to define separators for the rules defined
+in the context.
 The token is defined with a regular expression and returns nothing.</td>
 </tr>
 </tbody>
 </table>
 <p>A token can be defined by:</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">a name:</th><td class="field-body">which identifies the token.
-This name is used by the parser.</td>
-</tr>
-<tr class="field"><th class="field-name" colspan="2">a regular expression:</th></tr>
-<tr><td>&nbsp;</td><td class="field-body">which describes what to match to recognize the token.</td>
-</tr>
-<tr class="field"><th class="field-name">an action:</th><td class="field-body">which can translate the matched text into a Python object.
+<dl class="docutils">
+<dt>a name</dt>
+<dd>which identifies the token.
+This name is used by the parser.</dd>
+<dt>a regular expression</dt>
+<dd>which describes what to match to recognize the token.</dd>
+<dt>an action</dt>
+<dd>which can translate the matched text into a Python object.
 It can be a function of one argument or a non callable object.
 If it is not callable, it will be returned for each token
 otherwise it will be applied to the text of the token and the result will be returned.
-This action is optional. By default the token text is returned.</td>
-</tr>
-</tbody>
-</table>
+This action is optional. By default the token text is returned.</dd>
+</dl>
 <p>Token definition examples:</p>
 <pre class="literal-block">
 integer = R(r'\d+') / int
@@ -828,24 +800,24 @@ with Separator(spaces|comments):
     atom = '(' &amp; expr &amp; ')'
 </pre>
 <p>There are two kinds of tokens.
-Tokens defined by the <em>R</em> or <em>K</em> keywords are parsed by the parser
-and tokens defined by the <em>Separator</em> keyword are considered as separators
+Tokens defined by the <tt class="docutils literal"><span class="pre">R</span></tt> or <tt class="docutils literal"><span class="pre">K</span></tt> keywords are parsed by the parser
+and tokens defined by the <tt class="docutils literal"><span class="pre">Separator</span></tt> keyword are considered as separators
 (white spaces or comments for example) and are wiped out by the lexer.</p>
-<p>The word boundary <em>\b</em> can be used to avoid recognizing &quot;True&quot; at the beginning of &quot;Truexyz&quot;.</p>
+<p>The word boundary <tt class="docutils literal"><span class="pre">\b</span></tt> can be used to avoid recognizing &quot;True&quot; at the beginning of &quot;Truexyz&quot;.</p>
 </div>
 <div class="section" id="inline-tokens">
 <h3>Inline tokens</h3>
 <p>Tokens can also be defined on the fly.
 Their definition are then inlined in the grammar rules.
 This feature may be useful for keywords or punctuation signs.</p>
-<p>In this case tokens can be written without the <em>R</em> or <em>K</em> keywords.
-They are considered as keywords (as defiend by <em>K</em>).</p>
+<p>In this case tokens can be written without the <tt class="docutils literal"><span class="pre">R</span></tt> or <tt class="docutils literal"><span class="pre">K</span></tt> keywords.
+They are considered as keywords (as defined by <tt class="docutils literal"><span class="pre">K</span></tt>).</p>
 <p>Inline token definition examples:</p>
 <pre class="literal-block">
 IfThenElse = 'if' &amp; Cond &amp;
              'then' &amp; Statement &amp;
              'else' &amp; Statement
-    ;
+;
 </pre>
 </div>
 </div>
@@ -860,7 +832,7 @@ IfThenElse = 'if' &amp; Cond &amp;
 <p>Rule declarations have two parts.
 The left side declares the symbol associated to the rule.
 The right side describes the decomposition of the rule.
-Both parts of the declaration are separated with an equal sign (<em>=</em>).</p>
+Both parts of the declaration are separated with an equal sign (<tt class="docutils literal"><span class="pre">=</span></tt>).</p>
 <p>Rule declaration example:</p>
 <pre class="literal-block">
 SYMBOL = (A &amp; B) * (lambda a, b: f(a, b))
@@ -869,8 +841,8 @@ SYMBOL = (A &amp; B) * (lambda a, b: f(a, b))
 <div class="section" id="sequences">
 <h3>Sequences</h3>
 <p>Sequences in grammar rules describe in which order symbols should appear in the input string.
-For example the sequence <em>A &amp; B</em> recognizes an <em>A</em> followed by a <em>B</em>.</p>
-<p>For example to say that a <em>sum</em> is a <em>term</em> <em>plus</em> another <em>term</em> you can write:</p>
+For example the sequence <tt class="docutils literal"><span class="pre">A</span> <span class="pre">&amp;</span> <span class="pre">B</span></tt> recognizes an <tt class="docutils literal"><span class="pre">A</span></tt> followed by a <tt class="docutils literal"><span class="pre">B</span></tt>.</p>
+<p>For example to say that a <tt class="docutils literal"><span class="pre">sum</span></tt> is a <tt class="docutils literal"><span class="pre">term</span></tt> plus another <tt class="docutils literal"><span class="pre">term</span></tt> you can write:</p>
 <pre class="literal-block">
 Sum = Term &amp; '+' &amp; Term
 </pre>
@@ -878,13 +850,13 @@ Sum = Term &amp; '+' &amp; Term
 <div class="section" id="alternatives">
 <h3>Alternatives</h3>
 <p>Alternatives in grammar rules describe several possible decompositions of a symbol.
-The infix pipe operator (<em>|</em>) is used to separate alternatives.
-<em>A | B</em> recognizes either an <em>A</em> or a <em>B</em>.
-If both <em>A</em> and <em>B</em> can be matched only the first match is considered.
+The infix pipe operator (<tt class="docutils literal"><span class="pre">|</span></tt>) is used to separate alternatives.
+<tt class="docutils literal"><span class="pre">A</span> <span class="pre">|</span> <span class="pre">B</span></tt> recognizes either an <tt class="docutils literal"><span class="pre">A</span></tt> or a <tt class="docutils literal"><span class="pre">B</span></tt>.
+If both <tt class="docutils literal"><span class="pre">A</span></tt> and <tt class="docutils literal"><span class="pre">B</span></tt> can be matched only the first match is considered.
 So the order of alternatives is very important.
 If an alternative has an empty choice, it must be the last.
 Empty choices in other positions will be reported as syntax errors.</p>
-<p>For example to say that an <em>atom</em> is an <em>integer</em> or an <em>expression in paranthesis</em>
+<p>For example to say that an <tt class="docutils literal"><span class="pre">atom</span></tt> is an <em>integer</em> or an <em>expression in paranthesis</em>
 you can write:</p>
 <pre class="literal-block">
 Atom = integer | '(' &amp; Expr &amp; ')'
@@ -893,17 +865,28 @@ Atom = integer | '(' &amp; Expr &amp; ')'
 <div class="section" id="repetitions">
 <h3>Repetitions</h3>
 <p>Repetitions in grammar rules describe how many times an expression should be matched.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="83%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Expression</th>
+<th class="head">Usage</th>
+</tr>
+</thead>
 <tbody valign="top">
-<tr class="field"><th class="field-name">A[:1]:</th><td class="field-body">recognizes zero or one <em>A</em>.</td>
+<tr><td><tt class="docutils literal"><span class="pre">A[:1]</span></tt></td>
+<td>recognizes zero or one <tt class="docutils literal"><span class="pre">A</span></tt>.</td>
 </tr>
-<tr class="field"><th class="field-name">A[:]:</th><td class="field-body">recognizes zero or more <em>A</em>.</td>
+<tr><td><tt class="docutils literal"><span class="pre">A[:]</span></tt></td>
+<td>recognizes zero or more <tt class="docutils literal"><span class="pre">A</span></tt>.</td>
 </tr>
-<tr class="field"><th class="field-name">A[1:]:</th><td class="field-body">recognizes one or more <em>A</em>.</td>
+<tr><td><tt class="docutils literal"><span class="pre">A[1:]</span></tt></td>
+<td>recognizes one or more <tt class="docutils literal"><span class="pre">A</span></tt>.</td>
 </tr>
-<tr class="field"><th class="field-name">A[m:n]:</th><td class="field-body">recognizes at least m and at most n <em>A</em>.</td>
+<tr><td><tt class="docutils literal"><span class="pre">A[m:n]</span></tt></td>
+<td>recognizes at least m and at most n <tt class="docutils literal"><span class="pre">A</span></tt>.</td>
 </tr>
 </tbody>
 </table>
@@ -918,8 +901,8 @@ To override the default precedence you can group expressions with parenthesis.</
 <p>Precedence in SP expressions:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="55%" />
-<col width="45%" />
+<col width="50%" />
+<col width="50%" />
 </colgroup>
 <thead valign="bottom">
 <tr><th class="head">Structure</th>
@@ -928,19 +911,19 @@ To override the default precedence you can group expressions with parenthesis.</
 </thead>
 <tbody valign="top">
 <tr><td rowspan="2">Alternative</td>
-<td rowspan="2"><em>A | B</em></td>
+<td rowspan="2"><tt class="docutils literal"><span class="pre">A</span> <span class="pre">|</span> <span class="pre">B</span></tt></td>
 </tr>
 <tr></tr>
 <tr><td rowspan="2">Sequence</td>
-<td rowspan="2"><em>A &amp; B</em></td>
+<td rowspan="2"><tt class="docutils literal"><span class="pre">A</span> <span class="pre">&amp;</span> <span class="pre">B</span></tt></td>
 </tr>
 <tr></tr>
 <tr><td rowspan="2">Repetitions</td>
-<td rowspan="2"><em>A[x:y]</em></td>
+<td rowspan="2"><tt class="docutils literal"><span class="pre">A[x:y]</span></tt></td>
 </tr>
 <tr></tr>
 <tr><td rowspan="2">Symbol and grouping</td>
-<td rowspan="2"><em>A</em> and <em>( ... )</em></td>
+<td rowspan="2"><tt class="docutils literal"><span class="pre">A</span></tt> and <tt class="docutils literal"><span class="pre">(</span> <span class="pre">...</span> <span class="pre">)</span></tt></td>
 </tr>
 <tr></tr>
 </tbody>
@@ -949,20 +932,27 @@ To override the default precedence you can group expressions with parenthesis.</
 <div class="section" id="actions">
 <h3>Actions</h3>
 <p>Grammar rules can contain actions as Python functions.</p>
-<p>Functions are applyied to parsed objects using / or *.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name" colspan="2">parser / function:</th></tr>
-<tr><td>&nbsp;</td><td class="field-body">returns <em>function(result of parser)</em>.</td>
+<p>Functions are applyied to parsed objects using <tt class="docutils literal"><span class="pre">/</span></tt> or <tt class="docutils literal"><span class="pre">*</span></tt>.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Expression</th>
+<th class="head">Value</th>
 </tr>
-<tr class="field"><th class="field-name" colspan="2">parser * function:</th></tr>
-<tr><td>&nbsp;</td><td class="field-body">returns <em>function(*result of parser)</em>.</td>
+</thead>
+<tbody valign="top">
+<tr><td><tt class="docutils literal"><span class="pre">parser</span> <span class="pre">/</span> <span class="pre">function</span></tt></td>
+<td>returns <em>function(result of parser)</em>.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">parser</span> <span class="pre">*</span> <span class="pre">function</span></tt></td>
+<td>returns <em>function(*result of parser)</em>.</td>
 </tr>
 </tbody>
 </table>
-<p>* can be used to analyse the result of a sequence.</p>
+<p><tt class="docutils literal"><span class="pre">*</span></tt> can be used to analyse the result of a sequence.</p>
 </div>
 <div class="section" id="abstract-syntax-trees">
 <h3>Abstract syntax trees</h3>
@@ -993,9 +983,9 @@ This calculator has more functions and a memory.</p>
 <h3>New functions</h3>
 <p>The calculator has memories.
 A memory cell is identified by a name.
-For example, if the user types <em>pi = 3.14</em>},
-the memory cell named <em>pi</em> will contain the value of <em>pi</em>
-and <em>2*pi</em> will return <em>6.28</em>.</p>
+For example, if the user types <tt class="docutils literal"><span class="pre">pi</span> <span class="pre">=</span> <span class="pre">3.14</span></tt>},
+the memory cell named <tt class="docutils literal"><span class="pre">pi</span></tt> will contain the value of <tt class="docutils literal"><span class="pre">pi</span></tt>
+and <tt class="docutils literal"><span class="pre">2*pi</span></tt> will return <tt class="docutils literal"><span class="pre">6.28</span></tt>.</p>
 <p>The variables are saved in a dictionnary.</p>
 <p>Source code</p>
 <p>Here is the complete source code (<em>calc.py</em>):</p>
