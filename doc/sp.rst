@@ -498,7 +498,6 @@ Inline token definition examples::
     IfThenElse = 'if' & Cond &
                  'then' & Statement &
                  'else' & Statement
-    ;
 
 Parser
 ------
