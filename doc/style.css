@@ -5,8 +5,9 @@ Copyright: This stylesheet has been placed in the public domain - free to edit a
 */
 /*
 Modified by C. Delord for Simple Parser
-- some margins and paddings removed
 */
+
+@import url(html4css1.css);
 
 body {
   font: 100% sans-serif;
@@ -19,7 +20,7 @@ body {
     background: #003a6b;
     /*margin: 2em;*/
   }
-  .document, div.footer {
+  .document {
     border: 1px solid gray;
     margin: 0 auto;
     width: /*90%;*/ 95%;
@@ -31,7 +32,6 @@ body {
 @media print {
   body {
     background: #ffffff;
-    border: 2px solid #003a6b;
     margin: 0em;
   }
 }
@@ -105,25 +105,34 @@ p.rubric {
 h1.title {
   color: #003a6b;
   font-size: 250%;
+  margin-top: 0em;
   margin-bottom: 0em;
 }
 
 h2.subtitle {
   color: #003a6b;
-  border-bottom: 0px;
+  margin-top: 0.5em;
+  margin-bottom: 0em;
+  border-bottom: 1px solid #aaa;
 }
 
 h1, h2, h3, h4, h5, h6 {
   color: #555;
   background-color: transparent;
   margin: 0em;
+  margin-top: 1em;
   padding-top: 0.5em;
+  border: thin solid #aaa;    /* round borders on Mozilla */
+  -moz-border-radius: 8px;
+  padding: 2px;
 }
 
 h1 {
   font-size: 160%;
   margin-bottom: 0.5em;
   border-bottom: 2px solid #aaa;
+  border-right: 2px solid #aaa;
+  background-color: #eeeeee;
 }
 
 h2 {
@@ -163,37 +172,13 @@ dd {
   margin-bottom: 1.5em;
 }
 
-div.admonition, div.note, div.tip, div.caution, div.important {
+div.admonition, div.attention, div.danger, div.error, div.hint, div.note, div.tip, div.caution, div.important, div.warning {
   margin: 2em 2em;
   padding: 0em 1em;
   border-top: 1px solid #aaa;
   border-left: 1px solid #aaa;
   border-bottom: 2px solid #555;
   border-right: 2px solid #555;
-}
-
-div.important {
-  background: transparent url('../images/important.png') 10px 2px no-repeat;
-}
-
-div.caution {
-  background: transparent url('../images/caution.png') 10px 2px no-repeat;
-}
-
-div.note {
-  background: transparent url('../images/note.png') 10px 2px no-repeat;
-}
-
-div.tip {
-  background: transparent url('../images/tip.png') 10px 2px no-repeat;
-}
-
-div.admonition-example {
-  background: transparent url('../images/tip.png') 10px 2px no-repeat;
-}
-
-div.admonition-critical-example {
-  background: transparent url('../images/important.png') 10px 2px no-repeat;
 }
 
 p.admonition-title {
@@ -257,4 +242,11 @@ pre.literal-block, pre.doctest-block {
   padding: 5px;
   background-color: #dddddd;
   margin: 0 5em 0 5em ;
+}
+
+div.footer, div.header {
+    clear: both;
+    font-size: smaller;
+    color: white;
+    background-color: transparent;
 }

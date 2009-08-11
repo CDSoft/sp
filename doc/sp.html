@@ -6,7 +6,7 @@
 <meta name="generator" content="Docutils 0.5: http://docutils.sourceforge.net/" />
 <title>Simple Parser</title>
 <meta name="author" content="Christophe Delord" />
-<meta name="date" content="Friday 24 July 2009" />
+<meta name="date" content="Tuesday 11 August 2009" />
 <style type="text/css">
 
 /*
@@ -16,8 +16,9 @@ Copyright: This stylesheet has been placed in the public domain - free to edit a
 */
 /*
 Modified by C. Delord for Simple Parser
-- some margins and paddings removed
 */
+
+@import url(html4css1.css);
 
 body {
   font: 100% sans-serif;
@@ -30,7 +31,7 @@ body {
     background: #003a6b;
     /*margin: 2em;*/
   }
-  .document, div.footer {
+  .document {
     border: 1px solid gray;
     margin: 0 auto;
     width: /*90%;*/ 95%;
@@ -42,7 +43,6 @@ body {
 @media print {
   body {
     background: #ffffff;
-    border: 2px solid #003a6b;
     margin: 0em;
   }
 }
@@ -116,25 +116,34 @@ p.rubric {
 h1.title {
   color: #003a6b;
   font-size: 250%;
+  margin-top: 0em;
   margin-bottom: 0em;
 }
 
 h2.subtitle {
   color: #003a6b;
-  border-bottom: 0px;
+  margin-top: 0.5em;
+  margin-bottom: 0em;
+  border-bottom: 1px solid #aaa;
 }
 
 h1, h2, h3, h4, h5, h6 {
   color: #555;
   background-color: transparent;
   margin: 0em;
+  margin-top: 1em;
   padding-top: 0.5em;
+  border: thin solid #aaa;    /* round borders on Mozilla */
+  -moz-border-radius: 8px;
+  padding: 2px;
 }
 
 h1 {
   font-size: 160%;
   margin-bottom: 0.5em;
   border-bottom: 2px solid #aaa;
+  border-right: 2px solid #aaa;
+  background-color: #eeeeee;
 }
 
 h2 {
@@ -174,37 +183,13 @@ dd {
   margin-bottom: 1.5em;
 }
 
-div.admonition, div.note, div.tip, div.caution, div.important {
+div.admonition, div.attention, div.danger, div.error, div.hint, div.note, div.tip, div.caution, div.important, div.warning {
   margin: 2em 2em;
   padding: 0em 1em;
   border-top: 1px solid #aaa;
   border-left: 1px solid #aaa;
   border-bottom: 2px solid #555;
   border-right: 2px solid #555;
-}
-
-div.important {
-  background: transparent url('../images/important.png') 10px 2px no-repeat;
-}
-
-div.caution {
-  background: transparent url('../images/caution.png') 10px 2px no-repeat;
-}
-
-div.note {
-  background: transparent url('../images/note.png') 10px 2px no-repeat;
-}
-
-div.tip {
-  background: transparent url('../images/tip.png') 10px 2px no-repeat;
-}
-
-div.admonition-example {
-  background: transparent url('../images/tip.png') 10px 2px no-repeat;
-}
-
-div.admonition-critical-example {
-  background: transparent url('../images/important.png') 10px 2px no-repeat;
 }
 
 p.admonition-title {
@@ -270,6 +255,13 @@ pre.literal-block, pre.doctest-block {
   margin: 0 5em 0 5em ;
 }
 
+div.footer, div.header {
+    clear: both;
+    font-size: smaller;
+    color: white;
+    background-color: transparent;
+}
+
 </style>
 </head>
 <body>
@@ -287,7 +279,7 @@ pre.literal-block, pre.doctest-block {
 <tr class="field"><th class="docinfo-name">Web site:</th><td class="field-body"><a class="reference external" href="http://christophe.delord.free.fr/sp">http://christophe.delord.free.fr/sp</a></td>
 </tr>
 <tr><th class="docinfo-name">Date:</th>
-<td>Friday 24 July 2009</td></tr>
+<td>Tuesday 11 August 2009</td></tr>
 <tr class="field"><th class="docinfo-name">License:</th><td class="field-body">This software is released under the LGPL license.</td>
 </tr>
 </tbody>
@@ -306,29 +298,33 @@ along with Simple Parser.  If not, see <http://www.gnu.org/licenses/>. -->
 <div class="contents topic" id="table-of-contents">
 <p class="topic-title first">Table of Contents</p>
 <ul class="auto-toc simple">
-<li><a class="reference internal" href="#introduction-and-tutorial" id="id10">1&nbsp;&nbsp;&nbsp;Introduction and tutorial</a><ul class="auto-toc">
-<li><a class="reference internal" href="#introduction" id="id11">1.1&nbsp;&nbsp;&nbsp;Introduction</a></li>
-<li><a class="reference internal" href="#installation" id="id12">1.2&nbsp;&nbsp;&nbsp;Installation</a></li>
-<li><a class="reference internal" href="#tutorial" id="id13">1.3&nbsp;&nbsp;&nbsp;Tutorial</a></li>
+<li><a class="reference internal" href="#introduction-and-tutorial" id="id12">1&nbsp;&nbsp;&nbsp;Introduction and tutorial</a><ul class="auto-toc">
+<li><a class="reference internal" href="#introduction" id="id13">1.1&nbsp;&nbsp;&nbsp;Introduction</a></li>
+<li><a class="reference internal" href="#installation" id="id14">1.2&nbsp;&nbsp;&nbsp;Installation</a></li>
+<li><a class="reference internal" href="#tutorial" id="id15">1.3&nbsp;&nbsp;&nbsp;Tutorial</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#sp-reference" id="id14">2&nbsp;&nbsp;&nbsp;SP reference</a><ul class="auto-toc">
-<li><a class="reference internal" href="#usage" id="id15">2.1&nbsp;&nbsp;&nbsp;Usage</a></li>
-<li><a class="reference internal" href="#grammar-structure" id="id16">2.2&nbsp;&nbsp;&nbsp;Grammar structure</a></li>
-<li><a class="reference internal" href="#lexer" id="id17">2.3&nbsp;&nbsp;&nbsp;Lexer</a></li>
-<li><a class="reference internal" href="#parser" id="id18">2.4&nbsp;&nbsp;&nbsp;Parser</a></li>
+<li><a class="reference internal" href="#sp-reference" id="id16">2&nbsp;&nbsp;&nbsp;SP reference</a><ul class="auto-toc">
+<li><a class="reference internal" href="#usage" id="id17">2.1&nbsp;&nbsp;&nbsp;Usage</a></li>
+<li><a class="reference internal" href="#grammar-structure" id="id18">2.2&nbsp;&nbsp;&nbsp;Grammar structure</a></li>
+<li><a class="reference internal" href="#lexer" id="id19">2.3&nbsp;&nbsp;&nbsp;Lexer</a></li>
+<li><a class="reference internal" href="#parser" id="id20">2.4&nbsp;&nbsp;&nbsp;Parser</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#some-examples-to-illustrate-sp" id="id19">3&nbsp;&nbsp;&nbsp;Some examples to illustrate SP</a><ul class="auto-toc">
-<li><a class="reference internal" href="#complete-interactive-calculator" id="id20">3.1&nbsp;&nbsp;&nbsp;Complete interactive calculator</a></li>
+<li><a class="reference internal" href="#older-versions-of-python" id="id21">3&nbsp;&nbsp;&nbsp;Older versions of Python</a><ul class="auto-toc">
+<li><a class="reference internal" href="#separators" id="id22">3.1&nbsp;&nbsp;&nbsp;Separators</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#some-examples-to-illustrate-sp" id="id23">4&nbsp;&nbsp;&nbsp;Some examples to illustrate SP</a><ul class="auto-toc">
+<li><a class="reference internal" href="#complete-interactive-calculator" id="id24">4.1&nbsp;&nbsp;&nbsp;Complete interactive calculator</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="section" id="introduction-and-tutorial">
-<h1><a class="toc-backref" href="#id10">1&nbsp;&nbsp;&nbsp;Introduction and tutorial</a></h1>
+<h1><a class="toc-backref" href="#id12">1&nbsp;&nbsp;&nbsp;Introduction and tutorial</a></h1>
 <div class="section" id="introduction">
-<h2><a class="toc-backref" href="#id11">1.1&nbsp;&nbsp;&nbsp;Introduction</a></h2>
+<h2><a class="toc-backref" href="#id13">1.1&nbsp;&nbsp;&nbsp;Introduction</a></h2>
 <p>SP (Simple Parser) is a Python <a class="footnote-reference" href="#id2" id="id1">[1]</a> parser generator.
 It is aimed at easy usage rather than performance.</p>
 <table class="docutils footnote" frame="void" id="id2" rules="none">
@@ -373,7 +369,7 @@ I think this tutorial may be sufficent to start with SP.</dd>
 </div>
 </div>
 <div class="section" id="installation">
-<h2><a class="toc-backref" href="#id12">1.2&nbsp;&nbsp;&nbsp;Installation</a></h2>
+<h2><a class="toc-backref" href="#id14">1.2&nbsp;&nbsp;&nbsp;Installation</a></h2>
 <div class="section" id="getting-sp">
 <h3>Getting SP</h3>
 <p>SP is freely available on its web page (<a class="reference external" href="http://christophe.delord.free.fr/sp">http://christophe.delord.free.fr/sp</a>).</p>
@@ -382,13 +378,19 @@ I think this tutorial may be sufficent to start with SP.</dd>
 <h3>Requirements</h3>
 <p>SP is a <em>pure Python</em> package.
 It may run on <em>any platform</em> supported by Python.
-The only requirement of SP is <em>Python 3.0</em> or newer.
+The only requirement of SP is <em>Python 3.0</em> or newer <a class="footnote-reference" href="#id4" id="id3">[2]</a>.
 Python can be downloaded at <a class="reference external" href="http://www.python.org">http://www.python.org</a>.</p>
+<table class="docutils footnote" frame="void" id="id4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td><em>Python 2.5</em> is now supported. Differences will be explained later.</td></tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="section" id="tutorial">
-<h2><a class="toc-backref" href="#id13">1.3&nbsp;&nbsp;&nbsp;Tutorial</a></h2>
-<div class="section" id="id3">
+<h2><a class="toc-backref" href="#id15">1.3&nbsp;&nbsp;&nbsp;Tutorial</a></h2>
+<div class="section" id="id5">
 <h3>Introduction</h3>
 <p>This short tutorial presents how to make a simple calculator.
 The calculator will compute basic mathematical expressions (<tt class="docutils literal"><span class="pre">+</span></tt>, <tt class="docutils literal"><span class="pre">-</span></tt>, <tt class="docutils literal"><span class="pre">*</span></tt>, <tt class="docutils literal"><span class="pre">|</span></tt>) possibly nested in parenthesis.
@@ -442,7 +444,7 @@ For sake of simplicity numbers are integers composed of digits (the correspondin
 To simplify the grammar and then the Python script we define two terminal symbols to group the operators (additive and multiplicative operators).
 We can also define a special symbol that is ignored by SP.
 This symbol is used as a separator.
-This is generaly usefull for white spaces and comments.</p>
+This is generaly useful for white spaces and comments.</p>
 <p>Terminal symbol definition for expressions:</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -497,17 +499,17 @@ def Calc():
     return expr
 </pre>
 <p><tt class="docutils literal"><span class="pre">Calc</span></tt> is the name of the Python function that returns a parser.
-This function returns <tt class="docutils literal"><span class="pre">expr</span></tt> which is the <em>axiom</em> <a class="footnote-reference" href="#id5" id="id4">[2]</a> of the grammer.</p>
+This function returns <tt class="docutils literal"><span class="pre">expr</span></tt> which is the <em>axiom</em> <a class="footnote-reference" href="#id7" id="id6">[3]</a> of the grammer.</p>
 <p><tt class="docutils literal"><span class="pre">expr</span></tt> and <tt class="docutils literal"><span class="pre">fact</span></tt> are recursive rules.
 They are first declared as empty rules (<tt class="docutils literal"><span class="pre">expr</span> <span class="pre">=</span> <span class="pre">Rule()</span></tt>) and alternatives are later added (<tt class="docutils literal"><span class="pre">expr</span> <span class="pre">|=</span> <span class="pre">...</span></tt>).</p>
 <p>Slices are used to implement repetitions.
 <tt class="docutils literal"><span class="pre">foo[:]</span></tt> parses <tt class="docutils literal"><span class="pre">foo</span></tt> zero or more times, which is equivalent to <tt class="docutils literal"><span class="pre">foo*</span></tt> is a classical grammar notation.</p>
 <p>With this small grammar we can only recognize a correct expression.
 We will see in the next sections how to read the actual expression and to compute its value.</p>
-<table class="docutils footnote" frame="void" id="id5" rules="none">
+<table class="docutils footnote" frame="void" id="id7" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id4">[2]</a></td><td>The axiom is the symbol from which the parsing starts</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id6">[3]</a></td><td>The axiom is the symbol from which the parsing starts</td></tr>
 </tbody>
 </table>
 </div>
@@ -669,9 +671,9 @@ They contain more examples to illustrate all the features of SP.</p>
 </div>
 </div>
 <div class="section" id="sp-reference">
-<h1><a class="toc-backref" href="#id14">2&nbsp;&nbsp;&nbsp;SP reference</a></h1>
+<h1><a class="toc-backref" href="#id16">2&nbsp;&nbsp;&nbsp;SP reference</a></h1>
 <div class="section" id="usage">
-<h2><a class="toc-backref" href="#id15">2.1&nbsp;&nbsp;&nbsp;Usage</a></h2>
+<h2><a class="toc-backref" href="#id17">2.1&nbsp;&nbsp;&nbsp;Usage</a></h2>
 <p>SP is a package which main function is to provide basic objects to build a complete parser.</p>
 <p>The grammar is a Python object.</p>
 <p>Grammar embeding example:</p>
@@ -691,7 +693,7 @@ print x
 </pre>
 </div>
 <div class="section" id="grammar-structure">
-<h2><a class="toc-backref" href="#id16">2.2&nbsp;&nbsp;&nbsp;Grammar structure</a></h2>
+<h2><a class="toc-backref" href="#id18">2.2&nbsp;&nbsp;&nbsp;Grammar structure</a></h2>
 <p>SP grammars are Python objects.
 SP grammars may contain two parts:</p>
 <dl class="docutils">
@@ -718,25 +720,25 @@ result = foo(&quot;42 43 44&quot;) # return [42, 43, 44]
 </pre>
 </div>
 <div class="section" id="lexer">
-<h2><a class="toc-backref" href="#id17">2.3&nbsp;&nbsp;&nbsp;Lexer</a></h2>
+<h2><a class="toc-backref" href="#id19">2.3&nbsp;&nbsp;&nbsp;Lexer</a></h2>
 <div class="section" id="regular-expression-syntax">
 <h3>Regular expression syntax</h3>
-<p>The lexer is based on the <em>re</em> <a class="footnote-reference" href="#id8" id="id6">[3]</a> module.
+<p>The lexer is based on the <em>re</em> <a class="footnote-reference" href="#id10" id="id8">[4]</a> module.
 SP profits from the power of Python regular expressions.
 This document assumes the reader is familiar with regular expressions.</p>
-<p>You can use the syntax of regular expressions as expected by the <em>re</em> <a class="footnote-reference" href="#id9" id="id7">[4]</a> module.</p>
-<table class="docutils footnote" frame="void" id="id8" rules="none">
+<p>You can use the syntax of regular expressions as expected by the <em>re</em> <a class="footnote-reference" href="#id11" id="id9">[5]</a> module.</p>
+<table class="docutils footnote" frame="void" id="id10" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id6">[3]</a></td><td><em>re</em> is a standard Python module.
+<tr><td class="label"><a class="fn-backref" href="#id8">[4]</a></td><td><em>re</em> is a standard Python module.
 It handles regular expressions.
 For further information about <em>re</em> you can read <a class="reference external" href="http://docs.python.org/lib/module-re.html">http://docs.python.org/lib/module-re.html</a></td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id9" rules="none">
+<table class="docutils footnote" frame="void" id="id11" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id7">[4]</a></td><td>Read the Python documentation for further information: <a class="reference external" href="http://docs.python.org/lib/re-syntax.html">http://docs.python.org/lib/re-syntax.html</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id9">[5]</a></td><td>Read the Python documentation for further information: <a class="reference external" href="http://docs.python.org/lib/re-syntax.html">http://docs.python.org/lib/re-syntax.html</a></td></tr>
 </tbody>
 </table>
 </div>
@@ -759,7 +761,7 @@ For further information about <em>re</em> you can read <a class="reference exter
 The token is defined with a regular expression and returns a string.</td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">K</span></tt></td>
-<td>defines a token that returns nothing (usefull for keywords for instance).
+<td>defines a token that returns nothing (useful for keywords for instance).
 The keyword is defined by an identifier (in this case word boundaries
 are expected around the keyword) or another string (in this case the
 pattern is not considered as a regular expression).
@@ -821,7 +823,7 @@ IfThenElse = 'if' &amp; Cond &amp;
 </div>
 </div>
 <div class="section" id="parser">
-<h2><a class="toc-backref" href="#id18">2.4&nbsp;&nbsp;&nbsp;Parser</a></h2>
+<h2><a class="toc-backref" href="#id20">2.4&nbsp;&nbsp;&nbsp;Parser</a></h2>
 <div class="section" id="declaration">
 <h3>Declaration</h3>
 <p>A parser is declared as a Python object.</p>
@@ -970,13 +972,66 @@ def Foo():
     return couple
 </pre>
 </div>
+<div class="section" id="constants">
+<h3>Constants</h3>
+<p>It is sometimes useful to return a constant.
+<tt class="docutils literal"><span class="pre">C</span></tt> defines a parser that matches an empty input and returns a constant.</p>
+<p>Constant example:</p>
+<pre class="literal-block">
+number = (  '1' &amp; C(&quot;one&quot;)
+         |  '2' &amp; C(&quot;two&quot;)
+         |  '3' &amp; C(&quot;three&quot;)
+         )
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="older-versions-of-python">
+<h1><a class="toc-backref" href="#id21">3&nbsp;&nbsp;&nbsp;Older versions of Python</a></h1>
+<p>This document describes the usage of SP with Python 3.
+Grammars need some adaptations to work with Python 2.5.</p>
+<div class="section" id="separators">
+<h2><a class="toc-backref" href="#id22">3.1&nbsp;&nbsp;&nbsp;Separators</a></h2>
+<p>Separators use context managers which doesn't exist in Python 2.
+Instead of using a <tt class="docutils literal"><span class="pre">with</span></tt> clause, Python 2 scripts have to call the <tt class="docutils literal"><span class="pre">enable</span></tt> method.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="53%" />
+<col width="47%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Python 3</th>
+<th class="head">Python 2.5</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><pre class="first last literal-block">
+number = R(r'\d+') / int
+with Separator('\s+'):
+    coord = number &amp; ',' &amp; number
+</pre>
+</td>
+<td><pre class="first last literal-block">
+number = R(r'\d+') / int
+Separator('\s+').enable()
+coord = number &amp; ',' &amp; number
+</pre>
+</td>
+</tr>
+<tr><td>The separator is active within the
+context block.</td>
+<td>The separator is active
+until a new one is enabled.</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="section" id="some-examples-to-illustrate-sp">
-<h1><a class="toc-backref" href="#id19">3&nbsp;&nbsp;&nbsp;Some examples to illustrate SP</a></h1>
+<h1><a class="toc-backref" href="#id23">4&nbsp;&nbsp;&nbsp;Some examples to illustrate SP</a></h1>
 <div class="section" id="complete-interactive-calculator">
-<h2><a class="toc-backref" href="#id20">3.1&nbsp;&nbsp;&nbsp;Complete interactive calculator</a></h2>
-<p>This chapter presents an extention of the calculator described in the tutorial (see~ref{sp:tutorial}).
+<h2><a class="toc-backref" href="#id24">4.1&nbsp;&nbsp;&nbsp;Complete interactive calculator</a></h2>
+<p>This chapter presents an extention of the calculator described in the <a class="reference internal" href="#tutorial">tutorial</a>.
 This calculator has more functions and a memory.</p>
 <div class="section" id="new-functions">
 <h3>New functions</h3>
@@ -1225,7 +1280,7 @@ class Calc:
 
             expr = Rule()
 
-            calc = ( K('?') / __doc__.strip()
+            calc = ( K('?') &amp; C(__doc__.strip())
                    | K('num') / self.mode(Num)
                    | K('int8') / self.mode(Int8)
                    | K('int16') / self.mode(Int16)

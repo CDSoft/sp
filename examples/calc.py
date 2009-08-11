@@ -234,7 +234,7 @@ class Calc:
 
             expr = Rule()
 
-            calc = ( K('?') / __doc__.strip()
+            calc = ( K('?') & C(__doc__.strip())
                    | K('num') / self.mode(Num)
                    | K('int8') / self.mode(Int8)
                    | K('int16') / self.mode(Int16)

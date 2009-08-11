@@ -92,8 +92,10 @@ Requirements
 
 SP is a *pure Python* package.
 It may run on *any platform* supported by Python.
-The only requirement of SP is *Python 3.0* or newer.
+The only requirement of SP is *Python 3.0* or newer [#]_.
 Python can be downloaded at http://www.python.org.
+
+.. [#] *Python 2.5* is now supported. Differences will be explained later.
 
 Tutorial
 --------
@@ -145,7 +147,7 @@ For sake of simplicity numbers are integers composed of digits (the correspondin
 To simplify the grammar and then the Python script we define two terminal symbols to group the operators (additive and multiplicative operators).
 We can also define a special symbol that is ignored by SP.
 This symbol is used as a separator.
-This is generaly usefull for white spaces and comments.
+This is generaly useful for white spaces and comments.
 
 Terminal symbol definition for expressions:
 
@@ -438,7 +440,7 @@ Tokens can be explicitely defined by the ``R``, ``K`` and ``Separator`` keywords
 | ``R``         | defines a regular token.                                                  |
 |               | The token is defined with a regular expression and returns a string.      |
 +---------------+---------------------------------------------------------------------------+
-| ``K``         | defines a token that returns nothing (usefull for keywords for instance). |
+| ``K``         | defines a token that returns nothing (useful for keywords for instance).  |
 |               | The keyword is defined by an identifier (in this case word boundaries     |
 |               | are expected around the keyword) or another string (in this case the      |
 |               | pattern is not considered as a regular expression).                       |
@@ -621,13 +623,54 @@ AST example (parsing a couple)::
         couple = ('(' & item & ',' & item & ')') * Couple
         return couple
 
+Constants
+~~~~~~~~~
+
+It is sometimes useful to return a constant.
+``C`` defines a parser that matches an empty input and returns a constant.
+
+Constant example::
+
+    number = (  '1' & C("one")
+             |  '2' & C("two")
+             |  '3' & C("three")
+             )
+
+Older versions of Python
+========================
+
+This document describes the usage of SP with Python 3.
+Grammars need some adaptations to work with Python 2.5.
+
+Separators
+----------
+
+Separators use context managers which doesn't exist in Python 2.
+Instead of using a ``with`` clause, Python 2 scripts have to call the ``enable`` method.
+
++---------------------------------------+-----------------------------------+
+| Python 3                              | Python 2.5                        |
++=======================================+===================================+
+| ::                                    | ::                                |
+|                                       |                                   |
+|   number = R(r'\d+') / int            |   number = R(r'\d+') / int        |
+|   with Separator('\s+'):              |   Separator('\s+').enable()       |
+|       coord = number & ',' & number   |   coord = number & ',' & number   |
+|                                       |                                   |
++---------------------------------------+-----------------------------------+
+|                                       |                                   |
+| The separator is active within the    | The separator is active           |
+| context block.                        | until a new one is enabled.       |
+|                                       |                                   |
++---------------------------------------+-----------------------------------+
+
 Some examples to illustrate SP
 ==============================
 
 Complete interactive calculator
 -------------------------------
 
-This chapter presents an extention of the calculator described in the tutorial (see~\ref{sp:tutorial}).
+This chapter presents an extention of the calculator described in the `tutorial`_.
 This calculator has more functions and a memory.
 
 New functions
