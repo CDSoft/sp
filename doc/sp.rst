@@ -53,7 +53,7 @@ SP is available under the GNU Lesser General Public::
     Simple Parser: A Python parser generator
 
     Copyright (C) 2009 Christophe Delord
-     
+
     Simple Parser is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published
     by the Free Software Foundation, either version 3 of the License, or
@@ -92,10 +92,10 @@ Requirements
 
 SP is a *pure Python* package.
 It may run on *any platform* supported by Python.
-The only requirement of SP is *Python 3.0* or newer [#]_.
+The only requirement of SP is *Python 2.5* or newer [#]_.
 Python can be downloaded at http://www.python.org.
 
-.. [#] *Python 2.5* is now supported. Differences will be explained later.
+.. [#] Older *Python* versions may work. See the `Older Python versions`_ chapter.
 
 Tutorial
 --------
@@ -566,7 +566,7 @@ Repetitions in grammar rules describe how many times an expression should be mat
 
 Repetitions are greedy.
 Repetitions are implemented as Python loops.
-Thus whatever the length of the repetitions, the Python stack will not overflow. 
+Thus whatever the length of the repetitions, the Python stack will not overflow.
 
 Precedence and grouping
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -636,33 +636,45 @@ Constant example::
              |  '3' & C("three")
              )
 
-Older versions of Python
-========================
+Older Python versions
+=====================
 
-This document describes the usage of SP with Python 3.
-Grammars need some adaptations to work with Python 2.5.
+This document describes the usage of SP with Python 2.6.
+Grammars need some adaptations to work with Python 2.5. or older.
 
 Separators
 ----------
 
-Separators use context managers which doesn't exist in Python 2.
-Instead of using a ``with`` clause, Python 2 scripts have to call the ``enable`` method.
+Separators use context managers which don't exist in Python 2.4.
+Context managers have been introduced in Python 2.5
+(``from __future__ import with_statement``)
+and in Python 2.6 (as a standard feature).
+When the context managers are not available, it may be possible
+to call the ``__enter__`` and ``__exit__`` method explicitly
+(not tested for Python 2.4).
 
-+---------------------------------------+-----------------------------------+
-| Python 3                              | Python 2.5                        |
-+=======================================+===================================+
-| ::                                    | ::                                |
-|                                       |                                   |
-|   number = R(r'\d+') / int            |   number = R(r'\d+') / int        |
-|   with Separator('\s+'):              |   Separator('\s+').enable()       |
-|       coord = number & ',' & number   |   coord = number & ',' & number   |
-|                                       |                                   |
-+---------------------------------------+-----------------------------------+
-|                                       |                                   |
-| The separator is active within the    | The separator is active           |
-| context block.                        | until a new one is enabled.       |
-|                                       |                                   |
-+---------------------------------------+-----------------------------------+
+Python 2.6 and later::
+
+    number = R(r'\d+') / int
+    with Separator('\s+'):
+        coord = number & ',' & number
+
+Python 2.5 with ``with_statement``::
+
+    from __future__ import with_statement
+
+    number = R(r'\d+') / int
+    with Separator('\s+'):
+        coord = number & ',' & number
+
+Python 2.5 (or older but not tested) without ``with_statement``::
+
+    sep = Separator('\s+')
+
+    number = R(r'\d+') / int
+    sep.__enter__()
+    coord = number & ',' & number
+    sep.__exit__()
 
 Some examples to illustrate SP
 ==============================
@@ -678,7 +690,7 @@ New functions
 
 The calculator has memories.
 A memory cell is identified by a name.
-For example, if the user types ``pi = 3.14``},
+For example, if the user types ``pi = 3.14``,
 the memory cell named ``pi`` will contain the value of ``pi``
 and ``2*pi`` will return ``6.28``.
 

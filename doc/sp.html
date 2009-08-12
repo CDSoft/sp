@@ -6,7 +6,7 @@
 <meta name="generator" content="Docutils 0.5: http://docutils.sourceforge.net/" />
 <title>Simple Parser</title>
 <meta name="author" content="Christophe Delord" />
-<meta name="date" content="Tuesday 11 August 2009" />
+<meta name="date" content="Wednesday 12 August 2009" />
 <style type="text/css">
 
 /*
@@ -279,7 +279,7 @@ div.footer, div.header {
 <tr class="field"><th class="docinfo-name">Web site:</th><td class="field-body"><a class="reference external" href="http://christophe.delord.free.fr/sp">http://christophe.delord.free.fr/sp</a></td>
 </tr>
 <tr><th class="docinfo-name">Date:</th>
-<td>Tuesday 11 August 2009</td></tr>
+<td>Wednesday 12 August 2009</td></tr>
 <tr class="field"><th class="docinfo-name">License:</th><td class="field-body">This software is released under the LGPL license.</td>
 </tr>
 </tbody>
@@ -311,7 +311,7 @@ along with Simple Parser.  If not, see <http://www.gnu.org/licenses/>. -->
 <li><a class="reference internal" href="#parser" id="id20">2.4&nbsp;&nbsp;&nbsp;Parser</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#older-versions-of-python" id="id21">3&nbsp;&nbsp;&nbsp;Older versions of Python</a><ul class="auto-toc">
+<li><a class="reference internal" href="#older-python-versions" id="id21">3&nbsp;&nbsp;&nbsp;Older Python versions</a><ul class="auto-toc">
 <li><a class="reference internal" href="#separators" id="id22">3.1&nbsp;&nbsp;&nbsp;Separators</a></li>
 </ul>
 </li>
@@ -378,12 +378,12 @@ I think this tutorial may be sufficent to start with SP.</dd>
 <h3>Requirements</h3>
 <p>SP is a <em>pure Python</em> package.
 It may run on <em>any platform</em> supported by Python.
-The only requirement of SP is <em>Python 3.0</em> or newer <a class="footnote-reference" href="#id4" id="id3">[2]</a>.
+The only requirement of SP is <em>Python 2.5</em> or newer <a class="footnote-reference" href="#id4" id="id3">[2]</a>.
 Python can be downloaded at <a class="reference external" href="http://www.python.org">http://www.python.org</a>.</p>
 <table class="docutils footnote" frame="void" id="id4" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td><em>Python 2.5</em> is now supported. Differences will be explained later.</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td>Older <em>Python</em> versions may work. See the <a class="reference internal" href="#older-python-versions">Older Python versions</a> chapter.</td></tr>
 </tbody>
 </table>
 </div>
@@ -986,45 +986,42 @@ number = (  '1' &amp; C(&quot;one&quot;)
 </div>
 </div>
 </div>
-<div class="section" id="older-versions-of-python">
-<h1><a class="toc-backref" href="#id21">3&nbsp;&nbsp;&nbsp;Older versions of Python</a></h1>
-<p>This document describes the usage of SP with Python 3.
-Grammars need some adaptations to work with Python 2.5.</p>
+<div class="section" id="older-python-versions">
+<h1><a class="toc-backref" href="#id21">3&nbsp;&nbsp;&nbsp;Older Python versions</a></h1>
+<p>This document describes the usage of SP with Python 2.6.
+Grammars need some adaptations to work with Python 2.5. or older.</p>
 <div class="section" id="separators">
 <h2><a class="toc-backref" href="#id22">3.1&nbsp;&nbsp;&nbsp;Separators</a></h2>
-<p>Separators use context managers which doesn't exist in Python 2.
-Instead of using a <tt class="docutils literal"><span class="pre">with</span></tt> clause, Python 2 scripts have to call the <tt class="docutils literal"><span class="pre">enable</span></tt> method.</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="53%" />
-<col width="47%" />
-</colgroup>
-<thead valign="bottom">
-<tr><th class="head">Python 3</th>
-<th class="head">Python 2.5</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr><td><pre class="first last literal-block">
+<p>Separators use context managers which don't exist in Python 2.4.
+Context managers have been introduced in Python 2.5
+(<tt class="docutils literal"><span class="pre">from</span> <span class="pre">__future__</span> <span class="pre">import</span> <span class="pre">with_statement</span></tt>)
+and in Python 2.6 (as a standard feature).
+When the context managers are not available, it may be possible
+to call the <tt class="docutils literal"><span class="pre">__enter__</span></tt> and <tt class="docutils literal"><span class="pre">__exit__</span></tt> method explicitly
+(not tested for Python 2.4).</p>
+<p>Python 2.6 and later:</p>
+<pre class="literal-block">
 number = R(r'\d+') / int
 with Separator('\s+'):
     coord = number &amp; ',' &amp; number
 </pre>
-</td>
-<td><pre class="first last literal-block">
+<p>Python 2.5 with <tt class="docutils literal"><span class="pre">with_statement</span></tt>:</p>
+<pre class="literal-block">
+from __future__ import with_statement
+
 number = R(r'\d+') / int
-Separator('\s+').enable()
-coord = number &amp; ',' &amp; number
+with Separator('\s+'):
+    coord = number &amp; ',' &amp; number
 </pre>
-</td>
-</tr>
-<tr><td>The separator is active within the
-context block.</td>
-<td>The separator is active
-until a new one is enabled.</td>
-</tr>
-</tbody>
-</table>
+<p>Python 2.5 (or older but not tested) without <tt class="docutils literal"><span class="pre">with_statement</span></tt>:</p>
+<pre class="literal-block">
+sep = Separator('\s+')
+
+number = R(r'\d+') / int
+sep.__enter__()
+coord = number &amp; ',' &amp; number
+sep.__exit__()
+</pre>
 </div>
 </div>
 <div class="section" id="some-examples-to-illustrate-sp">
@@ -1037,7 +1034,7 @@ This calculator has more functions and a memory.</p>
 <h3>New functions</h3>
 <p>The calculator has memories.
 A memory cell is identified by a name.
-For example, if the user types <tt class="docutils literal"><span class="pre">pi</span> <span class="pre">=</span> <span class="pre">3.14</span></tt>},
+For example, if the user types <tt class="docutils literal"><span class="pre">pi</span> <span class="pre">=</span> <span class="pre">3.14</span></tt>,
 the memory cell named <tt class="docutils literal"><span class="pre">pi</span></tt> will contain the value of <tt class="docutils literal"><span class="pre">pi</span></tt>
 and <tt class="docutils literal"><span class="pre">2*pi</span></tt> will return <tt class="docutils literal"><span class="pre">6.28</span></tt>.</p>
 <p>The variables are saved in a dictionnary.</p>

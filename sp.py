@@ -274,7 +274,7 @@ class Parser:
         return Apply(self, func)
 
     # Python 2 fallback
-    if sys.version_info[0] == 2: __div__ = __truediv__
+    if sys.version_info[0] < 3: __div__ = __truediv__
 
     def __mul__(self, func):
         """ returns a parser that applies a function to the result of another parser
@@ -321,10 +321,6 @@ class Separator:
     def __exit__(self, type, value, traceback):
         global _separator
         _separator = self.previous_parser
-
-    # Python 2 fallback
-    if sys.version_info[0] == 2:
-        enable = __enter__
 
 _separator = None
 
