@@ -6,7 +6,7 @@
 <meta name="generator" content="Docutils 0.5: http://docutils.sourceforge.net/" />
 <title>Simple Parser</title>
 <meta name="author" content="Christophe Delord" />
-<meta name="date" content="Wednesday 12 August 2009" />
+<meta name="date" content="Wednesday 19 August 2009" />
 <style type="text/css">
 
 /*
@@ -279,11 +279,14 @@ div.footer, div.header {
 <tr class="field"><th class="docinfo-name">Web site:</th><td class="field-body"><a class="reference external" href="http://christophe.delord.free.fr/sp">http://christophe.delord.free.fr/sp</a></td>
 </tr>
 <tr><th class="docinfo-name">Date:</th>
-<td>Wednesday 12 August 2009</td></tr>
+<td>Wednesday 19 August 2009</td></tr>
 <tr class="field"><th class="docinfo-name">License:</th><td class="field-body">This software is released under the LGPL license.</td>
 </tr>
 </tbody>
 </table>
+<!-- Simple Parser
+Copyright (C) 2009 Christophe Delord
+http://christophe.delord.free.fr/sp -->
 <!-- This file is part of Simple Parser. -->
 <!-- Simple Parser is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published
@@ -378,12 +381,12 @@ I think this tutorial may be sufficent to start with SP.</dd>
 <h3>Requirements</h3>
 <p>SP is a <em>pure Python</em> package.
 It may run on <em>any platform</em> supported by Python.
-The only requirement of SP is <em>Python 2.5</em> or newer <a class="footnote-reference" href="#id4" id="id3">[2]</a>.
+The only requirement of SP is <em>Python 2.6</em> or newer <a class="footnote-reference" href="#id4" id="id3">[2]</a>.
 Python can be downloaded at <a class="reference external" href="http://www.python.org">http://www.python.org</a>.</p>
 <table class="docutils footnote" frame="void" id="id4" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td>Older <em>Python</em> versions may work. See the <a class="reference internal" href="#older-python-versions">Older Python versions</a> chapter.</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td>Older <em>Python</em> versions may work (tested with Python 2.4 and 2.5). See the <a class="reference internal" href="#older-python-versions">Older Python versions</a> chapter.</td></tr>
 </tbody>
 </table>
 </div>
@@ -853,10 +856,9 @@ Sum = Term &amp; '+' &amp; Term
 <p>Alternatives in grammar rules describe several possible decompositions of a symbol.
 The infix pipe operator (<tt class="docutils literal"><span class="pre">|</span></tt>) is used to separate alternatives.
 <tt class="docutils literal"><span class="pre">A</span> <span class="pre">|</span> <span class="pre">B</span></tt> recognizes either an <tt class="docutils literal"><span class="pre">A</span></tt> or a <tt class="docutils literal"><span class="pre">B</span></tt>.
-If both <tt class="docutils literal"><span class="pre">A</span></tt> and <tt class="docutils literal"><span class="pre">B</span></tt> can be matched only the first match is considered.
-So the order of alternatives is very important.
-If an alternative has an empty choice, it must be the last.
-Empty choices in other positions will be reported as syntax errors.</p>
+If both <tt class="docutils literal"><span class="pre">A</span></tt> and <tt class="docutils literal"><span class="pre">B</span></tt> can be matched only the first longest match is considered.
+So the order of alternatives may be very important
+when two alternatives can match texts of the same size.</p>
 <p>For example to say that an <tt class="docutils literal"><span class="pre">atom</span></tt> is an <em>integer</em> or an <em>expression in paranthesis</em>
 you can write:</p>
 <pre class="literal-block">
@@ -998,7 +1000,7 @@ Context managers have been introduced in Python 2.5
 and in Python 2.6 (as a standard feature).
 When the context managers are not available, it may be possible
 to call the <tt class="docutils literal"><span class="pre">__enter__</span></tt> and <tt class="docutils literal"><span class="pre">__exit__</span></tt> method explicitly
-(not tested for Python 2.4).</p>
+(tested for Python 2.4).</p>
 <p>Python 2.6 and later:</p>
 <pre class="literal-block">
 number = R(r'\d+') / int
@@ -1013,7 +1015,7 @@ number = R(r'\d+') / int
 with Separator('\s+'):
     coord = number &amp; ',' &amp; number
 </pre>
-<p>Python 2.5 (or older but not tested) without <tt class="docutils literal"><span class="pre">with_statement</span></tt>:</p>
+<p>Python 2.5 or 2.4 (or older but not tested) without <tt class="docutils literal"><span class="pre">with_statement</span></tt>:</p>
 <pre class="literal-block">
 sep = Separator('\s+')
 
@@ -1042,6 +1044,10 @@ and <tt class="docutils literal"><span class="pre">2*pi</span></tt> will return 
 <p>Here is the complete source code (<em>calc.py</em>):</p>
 <pre class="literal-block">
 #!/usr/bin/env python3
+
+# Simple Parser
+# Copyright (C) 2009 Christophe Delord
+# http://christophe.delord.free.fr/sp
 
 # This file is part of Simple Parser.
 # 

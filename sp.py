@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# Simple Parser
+# Copyright (C) 2009 Christophe Delord
+# http://christophe.delord.free.fr/sp
+
 """ Simple Parser
 
 Simple Parser is a simple parser generator for Python.
@@ -196,48 +200,48 @@ class Parser:
     def __and__(self, other):
         """ returns a sequence parser
 
-        >>> ab = R("a") & R("b")
-        >>> ab.parse("abc", _err(""))[:2]
-        (('a', 'b'), 'c')
-        >>> ab.parse("bac", _err(""))[:2]
-        (fail, 'bac')
+        >>> with Separator(" "): ab = R("a") & "b"
+        >>> ab.parse("a b c", _err(""))[:2]
+        ('a', 'c')
+        >>> ab.parse("b a c", _err(""))[:2]
+        (fail, 'b a c')
         """
         return And(self, other)
 
     def __rand__(self, other):
         """ returns a sequence parser
 
-        >>> ab = R("a") & R("b")
-        >>> ab.parse("abc", _err(""))[:2]
-        (('a', 'b'), 'c')
-        >>> ab.parse("bac", _err(""))[:2]
-        (fail, 'bac')
+        >>> with Separator(" "): ab = "a" & R("b")
+        >>> ab.parse("a b c", _err(""))[:2]
+        ('b', 'c')
+        >>> ab.parse("b a c", _err(""))[:2]
+        (fail, 'b a c')
         """
         return And(other, self)
 
     def __or__(self, other):
         """ returns an alternative parser
 
-        >>> ab = R("a") | R("b")
-        >>> ab.parse("abc", _err(""))[:2]
-        ('a', 'bc')
-        >>> ab.parse("bac", _err(""))[:2]
-        ('b', 'ac')
-        >>> ab.parse("cab", _err(""))[:2]
-        (fail, 'cab')
+        >>> with Separator(" "): ab = R("a") | "b"
+        >>> ab.parse("a b c", _err(""))[:2]
+        ('a', 'b c')
+        >>> ab.parse("b a c", _err(""))[:2]
+        (nil, 'a c')
+        >>> ab.parse("c a b", _err(""))[:2]
+        (fail, 'c a b')
         """
         return Or(self, other)
 
     def __ror__(self, other):
         """ returns an alternative parser
 
-        >>> ab = R("a") | R("b")
-        >>> ab.parse("abc", _err(""))[:2]
-        ('a', 'bc')
-        >>> ab.parse("bac", _err(""))[:2]
-        ('b', 'ac')
-        >>> ab.parse("cab", _err(""))[:2]
-        (fail, 'cab')
+        >>> with Separator(" "): ab = "a" | R("b")
+        >>> ab.parse("a b c", _err(""))[:2]
+        (nil, 'b c')
+        >>> ab.parse("b a c", _err(""))[:2]
+        ('b', 'a c')
+        >>> ab.parse("c a b", _err(""))[:2]
+        (fail, 'c a b')
         """
         return Or(other, self)
 
@@ -267,7 +271,7 @@ class Parser:
 
         >>> sum = lambda xy: xy[0]+xy[1]
         >>> num = R(r'\d+') / int               # parses an integer
-        >>> add = (num & K('+') & num) / sum    # returns the sum of two integers
+        >>> add = (num & '+' & num) / sum       # returns the sum of two integers
         >>> add.parse("1+2+4", _err(""))[:2]
         (3, '+4')
         """
@@ -284,7 +288,7 @@ class Parser:
 
         >>> sum = lambda x,y: x+y
         >>> num = R(r'\d+') / int               # parses an integer
-        >>> add = (num & K('+') & num) * sum    # returns the sum of two integers
+        >>> add = (num & '+' & num) * sum       # returns the sum of two integers
         >>> add.parse("1+2+4", _err(""))[:2]
         (3, '+4')
         """
@@ -372,7 +376,7 @@ class K(R):
     def parse(self, s, e):
         obj, rest, e = R.parse(self, s, e)
         if obj is fail: return fail, rest, e
-        else: return nil, rest, e.max(_err(rest))
+        else: return nil, rest, e
 
 class C(Parser):
     """ is a constant parser
@@ -380,8 +384,8 @@ class C(Parser):
     C parses nothing, simply returns a constant.
 
     >>> c = C('foo')
-    >>> c.parse("spam", "")
-    ('foo', 'spam', '')
+    >>> c.parse("spam", _err(""))[:2]
+    ('foo', 'spam')
     """
 
     def __init__(self, val):
@@ -390,7 +394,7 @@ class C(Parser):
 
     def parse(self, s, e):
         s = self.skipsep(s)
-        return self.val, s, e
+        return self.val, s, e.max(_err(s))
 
 class D(Parser):
     """ parses something and replaces the value by 'nil'
@@ -415,7 +419,7 @@ class D(Parser):
     def parse(self, s, e):
         rest = self.skipsep(s)
         x, rest, e = self.parser.parse(rest, e)
-        if x is fail: return fail, s, e
+        if x is fail: return fail, s, e.max(_err(rest))
         rest = self.skipsep(rest)
         return nil, rest, e.max(_err(rest))
 
@@ -461,11 +465,11 @@ class And(Parser):
         rest = self.skipsep(s)
         for item in self.items:
             token, rest, e = item.parse(rest, e)
-            if token is fail: return fail, s, e
+            if token is fail: return fail, s, e.max(_err(rest))
             if token is not nil: tokens.append(token)
             rest = self.skipsep(rest)
-        if len(tokens) == 1: return tokens[0], rest, e
-        return tuple(tokens), rest, e
+        if len(tokens) == 1: return tokens[0], rest, e.max(_err(rest))
+        return tuple(tokens), rest, e.max(_err(rest))
 
 class _Singleton:
     def __init__(self, name): self.name = name
@@ -481,7 +485,7 @@ class Or(Parser):
     Or(Or(x,y),z) <=> Or(x,Or(y,z)) <=> Or(x,y,z)
     or (x | y) | z <=> x | (y | z) <=> x | y | z
 
-    The alternative returns the value returns by the first matching subparser.
+    The alternative returns the value returns by the first longest matching subparser.
     >>> s = R('a') | R('b') | R('c')
     >>> s("b")
     'b'
@@ -491,6 +495,22 @@ class Or(Parser):
     >>> s = R('a') | (R('b') | R('c'))
     >>> s("b")
     'b'
+    >>> s = R('a')[:] | R('b')[:]
+    >>> s('aa')
+    ['a', 'a']
+    >>> s('bb')
+    ['b', 'b']
+    >>> s('')
+    []
+    >>> s('ba')
+    Traceback (most recent call last):
+        ...
+    SyntaxError: [1:2] expected: b
+    >>> s = R('a')[:] & C('branch 1') | R('a')[:] & R('b')[:] & C('branch 2')
+    >>> s('aa')
+    (['a', 'a'], 'branch 1')
+    >>> s('aab')
+    (['a', 'a'], ['b'], 'branch 2')
     """
 
     def __init__(self, *parsers):
@@ -502,12 +522,24 @@ class Or(Parser):
 
     def parse(self, s, e):
         s1 = self.skipsep(s)
+        e = e.max(_err(s1))
+        matches = []
         for item in self.items:
             token, rest, e = item.parse(s1, e)
             if token is not fail:
                 rest = self.skipsep(rest)
-                return token, rest, e
-        return fail, s, e
+                e = e.max(_err(rest))
+                matches.append((token, rest))
+        if matches:
+            # Returns the match that leaves the shortest rest
+            return min(matches, key=(lambda t: len(t[1]))) + (e,)
+        else:
+            return fail, s, e
+
+# Python 2.4 fallback
+if sys.version_info[:2] < (2,5):
+    def min(xs, key=(lambda x:x), min=min):
+        return min((key(x), x) for x in xs)[1]
 
 class Rule(Parser):
     """ returns an empty parser that can be later enriched.
@@ -536,9 +568,9 @@ class Rule(Parser):
     def parse(self, s, e):
         s1 = self.skipsep(s)
         x, rest, e = self.parser.parse(s1, e)
-        if x is fail: return fail, s, e
+        if x is fail: return fail, s, e.max(_err(rest))
         rest = self.skipsep(rest)
-        return x, rest, e
+        return x, rest, e.max(_err(rest))
 
 class Rep(Parser):
     """ parses repetitions.
@@ -609,19 +641,19 @@ class Rep(Parser):
             i += 1
             item, rest, e = self.parser.parse(rest, e)
             if item is fail:
-                if i <= self.min: return fail, s, e
-                return items, rest, e
+                if i <= self.min: return fail, s, e.max(_err(rest))
+                return items, rest, e.max(_err(rest))
             items.append(item)
             rest = self.skipsep(rest)
-        return items, rest, e
+        return items, rest, e.max(_err(rest))
 
     def _parse_with_sep(self, s, e):
         rest = self.skipsep(s)
         item, rest, e = self.parser.parse(rest, e)
         if item is fail:
-            if 1 <= self.min: return fail, s, e
+            if 1 <= self.min: return fail, s, e.max(_err(rest))
             rest = self.skipsep(rest)
-            return [], rest, e
+            return [], rest, e.max(_err(rest))
         items = [item]
         i = 1
         rest = self.skipsep(rest)
@@ -629,16 +661,16 @@ class Rep(Parser):
             i += 1
             sep, rest, e = self.sep.parse(rest, e)
             if sep is fail:
-                if i <= self.min: return fail, s, e
-                return items, rest, e
+                if i <= self.min: return fail, s, e.max(_err(rest))
+                return items, rest, e.max(_err(rest))
             rest = self.skipsep(rest)
             item, rest, e = self.parser.parse(rest, e)
             if item is fail:
-                if i <= self.min: return fail, s, e
-                return items, rest, e
+                if i <= self.min: return fail, s, e.max(_err(rest))
+                return items, rest, e.max(_err(rest))
             items.append(item)
             rest = self.skipsep(rest)
-        return items, rest, e
+        return items, rest, e.max(_err(rest))
 
 class Apply(Parser):
     """ applies a function to the result of a parser
@@ -663,9 +695,9 @@ class Apply(Parser):
     def parse(self, s, e):
         s1 = self.skipsep(s)
         token, rest, e = self.parser.parse(s1, e)
-        if token is fail: return fail, s, e
+        if token is fail: return fail, s, e.max(_err(rest))
         rest = self.skipsep(rest)
-        return self.func(token), rest, e
+        return self.func(token), rest, e.max(_err(rest))
 
 class ApplyStar(Apply):
     """ applies a function to the result of some parsers
@@ -685,9 +717,9 @@ class ApplyStar(Apply):
     def parse(self, s, e):
         s1 = self.skipsep(s)
         token, rest, e = self.parser.parse(s1, e)
-        if token is fail: return fail, s, e
+        if token is fail: return fail, s, e.max(_err(rest))
         rest = self.skipsep(rest)
-        return self.func(*token), rest, e
+        return self.func(*token), rest, e.max(_err(rest))
 
 if __name__ == '__main__':
     import doctest

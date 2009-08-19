@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# Simple Parser
+# Copyright (C) 2009 Christophe Delord
+# http://christophe.delord.free.fr/sp
+
 # This file is part of Simple Parser.
 # 
 # Simple Parser is free software: you can redistribute it and/or modify

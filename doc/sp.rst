@@ -1,3 +1,7 @@
+..  Simple Parser
+    Copyright (C) 2009 Christophe Delord
+    http://christophe.delord.free.fr/sp
+
 ..  This file is part of Simple Parser.
 
 ..  Simple Parser is free software: you can redistribute it and/or modify
@@ -92,10 +96,10 @@ Requirements
 
 SP is a *pure Python* package.
 It may run on *any platform* supported by Python.
-The only requirement of SP is *Python 2.5* or newer [#]_.
+The only requirement of SP is *Python 2.6* or newer [#]_.
 Python can be downloaded at http://www.python.org.
 
-.. [#] Older *Python* versions may work. See the `Older Python versions`_ chapter.
+.. [#] Older *Python* versions may work (tested with Python 2.4 and 2.5). See the `Older Python versions`_ chapter.
 
 Tutorial
 --------
@@ -537,10 +541,9 @@ Alternatives
 Alternatives in grammar rules describe several possible decompositions of a symbol.
 The infix pipe operator (``|``) is used to separate alternatives.
 ``A | B`` recognizes either an ``A`` or a ``B``.
-If both ``A`` and ``B`` can be matched only the first match is considered.
-So the order of alternatives is very important.
-If an alternative has an empty choice, it must be the last.
-Empty choices in other positions will be reported as syntax errors.
+If both ``A`` and ``B`` can be matched only the first longest match is considered.
+So the order of alternatives may be very important
+when two alternatives can match texts of the same size.
 
 For example to say that an ``atom`` is an *integer* or an *expression in paranthesis*
 you can write::
@@ -651,7 +654,7 @@ Context managers have been introduced in Python 2.5
 and in Python 2.6 (as a standard feature).
 When the context managers are not available, it may be possible
 to call the ``__enter__`` and ``__exit__`` method explicitly
-(not tested for Python 2.4).
+(tested for Python 2.4).
 
 Python 2.6 and later::
 
@@ -667,7 +670,7 @@ Python 2.5 with ``with_statement``::
     with Separator('\s+'):
         coord = number & ',' & number
 
-Python 2.5 (or older but not tested) without ``with_statement``::
+Python 2.5 or 2.4 (or older but not tested) without ``with_statement``::
 
     sep = Separator('\s+')
 
