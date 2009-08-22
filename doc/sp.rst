@@ -46,6 +46,12 @@ Introduction
 
 SP (Simple Parser) is a Python [#]_ parser generator.
 It is aimed at easy usage rather than performance.
+SP produces
+`Top-Down <http://en.wikipedia.org/wiki/Top-down_parser>`_
+`Recursive descent <http://en.wikipedia.org/wiki/Recursive_descent_parser>`_
+parsers.
+SP also uses `memoization <http://en.wikipedia.org/wiki/Memoization>`_
+to optimize parsers' speed when dealing with ambiguous grammars.
 
 .. [#] Python is a wonderful object oriented programming language available at http://www.python.org
 

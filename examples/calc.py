@@ -280,7 +280,10 @@ class Calc:
         return str(val)
 
     def val(self, var):
-        return self.var[var]
+        try:
+            return self.var[var]
+        except KeyError:
+            raise NameError(var)
 
     def __call__(self, s):
         return self.calc(s)

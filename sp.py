@@ -69,6 +69,41 @@ along with Simple Parser.  If not, see <http://www.gnu.org/licenses/>.
 import re
 import sys
 
+def _memoize_self_s(f):
+    """ creates a memoized parser method
+
+        arguments self (object) and s (string to parse) are memoized.
+    """
+    cache = {}
+    def _f(self, s):
+        try:
+            return cache[self, s]
+        except KeyError:
+            r = f(self, s)
+            cache[self, s] = r
+            return r
+    _f.__doc__ = f.__doc__
+    _f.__name__ = f.__name__
+    return _f
+
+def _memoize_self_s_e(f):
+    """ creates a memoized parser method
+
+        arguments self (object) and s (string to parse) are memoized.
+        The error argument (e) is not indexed.
+    """
+    cache = {}
+    def _f(self, s, e):
+        try:
+            return cache[self, s]
+        except KeyError:
+            r = f(self, s, e)
+            cache[self, s] = r
+            return r
+    _f.__doc__ = f.__doc__
+    _f.__name__ = f.__name__
+    return _f
+
 class _err:
     """ stores the maximal position of the detected errors
     """
@@ -184,6 +219,7 @@ class Parser:
             raise e.msg(s)
         return x
 
+    @_memoize_self_s
     def skipsep(self, s):
         """ removes separators from a string
 
@@ -460,6 +496,7 @@ class And(Parser):
             if isinstance(parser, And): self.items.extend(parser.items)
             else: self.items.append(_p(parser))
 
+    @_memoize_self_s_e
     def parse(self, s, e):
         tokens = []
         rest = self.skipsep(s)
@@ -520,6 +557,7 @@ class Or(Parser):
             if isinstance(parser, Or): self.items.extend(parser.items)
             else: self.items.append(_p(parser))
 
+    @_memoize_self_s_e
     def parse(self, s, e):
         s1 = self.skipsep(s)
         e = e.max(_err(s1))
