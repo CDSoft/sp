@@ -6,7 +6,7 @@
 <meta name="generator" content="Docutils 0.5: http://docutils.sourceforge.net/" />
 <title>Simple Parser</title>
 <meta name="author" content="Christophe Delord" />
-<meta name="date" content="Saturday 22 August 2009" />
+<meta name="date" content="Wednesday 26 August 2009" />
 <style type="text/css">
 
 /*
@@ -279,7 +279,7 @@ div.footer, div.header {
 <tr class="field"><th class="docinfo-name">Web site:</th><td class="field-body"><a class="reference external" href="http://christophe.delord.free.fr/sp">http://christophe.delord.free.fr/sp</a></td>
 </tr>
 <tr><th class="docinfo-name">Date:</th>
-<td>Saturday 22 August 2009</td></tr>
+<td>Wednesday 26 August 2009</td></tr>
 <tr class="field"><th class="docinfo-name">License:</th><td class="field-body">This software is released under the LGPL license.</td>
 </tr>
 </tbody>
@@ -318,8 +318,9 @@ along with Simple Parser.  If not, see <http://www.gnu.org/licenses/>. -->
 <li><a class="reference internal" href="#separators" id="id22">3.1&nbsp;&nbsp;&nbsp;Separators</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#some-examples-to-illustrate-sp" id="id23">4&nbsp;&nbsp;&nbsp;Some examples to illustrate SP</a><ul class="auto-toc">
-<li><a class="reference internal" href="#complete-interactive-calculator" id="id24">4.1&nbsp;&nbsp;&nbsp;Complete interactive calculator</a></li>
+<li><a class="reference internal" href="#sp-mini-language" id="id23">4&nbsp;&nbsp;&nbsp;SP mini language</a></li>
+<li><a class="reference internal" href="#some-examples-to-illustrate-sp" id="id24">5&nbsp;&nbsp;&nbsp;Some examples to illustrate SP</a><ul class="auto-toc">
+<li><a class="reference internal" href="#complete-interactive-calculator" id="id25">5.1&nbsp;&nbsp;&nbsp;Complete interactive calculator</a></li>
 </ul>
 </li>
 </ul>
@@ -508,17 +509,35 @@ def Calc():
     return expr
 </pre>
 <p><tt class="docutils literal"><span class="pre">Calc</span></tt> is the name of the Python function that returns a parser.
-This function returns <tt class="docutils literal"><span class="pre">expr</span></tt> which is the <em>axiom</em> <a class="footnote-reference" href="#id7" id="id6">[3]</a> of the grammer.</p>
+This function returns <tt class="docutils literal"><span class="pre">expr</span></tt> which is the <em>axiom</em> <a class="footnote-reference" href="#axiom" id="id6">[3]</a> of the grammer.</p>
 <p><tt class="docutils literal"><span class="pre">expr</span></tt> and <tt class="docutils literal"><span class="pre">fact</span></tt> are recursive rules.
 They are first declared as empty rules (<tt class="docutils literal"><span class="pre">expr</span> <span class="pre">=</span> <span class="pre">Rule()</span></tt>) and alternatives are later added (<tt class="docutils literal"><span class="pre">expr</span> <span class="pre">|=</span> <span class="pre">...</span></tt>).</p>
 <p>Slices are used to implement repetitions.
 <tt class="docutils literal"><span class="pre">foo[:]</span></tt> parses <tt class="docutils literal"><span class="pre">foo</span></tt> zero or more times, which is equivalent to <tt class="docutils literal"><span class="pre">foo*</span></tt> is a classical grammar notation.</p>
+<p>The grammar can also be defined with the mini grammar language provided by SP:</p>
+<pre class="literal-block">
+def Calc():
+    return compile(&quot;&quot;&quot;
+        number = r'[0-9]+' ;
+        addop = r'[+-]' ;
+        mulop = r'[*/]' ;
+
+        separator = r'\s+' ;
+
+        !expr = term (addop term)* ;
+        term = fact (mulop fact)* ;
+        fact = addop fact ;
+        fact = '(' expr ')' ;
+        fact = number ;
+    &quot;&quot;&quot;)
+</pre>
+<p>Here the <em>axiom</em> <a class="footnote-reference" href="#axiom" id="id7">[3]</a> is identified by <tt class="docutils literal"><span class="pre">!</span></tt>.</p>
 <p>With this small grammar we can only recognize a correct expression.
 We will see in the next sections how to read the actual expression and to compute its value.</p>
-<table class="docutils footnote" frame="void" id="id7" rules="none">
+<table class="docutils footnote" frame="void" id="axiom" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id6">[3]</a></td><td>The axiom is the symbol from which the parsing starts</td></tr>
+<tr><td class="label">[3]</td><td><em>(<a class="fn-backref" href="#id6">1</a>, <a class="fn-backref" href="#id7">2</a>)</em> The axiom is the symbol from which the parsing starts</td></tr>
 </tbody>
 </table>
 </div>
@@ -576,6 +595,35 @@ term = (fact &amp; ( (mulop &amp; fact) * op2 )[:]) * red
 # will return red(42, [(lambda x:mul(x, 43)), (lambda x:mul(x, 44))])
 # i.e. 42*43*44
 </pre>
+<p>And with the SP language:</p>
+<pre class="literal-block">
+number = r'[0-9]+' : `int` ;
+
+addop = r'[+-]' ;
+mulop = r'[*/]' ;
+
+fact = addop fact :: `op1` ;
+term = fact (mulop fact :: `op2`)* :: `red` ;
+
+# r'[0-9]+' applyed on &quot;42&quot; will return &quot;42&quot;.
+# r'[0-9]+' : `int` will return int(&quot;42&quot;)
+
+# &quot;addop fact&quot; applyied on &quot;+ 42&quot; will return ('+', 42)
+# &quot;addop fact :: `op1`&quot; will return op1(*('+', 42)), i.e. op1('+', 42)
+# so &quot;addop fact :: `op1`&quot; returns +42
+
+# &quot;addop fact :: `op2`&quot; will return op2(*('+', 42)), i.e. op2('+', 42)
+# so &quot;addop fact :: `op2`&quot; returns lambda x: add(x, 42)
+
+# &quot;fact (mulop fact :: `op2`)*&quot; returns a number and a list of functions
+# for instance (42, [(lambda x:mul(x, 43)), (lambda x:mul(x, 44))])
+# so &quot;fact (mulop fact :: `op2`)* :: `red`&quot; applyied on &quot;42*43*44&quot;
+# will return red(42, [(lambda x:mul(x, 43)), (lambda x:mul(x, 44))])
+# i.e. 42*43*44
+</pre>
+<p>In the SP language, <tt class="docutils literal"><span class="pre">:</span></tt> (as <tt class="docutils literal"><span class="pre">/</span></tt>) applies a Python function (more generally a callable object)
+to a value returned by a sequence and <tt class="docutils literal"><span class="pre">::</span></tt> (as <tt class="docutils literal"><span class="pre">*</span></tt>) applies a Python function to several values
+returned by a sequence.</p>
 <p>Here is finally the complete parser.</p>
 <p>Expression recognizer and evaluator:</p>
 <pre class="literal-block">
@@ -608,6 +656,35 @@ def Calc():
 
     return expr
 </pre>
+<p>Or with SP language:</p>
+<pre class="literal-block">
+from sp import *
+
+def Calc():
+
+    from operator import pos, neg, add, sub, mul, truediv as div
+
+    op1 = lambda f,x: {'+':pos, '-':neg}[f](x)
+    op2 = lambda f,y: lambda x: {'+': add, '-': sub, '*': mul, '/': div}[f](x,y)
+
+    def red(x, fs):
+        for f in fs: x = f(x)
+        return x
+
+    return compile(&quot;&quot;&quot;
+        number = r'[0-9]+' : `int` ;
+        addop = r'[+-]' ;
+        mulop = r'[*/]' ;
+
+        separator = r'\s+' ;
+
+        !expr = term (addop term :: `op2`)* :: `red` ;
+        term = fact (mulop fact :: `op2`)* :: `red` ;
+        fact = addop fact :: `op1` ;
+        fact = '(' expr ')' ;
+        fact = number ;
+    &quot;&quot;&quot;)
+</pre>
 </div>
 <div class="section" id="embeding-the-parser-in-a-script">
 <h3>Embeding the parser in a script</h3>
@@ -637,30 +714,7 @@ from sp import *
 
 def Calc():
 
-    from operator import pos, neg, add, sub, mul, truediv as div
-
-    op1 = lambda f,x: {'+':pos, '-':neg}[f](x)
-    op2 = lambda f,y: lambda x: {'+': add, '-': sub, '*': mul, '/': div}[f](x,y)
-
-    def red(x, fs):
-        for f in fs: x = f(x)
-        return x
-
-    number = R(r'[0-9]+') / int
-    addop = R('[+-]')
-    mulop = R('[*/]')
-
-    with Separator(r'\s+'):
-
-        expr = Rule()
-        fact = Rule()
-        fact |= (addop &amp; fact) * op1
-        fact |= '(' &amp; expr &amp; ')'
-        fact |= number
-        term = (fact &amp; ( (mulop &amp; fact) * op2 )[:]) * red
-        expr |= (term &amp; ( (addop &amp; term) * op2 )[:]) * red
-
-    return expr
+    ...
 
 calc = Calc()
 while True:
@@ -815,6 +869,21 @@ Tokens defined by the <tt class="docutils literal"><span class="pre">R</span></t
 and tokens defined by the <tt class="docutils literal"><span class="pre">Separator</span></tt> keyword are considered as separators
 (white spaces or comments for example) and are wiped out by the lexer.</p>
 <p>The word boundary <tt class="docutils literal"><span class="pre">\b</span></tt> can be used to avoid recognizing &quot;True&quot; at the beginning of &quot;Truexyz&quot;.</p>
+<p>If the regular expression defines groups,
+the parser returns a tuple containing these groups:</p>
+<pre class="literal-block">
+couple = R('&lt;(\d+)-(\d+)&gt;')
+
+couple(&quot;&lt;42-43&gt;&quot;) == ('42', '43')
+</pre>
+<p>If the regular expression defines only one group,
+the parser returns the value of this group:</p>
+<pre class="literal-block">
+first = R('&lt;(\d+)-\d+&gt;')
+
+first(&quot;&lt;42-43&gt;&quot;) == '42'
+</pre>
+<p>Unwanted groups can be avoided using <tt class="docutils literal"><span class="pre">(?:...)</span></tt>.</p>
 </div>
 <div class="section" id="inline-tokens">
 <h3>Inline tokens</h3>
@@ -1032,10 +1101,101 @@ sep.__exit__()
 </pre>
 </div>
 </div>
+<div class="section" id="sp-mini-language">
+<h1><a class="toc-backref" href="#id23">4&nbsp;&nbsp;&nbsp;SP mini language</a></h1>
+<p>Instead of using Python expressions that can sometimes be difficult to read,
+it's possible to write grammars in a cleaner syntax and compile these
+grammar with the <tt class="docutils literal"><span class="pre">sp.compile</span></tt> function.</p>
+<p>Here the equivalence between Python expressions and the SP mini language:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="35%" />
+<col width="35%" />
+<col width="31%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">SP Python expressions</th>
+<th class="head">SP mini language</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><tt class="docutils literal"><span class="pre">R(&quot;regular</span> <span class="pre">expression&quot;)</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">r&quot;regular</span> <span class="pre">expression&quot;</span></tt></td>
+<td>Token defined by a
+regular expression.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">K(&quot;plain</span> <span class="pre">text&quot;)</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">&quot;plain</span> <span class="pre">text&quot;</span></tt></td>
+<td>Keyword defined by a non
+interpreted string.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">C(object)</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">`object`</span></tt></td>
+<td>Parses nothing and
+returns <tt class="docutils literal"><span class="pre">object</span></tt>.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">...</span> <span class="pre">/</span> <span class="pre">function</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">...</span> <span class="pre">:</span> <span class="pre">`function`</span></tt></td>
+<td>Parses ... and apply the result
+to <tt class="docutils literal"><span class="pre">function</span></tt>
+(<tt class="docutils literal"><span class="pre">function(...)</span></tt>).</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">...</span> <span class="pre">*</span> <span class="pre">function</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">...</span> <span class="pre">::</span> <span class="pre">`function`</span></tt></td>
+<td>Parses ... and apply the result
+(multiple values) to <tt class="docutils literal"><span class="pre">function</span></tt>
+(<tt class="docutils literal"><span class="pre">function(*...)</span></tt>).</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">(...)[:]</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">(...)*</span></tt></td>
+<td>Zero or more matches.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">(...)[1:]</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">(...)+</span></tt></td>
+<td>One or more matches.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">(...)[:1]</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">(...)?</span></tt></td>
+<td>Zero or one matche.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">(...)[::S]</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">[.../S]*</span></tt></td>
+<td>Zero or more matches
+separated by <tt class="docutils literal"><span class="pre">S</span></tt>.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">(...)[1::S]</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">[.../S]+</span></tt></td>
+<td>One or more matches
+separated by <tt class="docutils literal"><span class="pre">S</span></tt>.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">A</span> <span class="pre">&amp;</span> <span class="pre">B</span> <span class="pre">&amp;</span> <span class="pre">C</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">A</span> <span class="pre">B</span> <span class="pre">C</span></tt></td>
+<td>Sequence.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">A</span> <span class="pre">|</span> <span class="pre">B</span> <span class="pre">|</span> <span class="pre">C</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">A</span> <span class="pre">|</span> <span class="pre">B</span> <span class="pre">|</span> <span class="pre">C</span></tt></td>
+<td>Alternative.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">(...)</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">(...)</span></tt></td>
+<td>Grouping.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">rule_name</span> <span class="pre">=</span> <span class="pre">...</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">rule_name</span> <span class="pre">=</span> <span class="pre">...</span> <span class="pre">;</span></tt></td>
+<td>Rule definition.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">axiom_name</span> <span class="pre">=</span> <span class="pre">...</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">!axiom_name</span> <span class="pre">=</span> <span class="pre">...</span> <span class="pre">;</span></tt></td>
+<td>Axiom definition.</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="some-examples-to-illustrate-sp">
-<h1><a class="toc-backref" href="#id23">4&nbsp;&nbsp;&nbsp;Some examples to illustrate SP</a></h1>
+<h1><a class="toc-backref" href="#id24">5&nbsp;&nbsp;&nbsp;Some examples to illustrate SP</a></h1>
 <div class="section" id="complete-interactive-calculator">
-<h2><a class="toc-backref" href="#id24">4.1&nbsp;&nbsp;&nbsp;Complete interactive calculator</a></h2>
+<h2><a class="toc-backref" href="#id25">5.1&nbsp;&nbsp;&nbsp;Complete interactive calculator</a></h2>
 <p>This chapter presents an extention of the calculator described in the <a class="reference internal" href="#tutorial">tutorial</a>.
 This calculator has more functions and a memory.</p>
 <div class="section" id="new-functions">
@@ -1086,13 +1246,26 @@ rat  : rational calculus            | this help : ?
 import struct
 import sys
 
-from sp import *
+import sp
 from fractions import Fraction
 
 try:
     import readline
 except ImportError:
     pass
+
+class Calc:
+    def __init__(self):
+        self.number = Num
+        self.memory = {}
+    def __getitem__(self, var): return self.memory[var.name]
+    def __setitem__(self, var, val): self.memory[var.name] = val
+
+class Help:
+    def __init__(self):
+        self.doc = __doc__.strip()
+    def eval(self, calc=None):
+        return self.doc
 
 class Num:
     name, descr = &quot;num&quot;, &quot;Number&quot;
@@ -1232,113 +1405,6 @@ def ieee_float(n):
 def ieee_double(n):
     return struct.unpack(&quot;d&quot;, struct.pack(&quot;Q&quot;, n))[0]
 
-class Calc:
-
-    def __init__(self):
-
-        self.number = Num
-
-        def bin2int(n):
-            n = n.replace('_', '')
-            n = n.replace('b', '')
-            return int(n, 2)
-
-        def oct2int(n):
-            n = n.replace('_', '')
-            n = n.replace('o', '')
-            return int(n, 8)
-
-        def hex2int(n):
-            n = n.replace('_', '')
-            n = n.replace('h', '')
-            if n.startswith('0x'): n = n[2:]
-            return int(n, 16)
-
-        def real2float(n):
-            n = n.replace('_', '')
-            return float(n)
-
-        def dec2int(n):
-            n = n.replace('_', '')
-            return int(n)
-
-        bin = (R(r'b[_0-1]+\b') | R(r'[_0-1]+b\b')) / bin2int
-        oct = (R(r'o[_0-7]+\b') | R(r'[_0-7]+o\b')) / oct2int
-        hex = ( R(r'h[_0-9a-fA-F]+\b') |
-                R(r'[_0-9a-fA-F]+h\b') |
-                R(r'0x[_0-9a-fA-F]+\b')) / hex2int
-        real = R(r'(\d+\.\d*|\d*\.\d+)([eE][-+]?\d+)?|\d+[eE][-+]?\d+') / real2float
-        dec = R(r'\d+') / dec2int
-        var = R(r'[a-zA-Z_]\w*')
-
-        from operator import pos, neg, invert, add, sub, or_, xor, \
-                             mul, mod, truediv, floordiv, and_, \
-                             rshift, lshift, pow as pow_
-        op1 = lambda f,x: {'+':pos, '-':neg, '~':invert}[f](x)
-        op = lambda f,y: lambda x: {'+':add, '-':sub,
-                                    '*':mul, '%':mod, '/':truediv,
-                                    '**':pow_,
-                                    '&amp;':and_, '|':or_, '^':xor,
-                                    '&gt;&gt;':rshift, '&lt;&lt;':lshift,
-                                   }[f](x,y)
-        def red(x, fs):
-            for f in fs: x = f(x)
-            return x
-
-        with Separator(r'\s+'):
-
-            expr = Rule()
-
-            calc = ( K('?') &amp; C(__doc__.strip())
-                   | K('num') / self.mode(Num)
-                   | K('int8') / self.mode(Int8)
-                   | K('int16') / self.mode(Int16)
-                   | K('int32') / self.mode(Int32)
-                   | K('int64') / self.mode(Int64)
-                   | K('int') / self.mode(Int)
-                   | K('flt32') / self.mode(Float)
-                   | K('flt64') / self.mode(Double)
-                   | K('rat') / self.mode(Rat)
-                   | (((var &amp; '=') | C('_')) &amp; expr) * self.assign
-                   )
-
-            fact = Rule()
-            atom = ( '(' &amp; expr &amp; ')'
-                   | (K('rev') &amp; '(' &amp; expr &amp; ')') / (lambda x: x.rev())
-                   | (K('factor') &amp; '(' &amp; expr &amp; ')') / (lambda x: x.factor())
-                   | (bin | oct | hex | real | dec | var / self.val)
-                     / self.convert
-                   )
-            pow = (atom &amp; ((R(r'\*\*') &amp; fact) * op)[:1]) * red
-            fact |= (R(r'\+|-|~') &amp; fact) * op1 | pow
-            term = (fact &amp; ((R(r'\*|%|/|&amp;|&gt;&gt;|&lt;&lt;') &amp; fact) * op)[:]) * red
-            expr |= (term &amp; ((R(r'\+|-|\||\^') &amp; term) * op)[:]) * red
-
-        self.calc = calc
-        self.var = {}
-
-    def mode(self, m):
-        def setmode(_):
-            self.number = m
-            return &quot;%s mode&quot;%self.number.descr
-        return setmode
-
-    def convert(self, x):
-        return self.number(x)
-
-    def assign(self, var, val):
-        self.var[var] = val
-        return str(val)
-
-    def val(self, var):
-        try:
-            return self.var[var]
-        except KeyError:
-            raise NameError(var)
-
-    def __call__(self, s):
-        return self.calc(s)
-
 def base(N, radix=10, group=3, width=None):
     if width:
         N %= 2**width
@@ -1354,20 +1420,174 @@ def base(N, radix=10, group=3, width=None):
     s = &quot; &quot;.join(s[i:i+group] for i in range(0, len(s), group))
     return s[::-1]
 
+class Bin:
+    def __init__(self, n): self.val = int(n.replace('_', ''), 2)
+    def eval(self, calc): return calc.number(self.val)
+
+class Oct:
+    def __init__(self, n): self.val = int(n.replace('_', ''), 8)
+    def eval(self, calc): return calc.number(self.val)
+
+class Hex:
+    def __init__(self, n): self.val = int(n.replace('_', ''), 16)
+    def eval(self, calc): return calc.number(self.val)
+
+class Dec:
+    def __init__(self, n): self.val = int(n.replace('_', ''), 10)
+    def eval(self, calc): return calc.number(self.val)
+
+class Real:
+    def __init__(self, n): self.val = float(n.replace('_', ''))
+    def eval(self, calc): return calc.number(self.val)
+
+class Var:
+    def __init__(self, n=&quot;_&quot;): self.name = n
+    def eval(self, calc):
+        try: val = calc[self]
+        except KeyError: raise NameError(self.name)
+        return val.eval(calc)
+
+class Mode:
+    def __init__(self, mode): self.mode = mode
+    def eval(self, calc):
+        calc.number = self.mode
+        return &quot;%s mode&quot;%calc.number.descr
+
+class Assign:
+    def __init__(self, name, expr): self.name, self.expr = name, expr
+    def eval(self, calc):
+        calc[self.name] = self.expr
+        return self.expr.eval(calc)
+
+class Op2:
+    def __init__(self, x, y): self.x, self.y = x, y
+
+class Op1:
+    def __init__(self, x): self.x = x
+
+class Add(Op2):
+    def eval(self, calc): return self.x.eval(calc) + self.y.eval(calc)
+
+class Sub(Op2):
+    def eval(self, calc): return self.x.eval(calc) - self.y.eval(calc)
+
+class Or(Op2):
+    def eval(self, calc): return self.x.eval(calc) | self.y.eval(calc)
+
+class Xor(Op2):
+    def eval(self, calc): return self.x.eval(calc) ^ self.y.eval(calc)
+
+class Mul(Op2):
+    def eval(self, calc): return self.x.eval(calc) * self.y.eval(calc)
+
+class Mod(Op2):
+    def eval(self, calc): return self.x.eval(calc) % self.y.eval(calc)
+
+class Div(Op2):
+    def eval(self, calc): return self.x.eval(calc) / self.y.eval(calc)
+
+class And(Op2):
+    def eval(self, calc): return self.x.eval(calc) &amp; self.y.eval(calc)
+
+class RShift(Op2):
+    def eval(self, calc): return self.x.eval(calc) &gt;&gt; self.y.eval(calc)
+
+class LShift(Op2):
+    def eval(self, calc): return self.x.eval(calc) &lt;&lt; self.y.eval(calc)
+
+class Pow(Op2):
+    def eval(self, calc): return self.x.eval(calc) ** self.y.eval(calc)
+
+class Pos(Op1):
+    def eval(self, calc): return +self.x.eval(calc)
+
+class Neg(Op1):
+    def eval(self, calc): return -self.x.eval(calc)
+
+class Inv(Op1):
+    def eval(self, calc): return ~self.x.eval(calc)
+
+class Rev(Op1):
+    def eval(self, calc): return self.x.eval(calc).rev()
+
+class Factor(Op1):
+    def eval(self, calc): return self.x.eval(calc).factor()
+
+def red(x, ys):
+    for f, y in ys:
+        x = f(x, y)
+    return x
+
+def red1(f, x):
+    return f(x)
+
+parser = sp.compile(
+    r&quot;&quot;&quot;
+        bin = r'b([_0-1]+)\b' : `Bin` ;
+        bin = r'([_0-1]+)b\b' : `Bin` ;
+        oct = r'o([_0-7]+)\b' : `Oct` ;
+        oct = r'([_0-7]+)o\b' : `Oct` ;
+        hex = r'h([_0-9a-fA-F]+)\b' : `Hex` ;
+        hex = r'([_0-9a-fA-F]+)h\b' : `Hex` ;
+        hex = r'0x([_0-9a-fA-F]+)\b' : `Hex` ;
+        real = r'(?:\d+\.\d*|\d*\.\d+)(?:[eE][-+]?\d+)?|\d+[eE][-+]?\d+' : `Real` ;
+        dec = r'\d+' : `Dec` ;
+        var = r'[a-zA-Z_]\w*' : `Var`;
+
+        addop = '+' `Add` ;
+        addop = '-' `Sub` ;
+        addop = '|' `Or` ;
+        addop = '^' `Xor` ;
+
+        mulop = '*' `Mul` ;
+        mulop = '%' `Mod` ;
+        mulop = '/' `Div` ;
+        mulop = '&amp;' `And` ;
+        mulop = '&gt;&gt;' `RShift` ;
+        mulop = '&lt;&lt;' `LShift` ;
+
+        unop = '+' `Pos` ;
+        unop = '-' `Neg` ;
+        unop = '~' `Inv` ;
+
+        powop = '**' `Pow` ;
+
+        separator = r'\s+' ;
+
+        !S = '?'        `Help()`;
+
+        !S = 'num'      `Mode(Num)`;
+        !S = 'int8'     `Mode(Int8)`;
+        !S = 'int16'    `Mode(Int16)`;
+        !S = 'int32'    `Mode(Int32)`;
+        !S = 'int64'    `Mode(Int64)`;
+        !S = 'int'      `Mode(Int)`;
+        !S = 'flt32'    `Mode(Float)`;
+        !S = 'flt64'    `Mode(Double)`;
+        !S = 'rat'      `Mode(Rat)`;
+
+        !S = (var '=' | `Var()`) expr :: `Assign` ;
+
+        expr = term (addop term)* :: `red` ;
+        term = fact (mulop fact)* :: `red` ;
+        fact = unop fact :: `red1` | pow ;
+        pow = atom (powop fact)? :: `red` ;
+
+        atom = '(' expr ')' ;
+        atom = 'rev' '(' expr ')' : `Rev` ;
+        atom = 'factor' '(' expr ')' : `Factor` ;
+        atom = bin | oct | hex | real | dec | var ;
+    &quot;&quot;&quot;)
+
 if __name__ == '__main__':
-    print(__doc__.strip())
+    print(Help().eval())
     print()
     calc = Calc()
-    for cmd in sys.argv[1:]:
-        try:
-            calc(cmd)
-        except Exception as e:
-            print(&quot;%s: %s&quot;%(e.__class__.__name__, e))
     while True:
         expr = input(&quot;(%s) &quot;%calc.number.name)
         if not expr: continue
         try:
-            val = calc(expr)
+            val = parser(expr).eval(calc)
         except Exception as e:
             print(&quot;%s: %s&quot;%(e.__class__.__name__, e))
         else:

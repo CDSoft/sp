@@ -35,13 +35,26 @@ rat  : rational calculus            | this help : ?
 import struct
 import sys
 
-from sp import *
+import sp
 from fractions import Fraction
 
 try:
     import readline
 except ImportError:
     pass
+
+class Calc:
+    def __init__(self):
+        self.number = Num
+        self.memory = {}
+    def __getitem__(self, var): return self.memory[var.name]
+    def __setitem__(self, var, val): self.memory[var.name] = val
+
+class Help:
+    def __init__(self):
+        self.doc = __doc__.strip()
+    def eval(self, calc=None):
+        return self.doc
 
 class Num:
     name, descr = "num", "Number"
@@ -181,113 +194,6 @@ def ieee_float(n):
 def ieee_double(n):
     return struct.unpack("d", struct.pack("Q", n))[0]
 
-class Calc:
-
-    def __init__(self):
-
-        self.number = Num
-
-        def bin2int(n):
-            n = n.replace('_', '')
-            n = n.replace('b', '')
-            return int(n, 2)
-
-        def oct2int(n):
-            n = n.replace('_', '')
-            n = n.replace('o', '')
-            return int(n, 8)
-
-        def hex2int(n):
-            n = n.replace('_', '')
-            n = n.replace('h', '')
-            if n.startswith('0x'): n = n[2:]
-            return int(n, 16)
-
-        def real2float(n):
-            n = n.replace('_', '')
-            return float(n)
-
-        def dec2int(n):
-            n = n.replace('_', '')
-            return int(n)
-
-        bin = (R(r'b[_0-1]+\b') | R(r'[_0-1]+b\b')) / bin2int
-        oct = (R(r'o[_0-7]+\b') | R(r'[_0-7]+o\b')) / oct2int
-        hex = ( R(r'h[_0-9a-fA-F]+\b') |
-                R(r'[_0-9a-fA-F]+h\b') |
-                R(r'0x[_0-9a-fA-F]+\b')) / hex2int
-        real = R(r'(\d+\.\d*|\d*\.\d+)([eE][-+]?\d+)?|\d+[eE][-+]?\d+') / real2float
-        dec = R(r'\d+') / dec2int
-        var = R(r'[a-zA-Z_]\w*')
-
-        from operator import pos, neg, invert, add, sub, or_, xor, \
-                             mul, mod, truediv, floordiv, and_, \
-                             rshift, lshift, pow as pow_
-        op1 = lambda f,x: {'+':pos, '-':neg, '~':invert}[f](x)
-        op = lambda f,y: lambda x: {'+':add, '-':sub,
-                                    '*':mul, '%':mod, '/':truediv,
-                                    '**':pow_,
-                                    '&':and_, '|':or_, '^':xor,
-                                    '>>':rshift, '<<':lshift,
-                                   }[f](x,y)
-        def red(x, fs):
-            for f in fs: x = f(x)
-            return x
-
-        with Separator(r'\s+'):
-
-            expr = Rule()
-
-            calc = ( K('?') & C(__doc__.strip())
-                   | K('num') / self.mode(Num)
-                   | K('int8') / self.mode(Int8)
-                   | K('int16') / self.mode(Int16)
-                   | K('int32') / self.mode(Int32)
-                   | K('int64') / self.mode(Int64)
-                   | K('int') / self.mode(Int)
-                   | K('flt32') / self.mode(Float)
-                   | K('flt64') / self.mode(Double)
-                   | K('rat') / self.mode(Rat)
-                   | (((var & '=') | C('_')) & expr) * self.assign
-                   )
-
-            fact = Rule()
-            atom = ( '(' & expr & ')'
-                   | (K('rev') & '(' & expr & ')') / (lambda x: x.rev())
-                   | (K('factor') & '(' & expr & ')') / (lambda x: x.factor())
-                   | (bin | oct | hex | real | dec | var / self.val)
-                     / self.convert
-                   )
-            pow = (atom & ((R(r'\*\*') & fact) * op)[:1]) * red
-            fact |= (R(r'\+|-|~') & fact) * op1 | pow
-            term = (fact & ((R(r'\*|%|/|&|>>|<<') & fact) * op)[:]) * red
-            expr |= (term & ((R(r'\+|-|\||\^') & term) * op)[:]) * red
-
-        self.calc = calc
-        self.var = {}
-
-    def mode(self, m):
-        def setmode(_):
-            self.number = m
-            return "%s mode"%self.number.descr
-        return setmode
-
-    def convert(self, x):
-        return self.number(x)
-
-    def assign(self, var, val):
-        self.var[var] = val
-        return str(val)
-
-    def val(self, var):
-        try:
-            return self.var[var]
-        except KeyError:
-            raise NameError(var)
-
-    def __call__(self, s):
-        return self.calc(s)
-
 def base(N, radix=10, group=3, width=None):
     if width:
         N %= 2**width
@@ -303,20 +209,174 @@ def base(N, radix=10, group=3, width=None):
     s = " ".join(s[i:i+group] for i in range(0, len(s), group))
     return s[::-1]
 
+class Bin:
+    def __init__(self, n): self.val = int(n.replace('_', ''), 2)
+    def eval(self, calc): return calc.number(self.val)
+
+class Oct:
+    def __init__(self, n): self.val = int(n.replace('_', ''), 8)
+    def eval(self, calc): return calc.number(self.val)
+
+class Hex:
+    def __init__(self, n): self.val = int(n.replace('_', ''), 16)
+    def eval(self, calc): return calc.number(self.val)
+
+class Dec:
+    def __init__(self, n): self.val = int(n.replace('_', ''), 10)
+    def eval(self, calc): return calc.number(self.val)
+
+class Real:
+    def __init__(self, n): self.val = float(n.replace('_', ''))
+    def eval(self, calc): return calc.number(self.val)
+
+class Var:
+    def __init__(self, n="_"): self.name = n
+    def eval(self, calc):
+        try: val = calc[self]
+        except KeyError: raise NameError(self.name)
+        return val.eval(calc)
+
+class Mode:
+    def __init__(self, mode): self.mode = mode
+    def eval(self, calc):
+        calc.number = self.mode
+        return "%s mode"%calc.number.descr
+
+class Assign:
+    def __init__(self, name, expr): self.name, self.expr = name, expr
+    def eval(self, calc):
+        calc[self.name] = self.expr
+        return self.expr.eval(calc)
+
+class Op2:
+    def __init__(self, x, y): self.x, self.y = x, y
+
+class Op1:
+    def __init__(self, x): self.x = x
+
+class Add(Op2):
+    def eval(self, calc): return self.x.eval(calc) + self.y.eval(calc)
+
+class Sub(Op2):
+    def eval(self, calc): return self.x.eval(calc) - self.y.eval(calc)
+
+class Or(Op2):
+    def eval(self, calc): return self.x.eval(calc) | self.y.eval(calc)
+
+class Xor(Op2):
+    def eval(self, calc): return self.x.eval(calc) ^ self.y.eval(calc)
+
+class Mul(Op2):
+    def eval(self, calc): return self.x.eval(calc) * self.y.eval(calc)
+
+class Mod(Op2):
+    def eval(self, calc): return self.x.eval(calc) % self.y.eval(calc)
+
+class Div(Op2):
+    def eval(self, calc): return self.x.eval(calc) / self.y.eval(calc)
+
+class And(Op2):
+    def eval(self, calc): return self.x.eval(calc) & self.y.eval(calc)
+
+class RShift(Op2):
+    def eval(self, calc): return self.x.eval(calc) >> self.y.eval(calc)
+
+class LShift(Op2):
+    def eval(self, calc): return self.x.eval(calc) << self.y.eval(calc)
+
+class Pow(Op2):
+    def eval(self, calc): return self.x.eval(calc) ** self.y.eval(calc)
+
+class Pos(Op1):
+    def eval(self, calc): return +self.x.eval(calc)
+
+class Neg(Op1):
+    def eval(self, calc): return -self.x.eval(calc)
+
+class Inv(Op1):
+    def eval(self, calc): return ~self.x.eval(calc)
+
+class Rev(Op1):
+    def eval(self, calc): return self.x.eval(calc).rev()
+
+class Factor(Op1):
+    def eval(self, calc): return self.x.eval(calc).factor()
+
+def red(x, ys):
+    for f, y in ys:
+        x = f(x, y)
+    return x
+
+def red1(f, x):
+    return f(x)
+
+parser = sp.compile(
+    r"""
+        bin = r'b([_0-1]+)\b' : `Bin` ;
+        bin = r'([_0-1]+)b\b' : `Bin` ;
+        oct = r'o([_0-7]+)\b' : `Oct` ;
+        oct = r'([_0-7]+)o\b' : `Oct` ;
+        hex = r'h([_0-9a-fA-F]+)\b' : `Hex` ;
+        hex = r'([_0-9a-fA-F]+)h\b' : `Hex` ;
+        hex = r'0x([_0-9a-fA-F]+)\b' : `Hex` ;
+        real = r'(?:\d+\.\d*|\d*\.\d+)(?:[eE][-+]?\d+)?|\d+[eE][-+]?\d+' : `Real` ;
+        dec = r'\d+' : `Dec` ;
+        var = r'[a-zA-Z_]\w*' : `Var`;
+
+        addop = '+' `Add` ;
+        addop = '-' `Sub` ;
+        addop = '|' `Or` ;
+        addop = '^' `Xor` ;
+
+        mulop = '*' `Mul` ;
+        mulop = '%' `Mod` ;
+        mulop = '/' `Div` ;
+        mulop = '&' `And` ;
+        mulop = '>>' `RShift` ;
+        mulop = '<<' `LShift` ;
+
+        unop = '+' `Pos` ;
+        unop = '-' `Neg` ;
+        unop = '~' `Inv` ;
+
+        powop = '**' `Pow` ;
+
+        separator = r'\s+' ;
+
+        !S = '?'        `Help()`;
+
+        !S = 'num'      `Mode(Num)`;
+        !S = 'int8'     `Mode(Int8)`;
+        !S = 'int16'    `Mode(Int16)`;
+        !S = 'int32'    `Mode(Int32)`;
+        !S = 'int64'    `Mode(Int64)`;
+        !S = 'int'      `Mode(Int)`;
+        !S = 'flt32'    `Mode(Float)`;
+        !S = 'flt64'    `Mode(Double)`;
+        !S = 'rat'      `Mode(Rat)`;
+
+        !S = (var '=' | `Var()`) expr :: `Assign` ;
+
+        expr = term (addop term)* :: `red` ;
+        term = fact (mulop fact)* :: `red` ;
+        fact = unop fact :: `red1` | pow ;
+        pow = atom (powop fact)? :: `red` ;
+
+        atom = '(' expr ')' ;
+        atom = 'rev' '(' expr ')' : `Rev` ;
+        atom = 'factor' '(' expr ')' : `Factor` ;
+        atom = bin | oct | hex | real | dec | var ;
+    """)
+
 if __name__ == '__main__':
-    print(__doc__.strip())
+    print(Help().eval())
     print()
     calc = Calc()
-    for cmd in sys.argv[1:]:
-        try:
-            calc(cmd)
-        except Exception as e:
-            print("%s: %s"%(e.__class__.__name__, e))
     while True:
         expr = input("(%s) "%calc.number.name)
         if not expr: continue
         try:
-            val = calc(expr)
+            val = parser(expr).eval(calc)
         except Exception as e:
             print("%s: %s"%(e.__class__.__name__, e))
         else:

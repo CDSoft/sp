@@ -39,14 +39,40 @@ Example: a simple 4 operation calculator
 ...                          )[:]
 ...                 ) * applyall
 ...     return expr
->>> calc = calc_parser()
->>> calc("1+2+3")
+>>> calc1 = calc_parser()
+>>> calc1("1 + 2+3")
 6
->>> calc("1+(2*3)")
+>>> calc1("1 + (2*3)")
 7
->>> calc("1-(2*3)")
+>>> calc1("1 - (2*3)")
 -5
 
+Example: another calculator using the SP language
+-------------------------------------------------
+
+>>> from operator import add, sub, mul, truediv as div, mod
+>>> op2 = lambda f, y: lambda x: f(x, y)
+>>> op1 = lambda f, x: f(0, x)
+>>> def red(x, fs):
+...     for f in fs: x = f(x)
+...     return x
+>>> calc2 = compile(r'''
+...         number = r'\d+' : `int`;
+...         addop = '+' `add` | '-' `sub` ;
+...         mulop = '*' `mul` | '/' `div` | '%' `mod`;
+...
+...         separator = r'\s+';
+...
+...         !expr = term (addop term :: `op2`)* :: `red`;
+...         term = fact (mulop fact :: `op2`)* :: `red`;
+...         fact = addop fact :: `op1` | '(' expr ')' | number;
+...     ''')
+>>> calc2("1 + 2+3")
+6
+>>> calc2("1 + (2*3)")
+7
+>>> calc2("1 - (2*3)")
+-5
 """
 
 __license__ = """
@@ -69,6 +95,8 @@ along with Simple Parser.  If not, see <http://www.gnu.org/licenses/>.
 import re
 import sys
 
+__all__ = ['compile', 'R', 'K', 'C', 'D', 'Rule', 'Separator']
+
 def _memoize_self_s(f):
     """ creates a memoized parser method
 
@@ -77,11 +105,10 @@ def _memoize_self_s(f):
     cache = {}
     def _f(self, s):
         try:
-            return cache[self, s]
+            r = cache[self, s]
         except KeyError:
-            r = f(self, s)
-            cache[self, s] = r
-            return r
+            r = cache[self, s] = f(self, s)
+        return r
     _f.__doc__ = f.__doc__
     _f.__name__ = f.__name__
     return _f
@@ -95,11 +122,10 @@ def _memoize_self_s_e(f):
     cache = {}
     def _f(self, s, e):
         try:
-            return cache[self, s]
+            r = cache[self, s]
         except KeyError:
-            r = f(self, s, e)
-            cache[self, s] = r
-            return r
+            r = cache[self, s] = f(self, s, e)
+        return r
     _f.__doc__ = f.__doc__
     _f.__name__ = f.__name__
     return _f
@@ -137,7 +163,7 @@ class _err:
             ....
         SyntaxError: [1:7] expected: \d+ \w+
         """
-        s = s[:-len(self.s)]
+        if self.s: s = s[:-len(self.s)] # else end of text => nothing to remove
         line = s.count('\n') + 1
         col = len(s[s.rfind('\n')+1:]) + 1
         msg = "[%d:%d] expected:"%(line, col)
@@ -349,16 +375,17 @@ class Separator:
     (['42', '43'], '')
     """
 
-    def __init__(self, parser):
+    def __init__(self, parser=None):
         if isinstance(parser, str): parser = R(parser)
-        self.parser = _p(parser)
+        elif parser is not None: parser = _p(parser)
+        self.parser = parser
 
     def __enter__(self):
         global _separator
         self.previous_parser = _separator
         _separator = self.parser
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type=None, value=None, traceback=None):
         global _separator
         _separator = self.previous_parser
 
@@ -373,25 +400,45 @@ class R(Parser):
     >>> t = R(r'ham|spam')
     >>> with Separator(r'\s'): t[:]("ham ham spam")
     ['ham', 'ham', 'spam']
+
+    If the regular expression defines groups, the parser returns
+    a tuple of these groups.
+
+    >>> t = R('<(\d+)-(\d+)>')
+    >>> t("<42-43>")
+    ('42', '43')
+
+    If the regular expression defines only one group, the parser
+    returns the value of this group.
+
+    >>> t = R('<(\d+)-\d+>')
+    >>> t("<42-43>")
+    '42'
     """
 
-    def __init__(self, pattern, flags=0):
+    def __init__(self, pattern, flags=0, name=None):
         Parser.__init__(self)
-        self.pattern = re.compile(pattern, flags)
+        self.pattern = name or pattern
+        self.re = re.compile(pattern, flags)
 
     def parse(self, s, e):
         s1 = self.skipsep(s)
-        token = self.pattern.match(s1)
-        if not token: return fail, s, e.max(_err(s1, self.pattern.pattern))
-        token = token.group(0)
-        rest = self.skipsep(s1[len(token):])
-        return token, rest, e.max(_err(rest))
+        token = self.re.match(s1)
+        if not token: return fail, s, e.max(_err(s1, self.pattern))
+        matched = token.group(0)
+        if token.lastindex:
+            value = token.groups()
+            if len(value) == 1: value = value[0]
+        else:
+            value = matched
+        rest = self.skipsep(s1[len(matched):])
+        return value, rest, e.max(_err(rest))
 
 class K(R):
     """ is a keyword parser
 
     Works a bit as R.
-    
+
     If the pattern is a keyword (\w+)
     word boundaries are expected around the token.
     >>> t = K('ham') & C('ok')
@@ -405,9 +452,11 @@ class K(R):
     """
 
     def __init__(self, pattern, flags=0):
+        Parser.__init__(self)
+        self.pattern = pattern
         if pattern.isalnum(): pattern = r"\b%s\b"%pattern
         else: pattern = re.escape(pattern)
-        R.__init__(self, pattern, flags)
+        self.re = re.compile(pattern, flags)
 
     def parse(self, s, e):
         obj, rest, e = R.parse(self, s, e)
@@ -667,7 +716,7 @@ class Rep(Parser):
         self.min = min
         self.max = max
         if sep is None: self.parse = self._parse_no_sep
-        else: 
+        else:
             self.parse = self._parse_with_sep
             self.sep = _p(sep)
 
@@ -759,6 +808,315 @@ class ApplyStar(Apply):
         rest = self.skipsep(rest)
         return self.func(*token), rest, e.max(_err(rest))
 
+def compile(source):
+    r""" defines a parser from a grammar
+
+    Token definition
+    ----------------
+
+    >>> test = compile('''
+    ...     name = r'\w+' ;
+    ...     !S = name ;
+    ... ''')
+    >>> test('foo')
+    'foo'
+    >>> test(':foo')
+    Traceback (most recent call last):
+        ...
+    SyntaxError: [1:1] expected: \w+
+
+    Keyword definition
+    ------------------
+
+    >>> test = compile('''
+    ...     kw = 'begin' ;
+    ...     !S = kw ;
+    ... ''')
+    >>> test('begin')
+    nil
+    >>> test('end')
+    Traceback (most recent call last):
+        ...
+    SyntaxError: [1:1] expected: begin
+
+    Repetitions
+    -----------
+
+    >>> test = compile('''
+    ...     separator = ' ' ;
+    ...     item = r'\w+' ;
+    ...     !S = item* ;
+    ... ''')
+    >>> test(' ')
+    []
+    >>> test(' abc ')
+    ['abc']
+    >>> test(' abc def ')
+    ['abc', 'def']
+    >>> test(' abc def ghi')
+    ['abc', 'def', 'ghi']
+
+    >>> test = compile('''
+    ...     separator = ' ' ;
+    ...     item = r'\w+' ;
+    ...     !S = item+ ;
+    ... ''')
+    >>> test(' ')
+    Traceback (most recent call last):
+        ...
+    SyntaxError: [1:2] expected: \w+
+    >>> test(' abc ')
+    ['abc']
+    >>> test(' abc def ')
+    ['abc', 'def']
+    >>> test(' abc def ghi')
+    ['abc', 'def', 'ghi']
+
+    >>> test = compile('''
+    ...     separator = ' ' ;
+    ...     item = r'\w+' ;
+    ...     !S = item? ;
+    ... ''')
+    >>> test(' ')
+    []
+    >>> test(' abc ')
+    ['abc']
+    >>> test(' abc def ')
+    Traceback (most recent call last):
+        ...
+    SyntaxError: [1:6] expected:
+
+    >>> test = compile('''
+    ...     separator = ' ';
+    ...     item = r'\w+';
+    ...     !S = [item / ',']*;
+    ... ''')
+    >>> test(' ')
+    []
+    >>> test('a')
+    ['a']
+    >>> test('a, b')
+    ['a', 'b']
+    >>> test('a, b, c')
+    ['a', 'b', 'c']
+
+    >>> test = compile('''
+    ...     separator = ' ';
+    ...     item = r'\w+';
+    ...     !S = [item / ',']+;
+    ... ''')
+    >>> test(' ')
+    Traceback (most recent call last):
+        ...
+    SyntaxError: [1:2] expected: \w+
+    >>> test('a')
+    ['a']
+    >>> test('a, b')
+    ['a', 'b']
+    >>> test('a, b, c')
+    ['a', 'b', 'c']
+
+    Sequences and Alternatives
+    --------------------------
+
+    >>> test = compile('''
+    ...     separator = ' ' ;
+    ...     A = 'A' 'A' `1` | 'A' 'B' `2` ;
+    ...     A = 'A' 'C' `3` ;
+    ...     !S = A ;
+    ... ''')
+    >>> test('A A')
+    1
+    >>> test('A B')
+    2
+    >>> test('A C')
+    3
+    >>> test('A D')
+    Traceback (most recent call last):
+        ...
+    SyntaxError: [1:3] expected: A B C
+
+    Inline Python functions or objects
+    ----------------------------------
+
+    >>> test = compile('''
+    ...     separator = ' ';
+    ...     number = r'\d+' : `int` ;
+    ...     couple = '(' number ',' number ')' `"a string"`
+    ...              :: `lambda x,y,s: "%s: <%d,%d>"%(s,x,y)` ;
+    ...     !S = couple ;
+    ... ''')
+    >>> test('(18, 42)')
+    'a string: <18,42>'
+
+    Rules and axiom
+    ---------------
+
+    >>> test = compile('''
+    ...     separator = ' ';
+    ...     !axiom = rule1 | rule2 ;
+    ...     rule1 = 'A' `"rule 1 - branch 1"` ;
+    ...     rule1 = 'B' `"rule 1 - branch 2"` ;
+    ...     rule2 = 'A' 'A' `"rule 2 - branch 1"` ;
+    ...     rule2 = 'A' 'B' `"rule 2 - branch 2"` ;
+    ... ''')
+    >>> test('A')
+    'rule 1 - branch 1'
+    >>> test('B')
+    'rule 1 - branch 2'
+    >>> test('A A')
+    'rule 2 - branch 1'
+    >>> test('A B')
+    'rule 2 - branch 2'
+    >>> test('A C')
+    Traceback (most recent call last):
+        ...
+    SyntaxError: [1:3] expected: A B
+
+    """
+
+    class _Ident:
+        def __init__(self, name): self.name = name
+        def gen(self, symbs): return symbs[self.name]
+
+    class _Re:
+        def __init__(self, expr): self.expr = expr[2:-1]
+        def gen(self, symbs): return R(self.expr)
+
+    class _Kw:
+        def __init__(self, val): self.val = val[1:-1]
+        def gen(self, symbs): return K(self.val)
+
+    class _Rep0N:
+        def __init__(self, expr): self.expr = expr
+        def gen(self, symbs): return self.expr.gen(symbs)[:]
+
+    class _Rep1N:
+        def __init__(self, expr): self.expr = expr
+        def gen(self, symbs): return self.expr.gen(symbs)[1:]
+
+    class _Rep01:
+        def __init__(self, expr): self.expr = expr
+        def gen(self, symbs): return self.expr.gen(symbs)[:1]
+
+    class _RepSep0N:
+        def __init__(self, expr, sep): self.expr, self.sep = expr, sep
+        def gen(self, symbs): return self.expr.gen(symbs)[::self.sep.gen(symbs)]
+
+    class _RepSep1N:
+        def __init__(self, expr, sep): self.expr, self.sep = expr, sep
+        def gen(self, symbs): return self.expr.gen(symbs)[1::self.sep.gen(symbs)]
+
+    class _And:
+        def __init__(self, A, B): self.A, self.B = A, B
+        def gen(self, symbs): return self.A.gen(symbs) & self.B.gen(symbs)
+
+    class _Or:
+        def __init__(self, A, B): self.A, self.B = A, B
+        def gen(self, symbs): return self.A.gen(symbs) | self.B.gen(symbs)
+
+    class _Func:
+        def __init__(self, expr): self.expr = expr[1:-1]
+        def gen(self, symbs): return C(self.genpy(symbs))
+        def genpy(self, symbs): return symbs.eval(self.expr)
+
+    class _Apply:
+        def __init__(self, expr, func): self.expr, self.func = expr, func
+        def gen(self, symbs):
+            expr = self.expr.gen(symbs)
+            func = self.func.genpy(symbs)
+            return expr / func
+
+    class _ApplyAll:
+        def __init__(self, expr, func): self.expr, self.func = expr, func
+        def gen(self, symbs):
+            expr = self.expr.gen(symbs)
+            func = self.func.genpy(symbs)
+            return expr * func
+
+    class _Rule:
+        isaxiom = False
+        def __init__(self, ident, expr): self.ident, self.expr = ident, expr
+        def gen(self, symbs):
+            expr = self.expr.gen(symbs)
+            if self.ident.name == 'separator':
+                Separator(expr).__enter__()
+            else:
+                rule = symbs[self.ident.name]
+                rule |= expr
+
+    class _Axiom(_Rule):
+        isaxiom = True
+
+    class _Symbs:
+        def __init__(self, frame):
+            self.symbs = {}
+            self.globals = frame.f_globals
+            self.locals = frame.f_locals
+        def __iter__(self): return iter(self.symbs)
+        def __getitem__(self, name):
+            try:
+                s = self.symbs[name]
+            except KeyError:
+                s = self.symbs[name] = Rule()
+            return s
+        def eval(self, expr):
+            return eval(expr, self.globals, self.locals)
+
+    class _Grammar:
+        def __init__(self, rules): self.rules = rules
+        def gen(self, frame):
+            symbs = _Symbs(frame)
+            separator = Separator(None)
+            separator.__enter__()
+            try:
+                for rule in self.rules:
+                    rule.gen(symbs)
+            finally:
+                separator.__exit__()
+            empty = set(name for name in symbs if symbs[name].parser is None)
+            if empty: raise NameError("Undefined symbols: %s"%(", ".join(sorted(empty))))
+            axioms = set(rule.ident.name for rule in self.rules if rule.isaxiom)
+            if len(axioms) == 0: raise NameError("No axiom")
+            if len(axioms) > 1: raise NameError("Too many axioms: %s"%(", ".join(axioms)))
+            return symbs[axioms.pop()]
+
+    ident = R(r'[a-z_]\w*', re.I, name='ident') / _Ident
+    _string = """
+        " [^"\\\n]* (?: \\. [^"\\\n]* )* "
+    |   ' [^'\\\n]* (?: \\. [^'\\\n]* )* '
+    """
+    regexpr = R(r'r(?:%s)'%_string, re.X, name='regexpr') / _Re
+    string = R(r'(?:%s)'%_string, re.VERBOSE, name='string') / _Kw
+    func = R(r'''`[^`]+`''', re.IGNORECASE, name='func') / _Func
+
+    separator = Separator(r"\s+|#.*")
+    separator.__enter__()
+    try:
+        expr_or = Rule()
+        expr_and = Rule()
+        expr_rep = Rule()
+        expr_func = Rule()
+        item = ident | regexpr | string | func | '(' & expr_or & ')'
+        expr_rep |= (item & '*') / _Rep0N
+        expr_rep |= (item & '+') / _Rep1N
+        expr_rep |= (item & '?') / _Rep01
+        expr_rep |= ('[' & expr_or & '/' & expr_or & ']' & '*') * _RepSep0N
+        expr_rep |= ('[' & expr_or & '/' & expr_or & ']' & '+') * _RepSep1N
+        expr_rep |= item
+        expr_and |= (expr_rep & expr_and) * _And | expr_rep
+        expr_func |= (expr_and & '::' & func) * _ApplyAll | expr_and
+        expr_func |= (expr_and & ':' & func) * _Apply | expr_and
+        expr_func |= expr_and
+        expr_or |= (expr_func & '|' & expr_or) * _Or | expr_func
+        rule = (ident & '=' & expr_or & ';') * _Rule
+        axiom = '!' & (ident & '=' & expr_or & ';') * _Axiom
+        grammar = (axiom|rule)[:] / _Grammar
+    finally:
+        separator.__exit__()
+
+    return grammar(source).gen(sys._getframe(1))
+
 if __name__ == '__main__':
     import doctest
     print(__license__.strip())
@@ -766,4 +1124,3 @@ if __name__ == '__main__':
     if failure_count == 0:
         print("*"*70)
         print("All %d tests succeeded"%test_count)
-

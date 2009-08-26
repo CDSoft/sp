@@ -48,12 +48,26 @@ def Calc():
         term = (fact & ( (mulop & fact) * op2 )[:]) * red
         expr |= (term & ( (addop & term) * op2 )[:]) * red
 
-    return expr
+    return expr, compile("""
+        number = r'[0-9]+' : `int` ;
+        addop = r'[+-]' ;
+        mulop = r'[*/]' ;
+
+        separator = r'\s+' ;
+
+        !expr = term (addop term :: `op2`)* :: `red` ;
+        term = fact (mulop fact :: `op2`)* :: `red` ;
+        fact = addop fact :: `op1` ;
+        fact = '(' expr ')' ;
+        fact = number ;
+    """)
 
 print(__license__.strip())
 print("*"*70)
-calc = Calc()
+calc1, calc2 = Calc()
 while True:
     expr = input('Enter an expression: ')
-    try: print(expr, '=', calc(expr))
-    except Exception as e: print("%s:"%e.__class__.__name__, e)
+    try: print('calc1:', expr, '=', calc1(expr))
+    except Exception as e: print('calc1:', "%s:"%e.__class__.__name__, e)
+    try: print('calc2:', expr, '=', calc2(expr))
+    except Exception as e: print('calc2:', "%s:"%e.__class__.__name__, e)

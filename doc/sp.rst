@@ -196,7 +196,7 @@ Grammar of the expression recognizer::
         return expr
 
 ``Calc`` is the name of the Python function that returns a parser.
-This function returns ``expr`` which is the *axiom* [#]_ of the grammer.
+This function returns ``expr`` which is the *axiom* [#axiom]_ of the grammer.
 
 ``expr`` and ``fact`` are recursive rules.
 They are first declared as empty rules (``expr = Rule()``) and alternatives are later added (``expr |= ...``).
@@ -204,10 +204,29 @@ They are first declared as empty rules (``expr = Rule()``) and alternatives are 
 Slices are used to implement repetitions.
 ``foo[:]`` parses ``foo`` zero or more times, which is equivalent to ``foo*`` is a classical grammar notation.
 
+The grammar can also be defined with the mini grammar language provided by SP::
+
+    def Calc():
+        return compile("""
+            number = r'[0-9]+' ;
+            addop = r'[+-]' ;
+            mulop = r'[*/]' ;
+
+            separator = r'\s+' ;
+
+            !expr = term (addop term)* ;
+            term = fact (mulop fact)* ;
+            fact = addop fact ;
+            fact = '(' expr ')' ;
+            fact = number ;
+        """)
+
+Here the *axiom* [#axiom]_ is identified by ``!``.
+
 With this small grammar we can only recognize a correct expression.
 We will see in the next sections how to read the actual expression and to compute its value.
 
-.. [#] The axiom is the symbol from which the parsing starts
+.. [#axiom] The axiom is the symbol from which the parsing starts
 
 Reading the input and returning values
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -263,6 +282,36 @@ Token and rule definitions with functions::
     # will return red(42, [(lambda x:mul(x, 43)), (lambda x:mul(x, 44))])
     # i.e. 42*43*44
 
+And with the SP language::
+
+    number = r'[0-9]+' : `int` ;
+
+    addop = r'[+-]' ;
+    mulop = r'[*/]' ;
+
+    fact = addop fact :: `op1` ;
+    term = fact (mulop fact :: `op2`)* :: `red` ;
+
+    # r'[0-9]+' applyed on "42" will return "42".
+    # r'[0-9]+' : `int` will return int("42")
+
+    # "addop fact" applyied on "+ 42" will return ('+', 42)
+    # "addop fact :: `op1`" will return op1(*('+', 42)), i.e. op1('+', 42)
+    # so "addop fact :: `op1`" returns +42
+
+    # "addop fact :: `op2`" will return op2(*('+', 42)), i.e. op2('+', 42)
+    # so "addop fact :: `op2`" returns lambda x: add(x, 42)
+
+    # "fact (mulop fact :: `op2`)*" returns a number and a list of functions
+    # for instance (42, [(lambda x:mul(x, 43)), (lambda x:mul(x, 44))])
+    # so "fact (mulop fact :: `op2`)* :: `red`" applyied on "42*43*44"
+    # will return red(42, [(lambda x:mul(x, 43)), (lambda x:mul(x, 44))])
+    # i.e. 42*43*44
+
+In the SP language, ``:`` (as ``/``) applies a Python function (more generally a callable object)
+to a value returned by a sequence and ``::`` (as ``*``) applies a Python function to several values
+returned by a sequence.
+
 Here is finally the complete parser.
 
 Expression recognizer and evaluator::
@@ -296,6 +345,36 @@ Expression recognizer and evaluator::
 
         return expr
 
+Or with SP language::
+
+    from sp import *
+
+    def Calc():
+
+        from operator import pos, neg, add, sub, mul, truediv as div
+
+        op1 = lambda f,x: {'+':pos, '-':neg}[f](x)
+        op2 = lambda f,y: lambda x: {'+': add, '-': sub, '*': mul, '/': div}[f](x,y)
+
+        def red(x, fs):
+            for f in fs: x = f(x)
+            return x
+
+        return compile("""
+            number = r'[0-9]+' : `int` ;
+            addop = r'[+-]' ;
+            mulop = r'[*/]' ;
+
+            separator = r'\s+' ;
+
+            !expr = term (addop term :: `op2`)* :: `red` ;
+            term = fact (mulop fact :: `op2`)* :: `red` ;
+            fact = addop fact :: `op1` ;
+            fact = '(' expr ')' ;
+            fact = number ;
+        """)
+
+
 Embeding the parser in a script
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -327,30 +406,7 @@ Complete Python script with expression parser::
 
     def Calc():
 
-        from operator import pos, neg, add, sub, mul, truediv as div
-
-        op1 = lambda f,x: {'+':pos, '-':neg}[f](x)
-        op2 = lambda f,y: lambda x: {'+': add, '-': sub, '*': mul, '/': div}[f](x,y)
-
-        def red(x, fs):
-            for f in fs: x = f(x)
-            return x
-
-        number = R(r'[0-9]+') / int
-        addop = R('[+-]')
-        mulop = R('[*/]')
-
-        with Separator(r'\s+'):
-
-            expr = Rule()
-            fact = Rule()
-            fact |= (addop & fact) * op1
-            fact |= '(' & expr & ')'
-            fact |= number
-            term = (fact & ( (mulop & fact) * op2 )[:]) * red
-            expr |= (term & ( (addop & term) * op2 )[:]) * red
-
-        return expr
+        ...
 
     calc = Calc()
     while True:
@@ -494,6 +550,22 @@ and tokens defined by the ``Separator`` keyword are considered as separators
 (white spaces or comments for example) and are wiped out by the lexer.
 
 The word boundary ``\b`` can be used to avoid recognizing "True" at the beginning of "Truexyz".
+
+If the regular expression defines groups,
+the parser returns a tuple containing these groups::
+
+    couple = R('<(\d+)-(\d+)>')
+
+    couple("<42-43>") == ('42', '43')
+
+If the regular expression defines only one group,
+the parser returns the value of this group::
+
+    first = R('<(\d+)-\d+>')
+
+    first("<42-43>") == '42'
+
+Unwanted groups can be avoided using ``(?:...)``.
 
 Inline tokens
 ~~~~~~~~~~~~~
@@ -684,6 +756,58 @@ Python 2.5 or 2.4 (or older but not tested) without ``with_statement``::
     sep.__enter__()
     coord = number & ',' & number
     sep.__exit__()
+
+SP mini language
+================
+
+Instead of using Python expressions that can sometimes be difficult to read,
+it's possible to write grammars in a cleaner syntax and compile these
+grammar with the ``sp.compile`` function.
+
+Here the equivalence between Python expressions and the SP mini language:
+
++---------------------------------------+---------------------------------------+-----------------------------------+
+| SP Python expressions                 | SP mini language                      | Description                       |
++=======================================+=======================================+===================================+
+| ``R("regular expression")``           | ``r"regular expression"``             | Token defined by a                |
+|                                       |                                       | regular expression.               |
++---------------------------------------+---------------------------------------+-----------------------------------+
+| ``K("plain text")``                   | ``"plain text"``                      | Keyword defined by a non          |
+|                                       |                                       | interpreted string.               |
++---------------------------------------+---------------------------------------+-----------------------------------+
+| ``C(object)``                         | ```object```                          | Parses nothing and                |
+|                                       |                                       | returns ``object``.               |
++---------------------------------------+---------------------------------------+-----------------------------------+
+| ``... / function``                    | ``... : `function```                  | Parses ... and apply the result   |
+|                                       |                                       | to ``function``                   |
+|                                       |                                       | (``function(...)``).              |
++---------------------------------------+---------------------------------------+-----------------------------------+
+| ``... * function``                    | ``... :: `function```                 | Parses ... and apply the result   |
+|                                       |                                       | (multiple values) to ``function`` |
+|                                       |                                       | (``function(*...)``).             |
++---------------------------------------+---------------------------------------+-----------------------------------+
+| ``(...)[:]``                          | ``(...)*``                            | Zero or more matches.             |
++---------------------------------------+---------------------------------------+-----------------------------------+
+| ``(...)[1:]``                         | ``(...)+``                            | One or more matches.              |
++---------------------------------------+---------------------------------------+-----------------------------------+
+| ``(...)[:1]``                         | ``(...)?``                            | Zero or one matche.               |
++---------------------------------------+---------------------------------------+-----------------------------------+
+| ``(...)[::S]``                        | ``[.../S]*``                          | Zero or more matches              |
+|                                       |                                       | separated by ``S``.               |
++---------------------------------------+---------------------------------------+-----------------------------------+
+| ``(...)[1::S]``                       | ``[.../S]+``                          | One or more matches               |
+|                                       |                                       | separated by ``S``.               |
++---------------------------------------+---------------------------------------+-----------------------------------+
+| ``A & B & C``                         | ``A B C``                             | Sequence.                         |
++---------------------------------------+---------------------------------------+-----------------------------------+
+| ``A | B | C``                         | ``A | B | C``                         | Alternative.                      |
++---------------------------------------+---------------------------------------+-----------------------------------+
+| ``(...)``                             | ``(...)``                             | Grouping.                         |
++---------------------------------------+---------------------------------------+-----------------------------------+
+| ``rule_name = ...``                   | ``rule_name = ... ;``                 | Rule definition.                  |
++---------------------------------------+---------------------------------------+-----------------------------------+
+| ``axiom_name = ...``                  | ``!axiom_name = ... ;``               | Axiom definition.                 |
++---------------------------------------+---------------------------------------+-----------------------------------+
 
 Some examples to illustrate SP
 ==============================
