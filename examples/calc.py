@@ -341,7 +341,7 @@ parser = sp.compile(
 
         powop = '**' `Pow` ;
 
-        separator = r'\s+' ;
+        separator: r'\s+' ;
 
         !S = '?'        `Help()`;
 

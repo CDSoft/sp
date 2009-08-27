@@ -57,11 +57,11 @@ Example: another calculator using the SP language
 ...     for f in fs: x = f(x)
 ...     return x
 >>> calc2 = compile(r'''
-...         number = r'\d+' : `int`;
+...         number = number.r'\d+' : `int`;
 ...         addop = '+' `add` | '-' `sub` ;
 ...         mulop = '*' `mul` | '/' `div` | '%' `mod`;
 ...
-...         separator = r'\s+';
+...         separator: r'\s+';
 ...
 ...         !expr = term (addop term :: `op2`)* :: `red`;
 ...         term = fact (mulop fact :: `op2`)* :: `red`;
@@ -95,56 +95,65 @@ along with Simple Parser.  If not, see <http://www.gnu.org/licenses/>.
 import re
 import sys
 
-__all__ = ['compile', 'R', 'K', 'C', 'D', 'Rule', 'Separator']
+__all__ = ['compile', 'R', 'K', 'C', 'At', 'D', 'Rule', 'Separator']
 
-def _memoize_self_s(f):
+def _memoize_self_s_i(f):
     """ creates a memoized parser method
 
-        arguments self (object) and s (string to parse) are memoized.
+        arguments self, s and i are memoized.
     """
     cache = {}
-    def _f(self, s):
+    def _f(self, s, i):
         try:
-            r = cache[self, s]
+            r = cache[self, s, i]
         except KeyError:
-            r = cache[self, s] = f(self, s)
+            r = cache[self, s, i] = f(self, s, i)
         return r
     _f.__doc__ = f.__doc__
     _f.__name__ = f.__name__
     return _f
 
-def _memoize_self_s_e(f):
+def _memoize_self_s_i_e(f):
     """ creates a memoized parser method
 
-        arguments self (object) and s (string to parse) are memoized.
+        arguments self, s and i are memoized.
         The error argument (e) is not indexed.
     """
     cache = {}
-    def _f(self, s, e):
+    def _f(self, s, i, e):
         try:
-            r = cache[self, s]
+            r = cache[self, s, i]
         except KeyError:
-            r = cache[self, s] = f(self, s, e)
+            r = cache[self, s, i] = f(self, s, i, e)
         return r
     _f.__doc__ = f.__doc__
     _f.__name__ = f.__name__
     return _f
+
+class _pos:
+    """ computes the position in a string
+    """
+    def __init__(self, s, i):
+        self.index = i
+        self.line = s.count('\n', 0, i) + 1
+        self.column = i - s.rfind('\n', 0, i)
+    def __str__(self): return "[%d:%d]"%(self.line, self.column)
 
 class _err:
     """ stores the maximal position of the detected errors
     """
 
-    def __init__(self, s, *ts):
-        self.s = s
+    def __init__(self, i, *ts):
+        self.i = i
         self.ts = tuple(ts)
 
     def max(self, other):
-        if len(self.s) < len(other.s):
+        if self.i > other.i:
             return self
-        elif len(self.s) > len(other.s):
+        elif self.i < other.i:
             return other
         else:
-            return _err(self.s, *(self.ts + tuple(t for t in other.ts if t not in self.ts)))
+            return _err(self.i, *(self.ts + tuple(t for t in other.ts if t not in self.ts)))
 
     def msg(self, s):
         """ returns a message with the location of the error
@@ -163,10 +172,8 @@ class _err:
             ....
         SyntaxError: [1:7] expected: \d+ \w+
         """
-        if self.s: s = s[:-len(self.s)] # else end of text => nothing to remove
-        line = s.count('\n') + 1
-        col = len(s[s.rfind('\n')+1:]) + 1
-        msg = "[%d:%d] expected:"%(line, col)
+        p = _pos(s, self.i)
+        msg = "[%d:%d] expected:"%(p.line, p.column)
         for t in self.ts:
             if t.startswith(r'\b'): t = t[2:]
             if t.endswith(r'\b'): t = t[:-2]
@@ -183,15 +190,15 @@ def _p(obj):
 
     A string is translated into a single Keyword parser.
     >>> num = _p(r'\d+')
-    >>> num.parse("42 43", _err(""))[:2]
-    (fail, '42 43')
-    >>> num.parse(r"\d+ 42 43", _err(""))[:2]
-    (nil, ' 42 43')
+    >>> num.parse("42 43", 0, _err(0))[:2]
+    (fail, 0)
+    >>> num.parse(r"\d+ 42 43", 0, _err(0))[:2]
+    (nil, 3)
     >>> kw = _p('foo')
-    >>> kw.parse("foo bar", _err(""))[:2]
-    (nil, ' bar')
-    >>> kw.parse("foobar", _err(""))[:2]
-    (fail, 'foobar')
+    >>> kw.parse("foo bar", 0, _err(0))[:2]
+    (nil, 3)
+    >>> kw.parse("foobar", 0, _err(0))[:2]
+    (fail, 0)
 
     Other types raise an exception:
     >>> _p(None)
@@ -208,9 +215,9 @@ class Parser:
         - trims separator before and after parsing (to allow different
             separators in a single parser)
         - recursively calls the child parsers
-        - returns a tuple (value, "rest to parse", error) in case of success
+        - returns a tuple (value, index, error) in case of success
             if value is nil, it will be later ignored
-        - returns a tuple (fail, "initial value", error) in case of failure
+        - returns a tuple (fail, "initial index", error) in case of failure
         error is the latest error detected.
     """
 
@@ -238,35 +245,35 @@ class Parser:
             ...
         SyntaxError: [4:1] expected:
         """
-        s1 = self.skipsep(s)
-        x, s1, e = self.parse(s1, _err(s))
-        s1 = self.skipsep(s1)
-        if x is fail or s1 != "":
+        i = self.skipsep(s, 0)
+        x, i, e = self.parse(s, i, _err(i))
+        i = self.skipsep(s, i)
+        if x is fail or i < len(s):
             raise e.msg(s)
         return x
 
-    @_memoize_self_s
-    def skipsep(self, s):
+    @_memoize_self_s_i
+    def skipsep(self, s, i):
         """ removes separators from a string
 
         >>> with Separator(r'\s'):
         ...     p = Parser()
-        >>> p.skipsep("   spam   ")
-        'spam   '
+        >>> p.skipsep("   spam   ", 0)
+        3
         """
-        if self.separator is None: return s
+        if self.separator is None: return i
         while True:
-            sep, s, e = self.separator.parse(s, _err(s))
-            if sep is fail: return s
+            sep, i, e = self.separator.parse(s, i, _err(i))
+            if sep is fail: return i
 
     def __and__(self, other):
         """ returns a sequence parser
 
         >>> with Separator(" "): ab = R("a") & "b"
-        >>> ab.parse("a b c", _err(""))[:2]
-        ('a', 'c')
-        >>> ab.parse("b a c", _err(""))[:2]
-        (fail, 'b a c')
+        >>> ab.parse("a b c", 0, _err(0))[:2]
+        ('a', 4)
+        >>> ab.parse("b a c", 0, _err(0))[:2]
+        (fail, 0)
         """
         return And(self, other)
 
@@ -274,10 +281,10 @@ class Parser:
         """ returns a sequence parser
 
         >>> with Separator(" "): ab = "a" & R("b")
-        >>> ab.parse("a b c", _err(""))[:2]
-        ('b', 'c')
-        >>> ab.parse("b a c", _err(""))[:2]
-        (fail, 'b a c')
+        >>> ab.parse("a b c", 0, _err(0))[:2]
+        ('b', 4)
+        >>> ab.parse("b a c", 0, _err(0))[:2]
+        (fail, 0)
         """
         return And(other, self)
 
@@ -285,12 +292,12 @@ class Parser:
         """ returns an alternative parser
 
         >>> with Separator(" "): ab = R("a") | "b"
-        >>> ab.parse("a b c", _err(""))[:2]
-        ('a', 'b c')
-        >>> ab.parse("b a c", _err(""))[:2]
-        (nil, 'a c')
-        >>> ab.parse("c a b", _err(""))[:2]
-        (fail, 'c a b')
+        >>> ab.parse("a b c", 0, _err(0))[:2]
+        ('a', 2)
+        >>> ab.parse("b a c", 0, _err(0))[:2]
+        (nil, 2)
+        >>> ab.parse("c a b", 0, _err(0))[:2]
+        (fail, 0)
         """
         return Or(self, other)
 
@@ -298,12 +305,12 @@ class Parser:
         """ returns an alternative parser
 
         >>> with Separator(" "): ab = "a" | R("b")
-        >>> ab.parse("a b c", _err(""))[:2]
-        (nil, 'b c')
-        >>> ab.parse("b a c", _err(""))[:2]
-        ('b', 'a c')
-        >>> ab.parse("c a b", _err(""))[:2]
-        (fail, 'c a b')
+        >>> ab.parse("a b c", 0, _err(0))[:2]
+        (nil, 2)
+        >>> ab.parse("b a c", 0, _err(0))[:2]
+        ('b', 2)
+        >>> ab.parse("c a b", 0, _err(0))[:2]
+        (fail, 0)
         """
         return Or(other, self)
 
@@ -317,12 +324,12 @@ class Parser:
 
         >>> with Separator('\s'):
         ...     item = R(r'\d+') / int
-        >>> item[:].parse("1 2 3 4", _err(""))[:2]
-        ([1, 2, 3, 4], '')
-        >>> item[:2].parse("1 2 3 4", _err(""))[:2]
-        ([1, 2], '3 4')
-        >>> item[::","].parse("1, 2, 3, 4", _err(""))[:2]
-        ([1, 2, 3, 4], '')
+        >>> item[:].parse("1 2 3 4", 0, _err(0))[:2]
+        ([1, 2, 3, 4], 7)
+        >>> item[:2].parse("1 2 3 4", 0, _err(0))[:2]
+        ([1, 2], 4)
+        >>> item[::","].parse("1, 2, 3, 4", 0, _err(0))[:2]
+        ([1, 2, 3, 4], 10)
         """
         return Rep(self, slice.start, slice.stop, slice.step)
 
@@ -334,8 +341,8 @@ class Parser:
         >>> sum = lambda xy: xy[0]+xy[1]
         >>> num = R(r'\d+') / int               # parses an integer
         >>> add = (num & '+' & num) / sum       # returns the sum of two integers
-        >>> add.parse("1+2+4", _err(""))[:2]
-        (3, '+4')
+        >>> add.parse("1+2+4", 0, _err(0))[:2]
+        (3, 3)
         """
         return Apply(self, func)
 
@@ -351,8 +358,8 @@ class Parser:
         >>> sum = lambda x,y: x+y
         >>> num = R(r'\d+') / int               # parses an integer
         >>> add = (num & '+' & num) * sum       # returns the sum of two integers
-        >>> add.parse("1+2+4", _err(""))[:2]
-        (3, '+4')
+        >>> add.parse("1+2+4", 0, _err(0))[:2]
+        (3, 3)
         """
         return ApplyStar(self, func)
 
@@ -367,12 +374,12 @@ class Separator:
 
     >>> num = R(r'\d+')
     >>> nums = num[:]
-    >>> nums.parse(" 42 43 ", _err(""))[:2] # matches nothing at the very beginning of the input
-    ([], ' 42 43 ')
+    >>> nums.parse(" 42 43 ", 0, _err(0))[:2] # matches nothing at the very beginning of the input
+    ([], 0)
     >>> with Separator(r'\s'):
     ...     nums = num[:]
-    >>> nums.parse(" 42 43 ", _err(""))[:2] # can match numbers after discarding spaces
-    (['42', '43'], '')
+    >>> nums.parse(" 42 43 ", 0, _err(0))[:2] # can match numbers after discarding spaces
+    (['42', '43'], 7)
     """
 
     def __init__(self, parser=None):
@@ -421,17 +428,17 @@ class R(Parser):
         self.pattern = name or pattern
         self.re = re.compile(pattern, flags)
 
-    def parse(self, s, e):
-        s1 = self.skipsep(s)
-        token = self.re.match(s1)
-        if not token: return fail, s, e.max(_err(s1, self.pattern))
+    def parse(self, s, i, e):
+        i1 = self.skipsep(s, i)
+        token = self.re.match(s, i1)
+        if not token: return fail, i, e.max(_err(i1, self.pattern))
         matched = token.group(0)
         if token.lastindex:
             value = token.groups()
             if len(value) == 1: value = value[0]
         else:
             value = matched
-        rest = self.skipsep(s1[len(matched):])
+        rest = self.skipsep(s, i1 + len(matched))
         return value, rest, e.max(_err(rest))
 
 class K(R):
@@ -442,24 +449,24 @@ class K(R):
     If the pattern is a keyword (\w+)
     word boundaries are expected around the token.
     >>> t = K('ham') & C('ok')
-    >>> with Separator(r'\s'): t[:].parse("ham ham hammm", _err(""))[:2]
-    (['ok', 'ok'], 'hammm')
+    >>> with Separator(r'\s'): t[:].parse("ham ham hammm", 0, _err(0))[:2]
+    (['ok', 'ok'], 8)
 
     Otherwise the pattern is escaped.
     >>> t = K('++') & C('pp')
-    >>> with Separator(r'\s'): t[:].parse("++ ++ +++", _err(""))[:2]
-    (['pp', 'pp', 'pp'], '+')
+    >>> with Separator(r'\s'): t[:].parse("++ ++ +++", 0, _err(0))[:2]
+    (['pp', 'pp', 'pp'], 8)
     """
 
-    def __init__(self, pattern, flags=0):
+    def __init__(self, pattern, flags=0, name=None):
         Parser.__init__(self)
-        self.pattern = pattern
+        self.pattern = name or pattern
         if pattern.isalnum(): pattern = r"\b%s\b"%pattern
         else: pattern = re.escape(pattern)
         self.re = re.compile(pattern, flags)
 
-    def parse(self, s, e):
-        obj, rest, e = R.parse(self, s, e)
+    def parse(self, s, i, e):
+        obj, rest, e = R.parse(self, s, i, e)
         if obj is fail: return fail, rest, e
         else: return nil, rest, e
 
@@ -469,17 +476,40 @@ class C(Parser):
     C parses nothing, simply returns a constant.
 
     >>> c = C('foo')
-    >>> c.parse("spam", _err(""))[:2]
-    ('foo', 'spam')
+    >>> c.parse("spam", 0, _err(0))[:2]
+    ('foo', 0)
     """
 
     def __init__(self, val):
         Parser.__init__(self)
         self.val = val
 
-    def parse(self, s, e):
-        s = self.skipsep(s)
-        return self.val, s, e.max(_err(s))
+    def parse(self, s, i, e):
+        i = self.skipsep(s, i)
+        return self.val, i, e.max(_err(i))
+
+class At(Parser):
+    r""" returns the current position
+
+    >>> with Separator('\s'): p = K('a')[:] & At() & 'b'
+    >>> p = p * (lambda a, p: (p.index, p.line, p.column))
+    >>> p('b')
+    (0, 1, 1)
+    >>> p('\nb')
+    (1, 2, 1)
+    >>> p('a b')
+    (2, 1, 3)
+    >>> p('a\nb')
+    (2, 2, 1)
+    >>> p('a a b')
+    (4, 1, 5)
+    >>> p('a\na\nb')
+    (4, 3, 1)
+    """
+
+    def parse(self, s, i, e):
+        i = self.skipsep(s, i)
+        return _pos(s, i), i, e.max(_err(i))
 
 class D(Parser):
     """ parses something and replaces the value by 'nil'
@@ -501,11 +531,11 @@ class D(Parser):
         Parser.__init__(self)
         self.parser = _p(parser)
 
-    def parse(self, s, e):
-        rest = self.skipsep(s)
-        x, rest, e = self.parser.parse(rest, e)
-        if x is fail: return fail, s, e.max(_err(rest))
-        rest = self.skipsep(rest)
+    def parse(self, s, i, e):
+        rest = self.skipsep(s, i)
+        x, rest, e = self.parser.parse(s, rest, e)
+        if x is fail: return fail, i, e.max(_err(rest))
+        rest = self.skipsep(s, rest)
         return nil, rest, e.max(_err(rest))
 
 class And(Parser):
@@ -545,15 +575,15 @@ class And(Parser):
             if isinstance(parser, And): self.items.extend(parser.items)
             else: self.items.append(_p(parser))
 
-    @_memoize_self_s_e
-    def parse(self, s, e):
+    @_memoize_self_s_i_e
+    def parse(self, s, i, e):
         tokens = []
-        rest = self.skipsep(s)
+        rest = self.skipsep(s, i)
         for item in self.items:
-            token, rest, e = item.parse(rest, e)
-            if token is fail: return fail, s, e.max(_err(rest))
+            token, rest, e = item.parse(s, rest, e)
+            if token is fail: return fail, i, e.max(_err(rest))
             if token is not nil: tokens.append(token)
-            rest = self.skipsep(rest)
+            rest = self.skipsep(s, rest)
         if len(tokens) == 1: return tokens[0], rest, e.max(_err(rest))
         return tuple(tokens), rest, e.max(_err(rest))
 
@@ -606,27 +636,27 @@ class Or(Parser):
             if isinstance(parser, Or): self.items.extend(parser.items)
             else: self.items.append(_p(parser))
 
-    @_memoize_self_s_e
-    def parse(self, s, e):
-        s1 = self.skipsep(s)
-        e = e.max(_err(s1))
+    @_memoize_self_s_i_e
+    def parse(self, s, i, e):
+        i1 = self.skipsep(s, i)
+        e = e.max(_err(i1))
         matches = []
         for item in self.items:
-            token, rest, e = item.parse(s1, e)
+            token, rest, e = item.parse(s, i1, e)
             if token is not fail:
-                rest = self.skipsep(rest)
+                rest = self.skipsep(s, rest)
                 e = e.max(_err(rest))
                 matches.append((token, rest))
         if matches:
-            # Returns the match that leaves the shortest rest
-            return min(matches, key=(lambda t: len(t[1]))) + (e,)
+            # Returns the longest match
+            return max(matches, key=(lambda t: t[1])) + (e,)
         else:
-            return fail, s, e
+            return fail, i, e
 
 # Python 2.4 fallback
 if sys.version_info[:2] < (2,5):
-    def min(xs, key=(lambda x:x), min=min):
-        return min((key(x), x) for x in xs)[1]
+    def max(xs, key=(lambda x:x), max=max):
+        return max((key(x), x) for x in xs)[1]
 
 class Rule(Parser):
     """ returns an empty parser that can be later enriched.
@@ -652,11 +682,11 @@ class Rule(Parser):
         else: self.parser = Or(self.parser, parser)
         return self
 
-    def parse(self, s, e):
-        s1 = self.skipsep(s)
-        x, rest, e = self.parser.parse(s1, e)
-        if x is fail: return fail, s, e.max(_err(rest))
-        rest = self.skipsep(rest)
+    def parse(self, s, i, e):
+        i1 = self.skipsep(s, i)
+        x, rest, e = self.parser.parse(s, i1, e)
+        if x is fail: return fail, i, e.max(_err(rest))
+        rest = self.skipsep(s, rest)
         return x, rest, e.max(_err(rest))
 
 class Rep(Parser):
@@ -720,43 +750,43 @@ class Rep(Parser):
             self.parse = self._parse_with_sep
             self.sep = _p(sep)
 
-    def _parse_no_sep(self, s, e):
+    def _parse_no_sep(self, s, i, e):
         items = []
-        i = 0
-        rest = self.skipsep(s)
-        while i != self.max:
-            i += 1
-            item, rest, e = self.parser.parse(rest, e)
+        n = 0
+        rest = self.skipsep(s, i)
+        while n != self.max:
+            n += 1
+            item, rest, e = self.parser.parse(s, rest, e)
             if item is fail:
-                if i <= self.min: return fail, s, e.max(_err(rest))
+                if n <= self.min: return fail, i, e.max(_err(rest))
                 return items, rest, e.max(_err(rest))
             items.append(item)
-            rest = self.skipsep(rest)
+            rest = self.skipsep(s, rest)
         return items, rest, e.max(_err(rest))
 
-    def _parse_with_sep(self, s, e):
-        rest = self.skipsep(s)
-        item, rest, e = self.parser.parse(rest, e)
+    def _parse_with_sep(self, s, i, e):
+        rest = self.skipsep(s, i)
+        item, rest, e = self.parser.parse(s, rest, e)
         if item is fail:
-            if 1 <= self.min: return fail, s, e.max(_err(rest))
-            rest = self.skipsep(rest)
+            if 1 <= self.min: return fail, i, e.max(_err(rest))
+            rest = self.skipsep(s, rest)
             return [], rest, e.max(_err(rest))
         items = [item]
-        i = 1
-        rest = self.skipsep(rest)
-        while i != self.max:
-            i += 1
-            sep, rest, e = self.sep.parse(rest, e)
+        n = 1
+        rest = self.skipsep(s, rest)
+        while n != self.max:
+            n += 1
+            sep, rest, e = self.sep.parse(s, rest, e)
             if sep is fail:
-                if i <= self.min: return fail, s, e.max(_err(rest))
+                if n <= self.min: return fail, i, e.max(_err(rest))
                 return items, rest, e.max(_err(rest))
-            rest = self.skipsep(rest)
-            item, rest, e = self.parser.parse(rest, e)
+            rest = self.skipsep(s, rest)
+            item, rest, e = self.parser.parse(s, rest, e)
             if item is fail:
-                if i <= self.min: return fail, s, e.max(_err(rest))
+                if n <= self.min: return fail, i, e.max(_err(rest))
                 return items, rest, e.max(_err(rest))
             items.append(item)
-            rest = self.skipsep(rest)
+            rest = self.skipsep(s, rest)
         return items, rest, e.max(_err(rest))
 
 class Apply(Parser):
@@ -779,11 +809,11 @@ class Apply(Parser):
         self.parser = _p(parser)
         self.func = func
 
-    def parse(self, s, e):
-        s1 = self.skipsep(s)
-        token, rest, e = self.parser.parse(s1, e)
-        if token is fail: return fail, s, e.max(_err(rest))
-        rest = self.skipsep(rest)
+    def parse(self, s, i, e):
+        i1 = self.skipsep(s, i)
+        token, rest, e = self.parser.parse(s, i1, e)
+        if token is fail: return fail, i, e.max(_err(rest))
+        rest = self.skipsep(s, rest)
         return self.func(token), rest, e.max(_err(rest))
 
 class ApplyStar(Apply):
@@ -801,11 +831,11 @@ class ApplyStar(Apply):
     6
     """
 
-    def parse(self, s, e):
-        s1 = self.skipsep(s)
-        token, rest, e = self.parser.parse(s1, e)
-        if token is fail: return fail, s, e.max(_err(rest))
-        rest = self.skipsep(rest)
+    def parse(self, s, i, e):
+        i1 = self.skipsep(s, i)
+        token, rest, e = self.parser.parse(s, i1, e)
+        if token is fail: return fail, i, e.max(_err(rest))
+        rest = self.skipsep(s, rest)
         return self.func(*token), rest, e.max(_err(rest))
 
 def compile(source):
@@ -825,6 +855,19 @@ def compile(source):
         ...
     SyntaxError: [1:1] expected: \w+
 
+    With specific lexer options:
+    >>> test = compile('''
+    ...     lexer: VERBOSE, IGNORECASE;
+    ...     string = r" ' ( [^']* ) ' ";
+    ...     lexer: IGNORECASE;
+    ...     begin = "begin";
+    ...     !S = string | begin;
+    ... ''')
+    >>> test("'this is a string'")
+    'this is a string'
+    >>> test("BeGiN")
+    nil
+
     Keyword definition
     ------------------
 
@@ -839,11 +882,31 @@ def compile(source):
         ...
     SyntaxError: [1:1] expected: begin
 
+    Position computation
+    --------------------
+
+    >>> test = compile('''
+    ...     separator: r'\s+';
+    ...     !S = 'a'* @ 'b' :: `lambda a, p: (p.index, p.line, p.column)`;
+    ... ''')
+    >>> test('b')
+    (0, 1, 1)
+    >>> test('\nb')
+    (1, 2, 1)
+    >>> test('a b')
+    (2, 1, 3)
+    >>> test('a\nb')
+    (2, 2, 1)
+    >>> test('a a b')
+    (4, 1, 5)
+    >>> test('a\na\nb')
+    (4, 3, 1)
+
     Repetitions
     -----------
 
     >>> test = compile('''
-    ...     separator = ' ' ;
+    ...     separator: ' ' ;
     ...     item = r'\w+' ;
     ...     !S = item* ;
     ... ''')
@@ -857,7 +920,7 @@ def compile(source):
     ['abc', 'def', 'ghi']
 
     >>> test = compile('''
-    ...     separator = ' ' ;
+    ...     separator: ' ' ;
     ...     item = r'\w+' ;
     ...     !S = item+ ;
     ... ''')
@@ -873,7 +936,7 @@ def compile(source):
     ['abc', 'def', 'ghi']
 
     >>> test = compile('''
-    ...     separator = ' ' ;
+    ...     separator: ' ' ;
     ...     item = r'\w+' ;
     ...     !S = item? ;
     ... ''')
@@ -887,7 +950,7 @@ def compile(source):
     SyntaxError: [1:6] expected:
 
     >>> test = compile('''
-    ...     separator = ' ';
+    ...     separator: ' ';
     ...     item = r'\w+';
     ...     !S = [item / ',']*;
     ... ''')
@@ -901,7 +964,7 @@ def compile(source):
     ['a', 'b', 'c']
 
     >>> test = compile('''
-    ...     separator = ' ';
+    ...     separator: ' ';
     ...     item = r'\w+';
     ...     !S = [item / ',']+;
     ... ''')
@@ -920,7 +983,7 @@ def compile(source):
     --------------------------
 
     >>> test = compile('''
-    ...     separator = ' ' ;
+    ...     separator: ' ' ;
     ...     A = 'A' 'A' `1` | 'A' 'B' `2` ;
     ...     A = 'A' 'C' `3` ;
     ...     !S = A ;
@@ -940,7 +1003,7 @@ def compile(source):
     ----------------------------------
 
     >>> test = compile('''
-    ...     separator = ' ';
+    ...     separator: ' ';
     ...     number = r'\d+' : `int` ;
     ...     couple = '(' number ',' number ')' `"a string"`
     ...              :: `lambda x,y,s: "%s: <%d,%d>"%(s,x,y)` ;
@@ -953,7 +1016,7 @@ def compile(source):
     ---------------
 
     >>> test = compile('''
-    ...     separator = ' ';
+    ...     separator: ' ';
     ...     !axiom = rule1 | rule2 ;
     ...     rule1 = 'A' `"rule 1 - branch 1"` ;
     ...     rule1 = 'B' `"rule 1 - branch 2"` ;
@@ -980,12 +1043,15 @@ def compile(source):
         def gen(self, symbs): return symbs[self.name]
 
     class _Re:
-        def __init__(self, expr): self.expr = expr[2:-1]
-        def gen(self, symbs): return R(self.expr)
+        def __init__(self, name, expr): self.name, self.expr = name, expr[1:-1]
+        def gen(self, symbs): return R(self.expr, flags=symbs.lexer, name=self.name)
 
     class _Kw:
-        def __init__(self, val): self.val = val[1:-1]
-        def gen(self, symbs): return K(self.val)
+        def __init__(self, name, val): self.name, self.val = name, val[1:-1]
+        def gen(self, symbs): return K(self.val, flags=symbs.lexer, name=self.name)
+
+    class _At:
+        def gen(self, symbs): return At()
 
     class _Rep0N:
         def __init__(self, expr): self.expr = expr
@@ -1038,21 +1104,34 @@ def compile(source):
         isaxiom = False
         def __init__(self, ident, expr): self.ident, self.expr = ident, expr
         def gen(self, symbs):
-            expr = self.expr.gen(symbs)
-            if self.ident.name == 'separator':
-                Separator(expr).__enter__()
-            else:
-                rule = symbs[self.ident.name]
-                rule |= expr
+            rule = symbs[self.ident.name]
+            rule |= self.expr.gen(symbs)
 
     class _Axiom(_Rule):
         isaxiom = True
+
+    class _Separator(_Rule):
+        def __init__(self, expr): self.expr = expr
+        def gen(self, symbs):
+            expr = self.expr.gen(symbs)
+            Separator(expr).__enter__()
+
+    class _Lexer(_Rule):
+        def __init__(self, opts): self.opts = opts
+        def gen(self, symbs):
+            symbs.lexer = 0
+            for opt in self.opts:
+                val = getattr(re, opt.name)
+                if not isinstance(val, int):
+                    raise TypeError("re.%s is not an integer"%opt)
+                symbs.lexer |= val
 
     class _Symbs:
         def __init__(self, frame):
             self.symbs = {}
             self.globals = frame.f_globals
             self.locals = frame.f_locals
+            self.lexer = 0
         def __iter__(self): return iter(self.symbs)
         def __getitem__(self, name):
             try:
@@ -1086,9 +1165,9 @@ def compile(source):
         " [^"\\\n]* (?: \\. [^"\\\n]* )* "
     |   ' [^'\\\n]* (?: \\. [^'\\\n]* )* '
     """
-    regexpr = R(r'r(?:%s)'%_string, re.X, name='regexpr') / _Re
-    string = R(r'(?:%s)'%_string, re.VERBOSE, name='string') / _Kw
-    func = R(r'''`[^`]+`''', re.IGNORECASE, name='func') / _Func
+    regexpr = R(r'(?:(\w+)\.)?r(%s)'%_string, re.VERBOSE, name='regexpr') * _Re
+    string = R(r'(?:(\w+)\.)?(%s)'%_string, re.VERBOSE, name='string') * _Kw
+    func = R(r'''`[^`]+`''', name='func') / _Func
 
     separator = Separator(r"\s+|#.*")
     separator.__enter__()
@@ -1097,7 +1176,8 @@ def compile(source):
         expr_and = Rule()
         expr_rep = Rule()
         expr_func = Rule()
-        item = ident | regexpr | string | func | '(' & expr_or & ')'
+        option = Rule()
+        item = ident | regexpr | string | func | '(' & expr_or & ')' | '@' & C(_At())
         expr_rep |= (item & '*') / _Rep0N
         expr_rep |= (item & '+') / _Rep1N
         expr_rep |= (item & '?') / _Rep01
@@ -1111,7 +1191,10 @@ def compile(source):
         expr_or |= (expr_func & '|' & expr_or) * _Or | expr_func
         rule = (ident & '=' & expr_or & ';') * _Rule
         axiom = '!' & (ident & '=' & expr_or & ';') * _Axiom
-        grammar = (axiom|rule)[:] / _Grammar
+        option |= (K('separator') & ':' & expr_or & ';') / _Separator
+        lexsep = K('') | ',' | '|' | '+'
+        option |= (K('lexer') & ':' & ident[::lexsep] & ';') / _Lexer
+        grammar = (axiom|rule|option)[:] / _Grammar
     finally:
         separator.__exit__()
 

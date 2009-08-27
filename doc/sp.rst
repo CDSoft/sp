@@ -105,7 +105,8 @@ It may run on *any platform* supported by Python.
 The only requirement of SP is *Python 2.6* or newer [#]_.
 Python can be downloaded at http://www.python.org.
 
-.. [#] Older *Python* versions may work (tested with Python 2.4 and 2.5). See the `Older Python versions`_ chapter.
+.. [#] Older *Python* versions may work (tested with Python 2.4 and 2.5).
+       See the `Older Python versions`_ chapter.
 
 Tutorial
 --------
@@ -567,6 +568,33 @@ the parser returns the value of this group::
 
 Unwanted groups can be avoided using ``(?:...)``.
 
+A name can be given to a token to make error messages easier to read::
+
+    couple = R('<(\d+)-(\d+)>', name="couple")
+
+Regular expressions can be compiled using specific compilation options.
+Options are defined in the ``re`` module::
+
+    token = R('...', flags=re.IGNORECASE|re.DOTALL)
+
+``re`` defines the following flags:
+
+I (IGNORECASE)
+    Perform case-insensitive matching.
+L (LOCALE)
+    Make ``\w``, ``\W``, ``\b``, ``\B``, dependent on the current locale.
+M (MULTILINE)
+    ``"^"`` matches the beginning of lines (after a newline)
+    as well as the string.
+    ``"$"`` matches the end of lines (before a newline) as well
+    as the end of the string.
+S (DOTALL)
+    ``"."`` matches any character at all, including the newline.
+X (VERBOSE)
+    Ignore whitespace and comments for nicer looking RE's.
+U (UNICODE)
+    Make ``\w``, ``\W``, ``\b``, ``\B``, dependent on the Unicode locale
+
 Inline tokens
 ~~~~~~~~~~~~~
 
@@ -717,6 +745,18 @@ Constant example::
              |  '3' & C("three")
              )
 
+Position in the input string
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To know the current position in the input string,
+the ``At()`` parser returns an object containing
+the current index (attribute ``index``) and the
+corresponding line and column numbers (attributes
+``line`` and ``column``)::
+
+    position = At() / `lambda p: (p.line, p.column)`
+    rule = ... & pos & ...
+
 Older Python versions
 =====================
 
@@ -769,44 +809,50 @@ Here the equivalence between Python expressions and the SP mini language:
 +---------------------------------------+---------------------------------------+-----------------------------------+
 | SP Python expressions                 | SP mini language                      | Description                       |
 +=======================================+=======================================+===================================+
-| ``R("regular expression")``           | ``r"regular expression"``             | Token defined by a                |
-|                                       |                                       | regular expression.               |
+| | ``R("regular expression")``         | | ``r"regular expression"``           | Token defined by a                |
+| | ``R("regexpr", name="name")``       | | ``name.r"regexpr"``                 | regular expression                |
 +---------------------------------------+---------------------------------------+-----------------------------------+
-| ``K("plain text")``                   | ``"plain text"``                      | Keyword defined by a non          |
-|                                       |                                       | interpreted string.               |
+| | ``K("plain text")``                 | | ``"plain text"``                    | Keyword defined by a non          |
+| | ``K("plain text", name="name")``    | | ``name."plain text"``               | interpreted string                |
++---------------------------------------+---------------------------------------+-----------------------------------+
+| ``t = R('...', flags=re.I|re.S)``     | ``lexer: I S; t = r'...'``            | Regular expression options        |
++---------------------------------------+---------------------------------------+-----------------------------------+
+| ``with Separator(...):``              | ``separator: ... ;``                  | Separator definition              |
 +---------------------------------------+---------------------------------------+-----------------------------------+
 | ``C(object)``                         | ```object```                          | Parses nothing and                |
-|                                       |                                       | returns ``object``.               |
+|                                       |                                       | returns ``object``                |
 +---------------------------------------+---------------------------------------+-----------------------------------+
 | ``... / function``                    | ``... : `function```                  | Parses ... and apply the result   |
 |                                       |                                       | to ``function``                   |
-|                                       |                                       | (``function(...)``).              |
+|                                       |                                       | (``function(...)``)               |
 +---------------------------------------+---------------------------------------+-----------------------------------+
 | ``... * function``                    | ``... :: `function```                 | Parses ... and apply the result   |
 |                                       |                                       | (multiple values) to ``function`` |
-|                                       |                                       | (``function(*...)``).             |
+|                                       |                                       | (``function(*...)``)              |
 +---------------------------------------+---------------------------------------+-----------------------------------+
-| ``(...)[:]``                          | ``(...)*``                            | Zero or more matches.             |
+| ``... & At() & ...``                  | ``... @ ...``                         | Position in the input string      |
 +---------------------------------------+---------------------------------------+-----------------------------------+
-| ``(...)[1:]``                         | ``(...)+``                            | One or more matches.              |
+| ``(...)[:]``                          | ``(...)*``                            | Zero or more matches              |
 +---------------------------------------+---------------------------------------+-----------------------------------+
-| ``(...)[:1]``                         | ``(...)?``                            | Zero or one matche.               |
+| ``(...)[1:]``                         | ``(...)+``                            | One or more matches               |
++---------------------------------------+---------------------------------------+-----------------------------------+
+| ``(...)[:1]``                         | ``(...)?``                            | Zero or one matche                |
 +---------------------------------------+---------------------------------------+-----------------------------------+
 | ``(...)[::S]``                        | ``[.../S]*``                          | Zero or more matches              |
-|                                       |                                       | separated by ``S``.               |
+|                                       |                                       | separated by ``S``                |
 +---------------------------------------+---------------------------------------+-----------------------------------+
 | ``(...)[1::S]``                       | ``[.../S]+``                          | One or more matches               |
-|                                       |                                       | separated by ``S``.               |
+|                                       |                                       | separated by ``S``                |
 +---------------------------------------+---------------------------------------+-----------------------------------+
-| ``A & B & C``                         | ``A B C``                             | Sequence.                         |
+| ``A & B & C``                         | ``A B C``                             | Sequence                          |
 +---------------------------------------+---------------------------------------+-----------------------------------+
-| ``A | B | C``                         | ``A | B | C``                         | Alternative.                      |
+| ``A | B | C``                         | ``A | B | C``                         | Alternative                       |
 +---------------------------------------+---------------------------------------+-----------------------------------+
-| ``(...)``                             | ``(...)``                             | Grouping.                         |
+| ``(...)``                             | ``(...)``                             | Grouping                          |
 +---------------------------------------+---------------------------------------+-----------------------------------+
-| ``rule_name = ...``                   | ``rule_name = ... ;``                 | Rule definition.                  |
+| ``rule_name = ...``                   | ``rule_name = ... ;``                 | Rule definition                   |
 +---------------------------------------+---------------------------------------+-----------------------------------+
-| ``axiom_name = ...``                  | ``!axiom_name = ... ;``               | Axiom definition.                 |
+| ``axiom_name = ...``                  | ``!axiom_name = ... ;``               | Axiom definition                  |
 +---------------------------------------+---------------------------------------+-----------------------------------+
 
 Some examples to illustrate SP
@@ -817,6 +863,8 @@ Complete interactive calculator
 
 This chapter presents an extention of the calculator described in the `tutorial`_.
 This calculator has more functions and a memory.
+
+The grammar has been rewritten using the SP language.
 
 New functions
 ~~~~~~~~~~~~~

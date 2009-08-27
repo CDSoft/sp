@@ -6,7 +6,7 @@
 <meta name="generator" content="Docutils 0.5: http://docutils.sourceforge.net/" />
 <title>Simple Parser</title>
 <meta name="author" content="Christophe Delord" />
-<meta name="date" content="Wednesday 26 August 2009" />
+<meta name="date" content="Thursday 27 August 2009" />
 <style type="text/css">
 
 /*
@@ -279,7 +279,7 @@ div.footer, div.header {
 <tr class="field"><th class="docinfo-name">Web site:</th><td class="field-body"><a class="reference external" href="http://christophe.delord.free.fr/sp">http://christophe.delord.free.fr/sp</a></td>
 </tr>
 <tr><th class="docinfo-name">Date:</th>
-<td>Wednesday 26 August 2009</td></tr>
+<td>Thursday 27 August 2009</td></tr>
 <tr class="field"><th class="docinfo-name">License:</th><td class="field-body">This software is released under the LGPL license.</td>
 </tr>
 </tbody>
@@ -393,7 +393,8 @@ Python can be downloaded at <a class="reference external" href="http://www.pytho
 <table class="docutils footnote" frame="void" id="id4" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td>Older <em>Python</em> versions may work (tested with Python 2.4 and 2.5). See the <a class="reference internal" href="#older-python-versions">Older Python versions</a> chapter.</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td>Older <em>Python</em> versions may work (tested with Python 2.4 and 2.5).
+See the <a class="reference internal" href="#older-python-versions">Older Python versions</a> chapter.</td></tr>
 </tbody>
 </table>
 </div>
@@ -884,6 +885,33 @@ first = R('&lt;(\d+)-\d+&gt;')
 first(&quot;&lt;42-43&gt;&quot;) == '42'
 </pre>
 <p>Unwanted groups can be avoided using <tt class="docutils literal"><span class="pre">(?:...)</span></tt>.</p>
+<p>A name can be given to a token to make error messages easier to read:</p>
+<pre class="literal-block">
+couple = R('&lt;(\d+)-(\d+)&gt;', name=&quot;couple&quot;)
+</pre>
+<p>Regular expressions can be compiled using specific compilation options.
+Options are defined in the <tt class="docutils literal"><span class="pre">re</span></tt> module:</p>
+<pre class="literal-block">
+token = R('...', flags=re.IGNORECASE|re.DOTALL)
+</pre>
+<p><tt class="docutils literal"><span class="pre">re</span></tt> defines the following flags:</p>
+<dl class="docutils">
+<dt>I (IGNORECASE)</dt>
+<dd>Perform case-insensitive matching.</dd>
+<dt>L (LOCALE)</dt>
+<dd>Make <tt class="docutils literal"><span class="pre">\w</span></tt>, <tt class="docutils literal"><span class="pre">\W</span></tt>, <tt class="docutils literal"><span class="pre">\b</span></tt>, <tt class="docutils literal"><span class="pre">\B</span></tt>, dependent on the current locale.</dd>
+<dt>M (MULTILINE)</dt>
+<dd><tt class="docutils literal"><span class="pre">&quot;^&quot;</span></tt> matches the beginning of lines (after a newline)
+as well as the string.
+<tt class="docutils literal"><span class="pre">&quot;$&quot;</span></tt> matches the end of lines (before a newline) as well
+as the end of the string.</dd>
+<dt>S (DOTALL)</dt>
+<dd><tt class="docutils literal"><span class="pre">&quot;.&quot;</span></tt> matches any character at all, including the newline.</dd>
+<dt>X (VERBOSE)</dt>
+<dd>Ignore whitespace and comments for nicer looking RE's.</dd>
+<dt>U (UNICODE)</dt>
+<dd>Make <tt class="docutils literal"><span class="pre">\w</span></tt>, <tt class="docutils literal"><span class="pre">\W</span></tt>, <tt class="docutils literal"><span class="pre">\b</span></tt>, <tt class="docutils literal"><span class="pre">\B</span></tt>, dependent on the Unicode locale</dd>
+</dl>
 </div>
 <div class="section" id="inline-tokens">
 <h3>Inline tokens</h3>
@@ -1061,6 +1089,18 @@ number = (  '1' &amp; C(&quot;one&quot;)
          )
 </pre>
 </div>
+<div class="section" id="position-in-the-input-string">
+<h3>Position in the input string</h3>
+<p>To know the current position in the input string,
+the <tt class="docutils literal"><span class="pre">At()</span></tt> parser returns an object containing
+the current index (attribute <tt class="docutils literal"><span class="pre">index</span></tt>) and the
+corresponding line and column numbers (attributes
+<tt class="docutils literal"><span class="pre">line</span></tt> and <tt class="docutils literal"><span class="pre">column</span></tt>):</p>
+<pre class="literal-block">
+position = At() / `lambda p: (p.line, p.column)`
+rule = ... &amp; pos &amp; ...
+</pre>
+</div>
 </div>
 </div>
 <div class="section" id="older-python-versions">
@@ -1120,74 +1160,102 @@ grammar with the <tt class="docutils literal"><span class="pre">sp.compile</span
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td><tt class="docutils literal"><span class="pre">R(&quot;regular</span> <span class="pre">expression&quot;)</span></tt></td>
-<td><tt class="docutils literal"><span class="pre">r&quot;regular</span> <span class="pre">expression&quot;</span></tt></td>
+<tr><td><div class="first last line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">R(&quot;regular</span> <span class="pre">expression&quot;)</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">R(&quot;regexpr&quot;,</span> <span class="pre">name=&quot;name&quot;)</span></tt></div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">r&quot;regular</span> <span class="pre">expression&quot;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">name.r&quot;regexpr&quot;</span></tt></div>
+</div>
+</td>
 <td>Token defined by a
-regular expression.</td>
+regular expression</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">K(&quot;plain</span> <span class="pre">text&quot;)</span></tt></td>
-<td><tt class="docutils literal"><span class="pre">&quot;plain</span> <span class="pre">text&quot;</span></tt></td>
+<tr><td><div class="first last line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">K(&quot;plain</span> <span class="pre">text&quot;)</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">K(&quot;plain</span> <span class="pre">text&quot;,</span> <span class="pre">name=&quot;name&quot;)</span></tt></div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">&quot;plain</span> <span class="pre">text&quot;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">name.&quot;plain</span> <span class="pre">text&quot;</span></tt></div>
+</div>
+</td>
 <td>Keyword defined by a non
-interpreted string.</td>
+interpreted string</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">t</span> <span class="pre">=</span> <span class="pre">R('...',</span> <span class="pre">flags=re.I|re.S)</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">lexer:</span> <span class="pre">I</span> <span class="pre">S;</span> <span class="pre">t</span> <span class="pre">=</span> <span class="pre">r'...'</span></tt></td>
+<td>Regular expression options</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">with</span> <span class="pre">Separator(...):</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">separator:</span> <span class="pre">...</span> <span class="pre">;</span></tt></td>
+<td>Separator definition</td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">C(object)</span></tt></td>
 <td><tt class="docutils literal"><span class="pre">`object`</span></tt></td>
 <td>Parses nothing and
-returns <tt class="docutils literal"><span class="pre">object</span></tt>.</td>
+returns <tt class="docutils literal"><span class="pre">object</span></tt></td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">...</span> <span class="pre">/</span> <span class="pre">function</span></tt></td>
 <td><tt class="docutils literal"><span class="pre">...</span> <span class="pre">:</span> <span class="pre">`function`</span></tt></td>
 <td>Parses ... and apply the result
 to <tt class="docutils literal"><span class="pre">function</span></tt>
-(<tt class="docutils literal"><span class="pre">function(...)</span></tt>).</td>
+(<tt class="docutils literal"><span class="pre">function(...)</span></tt>)</td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">...</span> <span class="pre">*</span> <span class="pre">function</span></tt></td>
 <td><tt class="docutils literal"><span class="pre">...</span> <span class="pre">::</span> <span class="pre">`function`</span></tt></td>
 <td>Parses ... and apply the result
 (multiple values) to <tt class="docutils literal"><span class="pre">function</span></tt>
-(<tt class="docutils literal"><span class="pre">function(*...)</span></tt>).</td>
+(<tt class="docutils literal"><span class="pre">function(*...)</span></tt>)</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">...</span> <span class="pre">&amp;</span> <span class="pre">At()</span> <span class="pre">&amp;</span> <span class="pre">...</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">...</span> <span class="pre">&#64;</span> <span class="pre">...</span></tt></td>
+<td>Position in the input string</td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">(...)[:]</span></tt></td>
 <td><tt class="docutils literal"><span class="pre">(...)*</span></tt></td>
-<td>Zero or more matches.</td>
+<td>Zero or more matches</td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">(...)[1:]</span></tt></td>
 <td><tt class="docutils literal"><span class="pre">(...)+</span></tt></td>
-<td>One or more matches.</td>
+<td>One or more matches</td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">(...)[:1]</span></tt></td>
 <td><tt class="docutils literal"><span class="pre">(...)?</span></tt></td>
-<td>Zero or one matche.</td>
+<td>Zero or one matche</td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">(...)[::S]</span></tt></td>
 <td><tt class="docutils literal"><span class="pre">[.../S]*</span></tt></td>
 <td>Zero or more matches
-separated by <tt class="docutils literal"><span class="pre">S</span></tt>.</td>
+separated by <tt class="docutils literal"><span class="pre">S</span></tt></td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">(...)[1::S]</span></tt></td>
 <td><tt class="docutils literal"><span class="pre">[.../S]+</span></tt></td>
 <td>One or more matches
-separated by <tt class="docutils literal"><span class="pre">S</span></tt>.</td>
+separated by <tt class="docutils literal"><span class="pre">S</span></tt></td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">A</span> <span class="pre">&amp;</span> <span class="pre">B</span> <span class="pre">&amp;</span> <span class="pre">C</span></tt></td>
 <td><tt class="docutils literal"><span class="pre">A</span> <span class="pre">B</span> <span class="pre">C</span></tt></td>
-<td>Sequence.</td>
+<td>Sequence</td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">A</span> <span class="pre">|</span> <span class="pre">B</span> <span class="pre">|</span> <span class="pre">C</span></tt></td>
 <td><tt class="docutils literal"><span class="pre">A</span> <span class="pre">|</span> <span class="pre">B</span> <span class="pre">|</span> <span class="pre">C</span></tt></td>
-<td>Alternative.</td>
+<td>Alternative</td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">(...)</span></tt></td>
 <td><tt class="docutils literal"><span class="pre">(...)</span></tt></td>
-<td>Grouping.</td>
+<td>Grouping</td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">rule_name</span> <span class="pre">=</span> <span class="pre">...</span></tt></td>
 <td><tt class="docutils literal"><span class="pre">rule_name</span> <span class="pre">=</span> <span class="pre">...</span> <span class="pre">;</span></tt></td>
-<td>Rule definition.</td>
+<td>Rule definition</td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">axiom_name</span> <span class="pre">=</span> <span class="pre">...</span></tt></td>
 <td><tt class="docutils literal"><span class="pre">!axiom_name</span> <span class="pre">=</span> <span class="pre">...</span> <span class="pre">;</span></tt></td>
-<td>Axiom definition.</td>
+<td>Axiom definition</td>
 </tr>
 </tbody>
 </table>
@@ -1198,6 +1266,7 @@ separated by <tt class="docutils literal"><span class="pre">S</span></tt>.</td>
 <h2><a class="toc-backref" href="#id25">5.1&nbsp;&nbsp;&nbsp;Complete interactive calculator</a></h2>
 <p>This chapter presents an extention of the calculator described in the <a class="reference internal" href="#tutorial">tutorial</a>.
 This calculator has more functions and a memory.</p>
+<p>The grammar has been rewritten using the SP language.</p>
 <div class="section" id="new-functions">
 <h3>New functions</h3>
 <p>The calculator has memories.
@@ -1552,7 +1621,7 @@ parser = sp.compile(
 
         powop = '**' `Pow` ;
 
-        separator = r'\s+' ;
+        separator: r'\s+' ;
 
         !S = '?'        `Help()`;
 
