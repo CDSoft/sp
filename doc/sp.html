@@ -6,7 +6,7 @@
 <meta name="generator" content="Docutils 0.5: http://docutils.sourceforge.net/" />
 <title>Simple Parser</title>
 <meta name="author" content="Christophe Delord" />
-<meta name="date" content="Thursday 27 August 2009" />
+<meta name="date" content="Saturday 19 September 2009" />
 <style type="text/css">
 
 /*
@@ -279,7 +279,7 @@ div.footer, div.header {
 <tr class="field"><th class="docinfo-name">Web site:</th><td class="field-body"><a class="reference external" href="http://christophe.delord.free.fr/sp">http://christophe.delord.free.fr/sp</a></td>
 </tr>
 <tr><th class="docinfo-name">Date:</th>
-<td>Thursday 27 August 2009</td></tr>
+<td>Saturday 19 September 2009</td></tr>
 <tr class="field"><th class="docinfo-name">License:</th><td class="field-body">This software is released under the LGPL license.</td>
 </tr>
 </tbody>
@@ -822,7 +822,8 @@ For further information about <em>re</em> you can read <a class="reference exter
 <tbody valign="top">
 <tr><td><tt class="docutils literal"><span class="pre">R</span></tt></td>
 <td>defines a regular token.
-The token is defined with a regular expression and returns a string.</td>
+The token is defined with a regular expression and returns a string
+(or a tuple of strings if the regular expression defines groups).</td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">K</span></tt></td>
 <td>defines a token that returns nothing (useful for keywords for instance).
@@ -832,7 +833,7 @@ pattern is not considered as a regular expression).
 The token just recognizes a keyword and returns nothing.</td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">Separator</span></tt></td>
-<td>if a context manager used to define separators for the rules defined
+<td>is a context manager used to define separators for the rules defined
 in the context.
 The token is defined with a regular expression and returns nothing.</td>
 </tr>
@@ -994,11 +995,16 @@ Atom = integer | '(' &amp; Expr &amp; ')'
 <tr><td><tt class="docutils literal"><span class="pre">A[m:n]</span></tt></td>
 <td>recognizes at least m and at most n <tt class="docutils literal"><span class="pre">A</span></tt>.</td>
 </tr>
+<tr><td><tt class="docutils literal"><span class="pre">A[m:n:s]</span></tt></td>
+<td>recognizes at least m and at most n <tt class="docutils literal"><span class="pre">A</span></tt> using <tt class="docutils literal"><span class="pre">s</span></tt> as a separator.</td>
+</tr>
 </tbody>
 </table>
 <p>Repetitions are greedy.
 Repetitions are implemented as Python loops.
 Thus whatever the length of the repetitions, the Python stack will not overflow.</p>
+<p>The separator is useful to parse lists.
+For instance a comma separated parameter list is <tt class="docutils literal"><span class="pre">parameter[::',']</span></tt>.</p>
 </div>
 <div class="section" id="precedence-and-grouping">
 <h3>Precedence and grouping</h3>
@@ -1275,7 +1281,9 @@ For example, if the user types <tt class="docutils literal"><span class="pre">pi
 the memory cell named <tt class="docutils literal"><span class="pre">pi</span></tt> will contain the value of <tt class="docutils literal"><span class="pre">pi</span></tt>
 and <tt class="docutils literal"><span class="pre">2*pi</span></tt> will return <tt class="docutils literal"><span class="pre">6.28</span></tt>.</p>
 <p>The variables are saved in a dictionnary.</p>
-<p>Source code</p>
+</div>
+<div class="section" id="source-code">
+<h3>Source code</h3>
 <p>Here is the complete source code (<em>calc.py</em>):</p>
 <pre class="literal-block">
 #!/usr/bin/env python3

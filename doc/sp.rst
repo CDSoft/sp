@@ -505,7 +505,8 @@ Tokens can be explicitely defined by the ``R``, ``K`` and ``Separator`` keywords
 | Expression    | Usage                                                                     |
 +===============+===========================================================================+
 | ``R``         | defines a regular token.                                                  |
-|               | The token is defined with a regular expression and returns a string.      |
+|               | The token is defined with a regular expression and returns a string       |
+|               | (or a tuple of strings if the regular expression defines groups).         |
 +---------------+---------------------------------------------------------------------------+
 | ``K``         | defines a token that returns nothing (useful for keywords for instance).  |
 |               | The keyword is defined by an identifier (in this case word boundaries     |
@@ -513,7 +514,7 @@ Tokens can be explicitely defined by the ``R``, ``K`` and ``Separator`` keywords
 |               | pattern is not considered as a regular expression).                       |
 |               | The token just recognizes a keyword and returns nothing.                  |
 +---------------+---------------------------------------------------------------------------+
-| ``Separator`` | if a context manager used to define separators for the rules defined      |
+| ``Separator`` | is a context manager used to define separators for the rules defined      |
 |               | in the context.                                                           |
 |               | The token is defined with a regular expression and returns nothing.       |
 +---------------+---------------------------------------------------------------------------+
@@ -672,10 +673,15 @@ Repetitions in grammar rules describe how many times an expression should be mat
 +---------------+---------------------------------------------------------------------------+
 | ``A[m:n]``    | recognizes at least m and at most n ``A``.                                |
 +---------------+---------------------------------------------------------------------------+
+| ``A[m:n:s]``  | recognizes at least m and at most n ``A`` using ``s`` as a separator.     |
++---------------+---------------------------------------------------------------------------+
 
 Repetitions are greedy.
 Repetitions are implemented as Python loops.
 Thus whatever the length of the repetitions, the Python stack will not overflow.
+
+The separator is useful to parse lists.
+For instance a comma separated parameter list is ``parameter[::',']``.
 
 Precedence and grouping
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -878,6 +884,7 @@ and ``2*pi`` will return ``6.28``.
 The variables are saved in a dictionnary.
 
 Source code
+~~~~~~~~~~~
 
 Here is the complete source code (*calc.py*):
 
