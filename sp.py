@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # Simple Parser
 # Copyright (C) 2009 Christophe Delord
@@ -95,7 +95,33 @@ along with Simple Parser.  If not, see <http://www.gnu.org/licenses/>.
 import re
 import sys
 
-__all__ = ['compile', 'R', 'K', 'C', 'At', 'D', 'Rule', 'Separator']
+# "from sp import *" only imports objects for hand written parsers
+__all__ = ['R', 'K', 'C', 'At', 'D', 'Rule', 'Separator']
+
+class _Caches(list):
+    def add(self, cache):
+        self.append(cache)
+    def clear(self):
+        for cache in self:
+            cache.clear()
+_caches = _Caches()
+
+def clean():
+    """ clears the SP internal caches
+
+    >>> clean(); sum(len(cache) for cache in _caches) == 0
+    True
+    >>> with Separator(' '): p = K('A') | 'B'
+    >>> p('A')
+    nil
+    >>> p('B')
+    nil
+    >>> sum(len(cache) for cache in _caches) > 0
+    True
+    >>> clean(); sum(len(cache) for cache in _caches) == 0
+    True
+    """
+    _caches.clear()
 
 def _memoize_self_s_i(f):
     """ creates a memoized parser method
@@ -111,6 +137,7 @@ def _memoize_self_s_i(f):
         return r
     _f.__doc__ = f.__doc__
     _f.__name__ = f.__name__
+    _caches.add(cache)
     return _f
 
 def _memoize_self_s_i_e(f):
@@ -128,6 +155,7 @@ def _memoize_self_s_i_e(f):
         return r
     _f.__doc__ = f.__doc__
     _f.__name__ = f.__name__
+    _caches.add(cache)
     return _f
 
 class _pos:
@@ -1203,7 +1231,11 @@ def compile(source):
 if __name__ == '__main__':
     import doctest
     print(__license__.strip())
-    failure_count, test_count = doctest.testmod()
-    if failure_count == 0:
+    if sys.version_info[0] < 3:
         print("*"*70)
-        print("All %d tests succeeded"%test_count)
+        print("Python 3 is required to run the tests")
+    else:
+        failure_count, test_count = doctest.testmod()
+        if failure_count == 0:
+            print("*"*70)
+            print("All %d tests succeeded"%test_count)

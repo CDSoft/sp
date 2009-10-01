@@ -763,6 +763,27 @@ corresponding line and column numbers (attributes
     position = At() / `lambda p: (p.line, p.column)`
     rule = ... & pos & ...
 
+Performances and memory consumption
+-----------------------------------
+
+Backtracking has a cost.
+The parser may often try to parse again the same string at the same position.
+To improve the speed of the parser, some time consumming functions are *memoized*.
+This drastically fasten the parser but requires more memory.
+If a lot of string are parsed in a single script this mechanism can slow down
+the computer because of heavy swap disk usage or even lead to a memory error.
+
+To avoid such problems it is recommanded to clean the memoization cache
+by calling the ``sp.clean`` function::
+
+    import sp
+
+    ...
+
+    for s in a_lot_of_strings:
+        parse(s)
+        sp.clean()
+
 Older Python versions
 =====================
 
