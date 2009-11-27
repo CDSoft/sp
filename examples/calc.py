@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # Simple Parser
 # Copyright (C) 2009 Christophe Delord
@@ -26,7 +26,7 @@ int  : integral calculus            | binary    : b... or ...b
 int8 : integral calculus on 8 bits  | octal     : o... or ...o
 int16: integral calculus on 16 bits | hexa      : h... or ...h or 0x...
 int32: integral calculus on 32 bits | operators : + - | ^ * % / & >> << ~ **
-int64: integral calculus on 64 bits | functions : rev factor
+int64: integral calculus on 64 bits | functions : rev factor sqrt
 flt32: 32 bit float calculus        |
 flt64: 64 bit float calculus        |
 rat  : rational calculus            | this help : ?
@@ -93,6 +93,8 @@ class Num:
             d += 2
         if n > 1: ds.append(n)
         return " ".join(map(str, ds))
+    def sqrt(self):
+        return self.__class__(self.val ** (1/2))
 
 class Float(Num):
     name, descr = "flt32", "32 bit Float"
@@ -199,6 +201,11 @@ def base(N, radix=10, group=3, width=None):
         N %= 2**width
         bits_per_digit = {16:4, 8:3, 2:1}[radix]
         min_len = width//bits_per_digit
+    if N < 0:
+        N = -N
+        sign = "-"
+    else:
+        sign = ""
     s = ""
     while N:
         N, d = divmod(N, radix)
@@ -207,7 +214,7 @@ def base(N, radix=10, group=3, width=None):
     if width:
         s = s + "0"*(min_len-len(s))
     s = " ".join(s[i:i+group] for i in range(0, len(s), group))
-    return s[::-1]
+    return sign + s[::-1]
 
 class Bin:
     def __init__(self, n): self.val = int(n.replace('_', ''), 2)
@@ -230,7 +237,7 @@ class Real:
     def eval(self, calc): return calc.number(self.val)
 
 class Var:
-    def __init__(self, n="_"): self.name = n
+    def __init__(self, n): self.name = n
     def eval(self, calc):
         try: val = calc[self]
         except KeyError: raise NameError(self.name)
@@ -302,6 +309,9 @@ class Rev(Op1):
 class Factor(Op1):
     def eval(self, calc): return self.x.eval(calc).factor()
 
+class Sqrt(Op1):
+    def eval(self, calc): return self.x.eval(calc).sqrt()
+
 def red(x, ys):
     for f, y in ys:
         x = f(x, y)
@@ -355,7 +365,8 @@ parser = sp.compile(
         !S = 'flt64'    `Mode(Double)`;
         !S = 'rat'      `Mode(Rat)`;
 
-        !S = (var '=' | `Var()`) expr :: `Assign` ;
+        !S = var '=' expr :: `Assign` ;
+        !S = expr ;
 
         expr = term (addop term)* :: `red` ;
         term = fact (mulop fact)* :: `red` ;
@@ -365,6 +376,7 @@ parser = sp.compile(
         atom = '(' expr ')' ;
         atom = 'rev' '(' expr ')' : `Rev` ;
         atom = 'factor' '(' expr ')' : `Factor` ;
+        atom = 'sqrt' '(' expr ')' : `Sqrt` ;
         atom = bin | oct | hex | real | dec | var ;
     """)
 
