@@ -213,7 +213,7 @@ The grammar can also be defined with the mini grammar language provided by SP::
             addop = r'[+-]' ;
             mulop = r'[*/]' ;
 
-            separator = r'\s+' ;
+            separator: r'\s+' ;
 
             !expr = term (addop term)* ;
             term = fact (mulop fact)* ;
@@ -366,7 +366,7 @@ Or with SP language::
             addop = r'[+-]' ;
             mulop = r'[*/]' ;
 
-            separator = r'\s+' ;
+            separator: r'\s+' ;
 
             !expr = term (addop term :: `op2`)* :: `red` ;
             term = fact (mulop fact :: `op2`)* :: `red` ;
@@ -829,7 +829,9 @@ SP mini language
 
 Instead of using Python expressions that can sometimes be difficult to read,
 it's possible to write grammars in a cleaner syntax and compile these
-grammar with the ``sp.compile`` function.
+grammar with the ``sp.compile`` function. This function takes the grammar as
+a string parameter.  The ``sp.compile_file`` function reads the grammar in a
+separate file.
 
 Here the equivalence between Python expressions and the SP mini language:
 

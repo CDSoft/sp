@@ -206,7 +206,10 @@ class _err:
             if t.startswith(r'\b'): t = t[2:]
             if t.endswith(r'\b'): t = t[:-2]
             msg += " "+t
-        return SyntaxError(msg)
+        err = SyntaxError(msg)
+        err.filename = "<string>"
+        err.lineno = p.line
+        return err
 
 def _p(obj):
     """ converts 'obj' to a parser object
@@ -866,7 +869,7 @@ class ApplyStar(Apply):
         rest = self.skipsep(s, rest)
         return self.func(*token), rest, e.max(_err(rest))
 
-def compile(source):
+def _compile_string(source, frame):
     r""" defines a parser from a grammar
 
     Token definition
@@ -1226,7 +1229,32 @@ def compile(source):
     finally:
         separator.__exit__()
 
-    return grammar(source).gen(sys._getframe(1))
+    return grammar(source).gen(frame)
+
+def compile(source):
+    frame = sys._getframe(1)
+    try:
+        return _compile_string(source, frame)
+    except SyntaxError:
+        import os
+        filename = frame.f_code.co_filename
+        if os.path.isfile(filename):
+            # Locate the grammar in the source
+            python_source = open(filename).read()
+            index = python_source.find(source)
+            if index >= 0:
+                # if found, update the filename and the error line number
+                sys.exc_value.filename = filename
+                sys.exc_value.lineno += python_source[:index].count('\n')
+        raise
+
+def compile_file(filename):
+    frame = sys._getframe(1)
+    try:
+        return _compile_string(open(filename).read(), frame)
+    except SyntaxError:
+        sys.exc_value.filename = filename
+        raise
 
 if __name__ == '__main__':
     import doctest
