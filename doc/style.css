@@ -7,7 +7,7 @@ Copyright: This stylesheet has been placed in the public domain - free to edit a
 Modified by C. Delord for Simple Parser
 */
 
-@import url(html4css1.css);
+/*@import url(html4css1.css);*/
 
 body {
   font: 100% sans-serif;

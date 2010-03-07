@@ -1,6 +1,6 @@
 ..  Simple Parser
-    Copyright (C) 2009 Christophe Delord
-    http://christophe.delord.free.fr/sp
+    Copyright (C) 2009-2010 Christophe Delord
+    http://www.cdsoft.fr/sp.html
 
 ..  This file is part of Simple Parser.
 
@@ -25,8 +25,8 @@
 ---------------------------------------
 
 :Author:    Christophe Delord
-:Contact:   christophe.delord@free.fr
-:Web site:  http://christophe.delord.free.fr/sp
+:Contact:   cdelord@cdsoft.fr
+:Web site:  http://www.cdsoft.fr/sp.html
 :Date:      |date|
 :License:   This software is released under the LGPL license.
 
@@ -62,7 +62,7 @@ SP is available under the GNU Lesser General Public::
 
     Simple Parser: A Python parser generator
 
-    Copyright (C) 2009 Christophe Delord
+    Copyright (C) 2009-2010 Christophe Delord
 
     Simple Parser is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published
@@ -95,7 +95,7 @@ Installation
 Getting SP
 ~~~~~~~~~~
 
-SP is freely available on its web page (http://christophe.delord.free.fr/sp).
+SP is freely available on its web page (http://www.cdsoft.fr/sp.html).
 
 Requirements
 ~~~~~~~~~~~~

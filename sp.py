@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 # Simple Parser
-# Copyright (C) 2009 Christophe Delord
-# http://christophe.delord.free.fr/sp
+# Copyright (C) 2009-2010 Christophe Delord
+# http://cdsoft.fr/sp.html
 
 """ Simple Parser
 
