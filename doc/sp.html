@@ -301,35 +301,37 @@ along with Simple Parser.  If not, see <http://www.gnu.org/licenses/>. -->
 <div class="contents topic" id="table-of-contents">
 <p class="topic-title first">Table of Contents</p>
 <ul class="auto-toc simple">
-<li><a class="reference internal" href="#introduction-and-tutorial" id="id12">1&nbsp;&nbsp;&nbsp;Introduction and tutorial</a><ul class="auto-toc">
-<li><a class="reference internal" href="#introduction" id="id13">1.1&nbsp;&nbsp;&nbsp;Introduction</a></li>
-<li><a class="reference internal" href="#installation" id="id14">1.2&nbsp;&nbsp;&nbsp;Installation</a></li>
-<li><a class="reference internal" href="#tutorial" id="id15">1.3&nbsp;&nbsp;&nbsp;Tutorial</a></li>
+<li><a class="reference internal" href="#introduction-and-tutorial" id="id15">1&nbsp;&nbsp;&nbsp;Introduction and tutorial</a><ul class="auto-toc">
+<li><a class="reference internal" href="#introduction" id="id16">1.1&nbsp;&nbsp;&nbsp;Introduction</a></li>
+<li><a class="reference internal" href="#installation" id="id17">1.2&nbsp;&nbsp;&nbsp;Installation</a></li>
+<li><a class="reference internal" href="#tutorial" id="id18">1.3&nbsp;&nbsp;&nbsp;Tutorial</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#sp-reference" id="id16">2&nbsp;&nbsp;&nbsp;SP reference</a><ul class="auto-toc">
-<li><a class="reference internal" href="#usage" id="id17">2.1&nbsp;&nbsp;&nbsp;Usage</a></li>
-<li><a class="reference internal" href="#grammar-structure" id="id18">2.2&nbsp;&nbsp;&nbsp;Grammar structure</a></li>
-<li><a class="reference internal" href="#lexer" id="id19">2.3&nbsp;&nbsp;&nbsp;Lexer</a></li>
-<li><a class="reference internal" href="#parser" id="id20">2.4&nbsp;&nbsp;&nbsp;Parser</a></li>
-<li><a class="reference internal" href="#performances-and-memory-consumption" id="id21">2.5&nbsp;&nbsp;&nbsp;Performances and memory consumption</a></li>
+<li><a class="reference internal" href="#sp-reference" id="id19">2&nbsp;&nbsp;&nbsp;SP reference</a><ul class="auto-toc">
+<li><a class="reference internal" href="#usage" id="id20">2.1&nbsp;&nbsp;&nbsp;Usage</a></li>
+<li><a class="reference internal" href="#grammar-structure" id="id21">2.2&nbsp;&nbsp;&nbsp;Grammar structure</a></li>
+<li><a class="reference internal" href="#lexer" id="id22">2.3&nbsp;&nbsp;&nbsp;Lexer</a></li>
+<li><a class="reference internal" href="#parser" id="id23">2.4&nbsp;&nbsp;&nbsp;Parser</a></li>
+<li><a class="reference internal" href="#performances-and-memory-consumption" id="id24">2.5&nbsp;&nbsp;&nbsp;Performances and memory consumption</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#older-python-versions" id="id22">3&nbsp;&nbsp;&nbsp;Older Python versions</a><ul class="auto-toc">
-<li><a class="reference internal" href="#separators" id="id23">3.1&nbsp;&nbsp;&nbsp;Separators</a></li>
+<li><a class="reference internal" href="#older-python-versions" id="id25">3&nbsp;&nbsp;&nbsp;Older Python versions</a><ul class="auto-toc">
+<li><a class="reference internal" href="#separators" id="id26">3.1&nbsp;&nbsp;&nbsp;Separators</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#sp-mini-language" id="id24">4&nbsp;&nbsp;&nbsp;SP mini language</a></li>
-<li><a class="reference internal" href="#some-examples-to-illustrate-sp" id="id25">5&nbsp;&nbsp;&nbsp;Some examples to illustrate SP</a><ul class="auto-toc">
-<li><a class="reference internal" href="#complete-interactive-calculator" id="id26">5.1&nbsp;&nbsp;&nbsp;Complete interactive calculator</a></li>
+<li><a class="reference internal" href="#sp-mini-language" id="id27">4&nbsp;&nbsp;&nbsp;SP mini language</a></li>
+<li><a class="reference internal" href="#some-examples-to-illustrate-sp" id="id28">5&nbsp;&nbsp;&nbsp;Some examples to illustrate SP</a><ul class="auto-toc">
+<li><a class="reference internal" href="#newick-format" id="id29">5.1&nbsp;&nbsp;&nbsp;Newick format</a></li>
+<li><a class="reference internal" href="#infix-prefix-postfix-notation-converter" id="id30">5.2&nbsp;&nbsp;&nbsp;Infix/Prefix/Postfix notation converter</a></li>
+<li><a class="reference internal" href="#complete-interactive-calculator" id="id31">5.3&nbsp;&nbsp;&nbsp;Complete interactive calculator</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="section" id="introduction-and-tutorial">
-<h1><a class="toc-backref" href="#id12">1&nbsp;&nbsp;&nbsp;Introduction and tutorial</a></h1>
+<h1><a class="toc-backref" href="#id15">1&nbsp;&nbsp;&nbsp;Introduction and tutorial</a></h1>
 <div class="section" id="introduction">
-<h2><a class="toc-backref" href="#id13">1.1&nbsp;&nbsp;&nbsp;Introduction</a></h2>
+<h2><a class="toc-backref" href="#id16">1.1&nbsp;&nbsp;&nbsp;Introduction</a></h2>
 <p>SP (Simple Parser) is a Python <a class="footnote-reference" href="#id2" id="id1">[1]</a> parser generator.
 It is aimed at easy usage rather than performance.
 SP produces
@@ -380,7 +382,7 @@ I think this tutorial may be sufficent to start with SP.</dd>
 </div>
 </div>
 <div class="section" id="installation">
-<h2><a class="toc-backref" href="#id14">1.2&nbsp;&nbsp;&nbsp;Installation</a></h2>
+<h2><a class="toc-backref" href="#id17">1.2&nbsp;&nbsp;&nbsp;Installation</a></h2>
 <div class="section" id="getting-sp">
 <h3>Getting SP</h3>
 <p>SP is freely available on its web page (<a class="reference external" href="http://www.cdsoft.fr/sp.html">http://www.cdsoft.fr/sp.html</a>).</p>
@@ -401,7 +403,7 @@ See the <a class="reference internal" href="#older-python-versions">Older Python
 </div>
 </div>
 <div class="section" id="tutorial">
-<h2><a class="toc-backref" href="#id15">1.3&nbsp;&nbsp;&nbsp;Tutorial</a></h2>
+<h2><a class="toc-backref" href="#id18">1.3&nbsp;&nbsp;&nbsp;Tutorial</a></h2>
 <div class="section" id="id5">
 <h3>Introduction</h3>
 <p>This short tutorial presents how to make a simple calculator.
@@ -736,9 +738,9 @@ They contain more examples to illustrate all the features of SP.</p>
 </div>
 </div>
 <div class="section" id="sp-reference">
-<h1><a class="toc-backref" href="#id16">2&nbsp;&nbsp;&nbsp;SP reference</a></h1>
+<h1><a class="toc-backref" href="#id19">2&nbsp;&nbsp;&nbsp;SP reference</a></h1>
 <div class="section" id="usage">
-<h2><a class="toc-backref" href="#id17">2.1&nbsp;&nbsp;&nbsp;Usage</a></h2>
+<h2><a class="toc-backref" href="#id20">2.1&nbsp;&nbsp;&nbsp;Usage</a></h2>
 <p>SP is a package which main function is to provide basic objects to build a complete parser.</p>
 <p>The grammar is a Python object.</p>
 <p>Grammar embeding example:</p>
@@ -758,7 +760,7 @@ print x
 </pre>
 </div>
 <div class="section" id="grammar-structure">
-<h2><a class="toc-backref" href="#id18">2.2&nbsp;&nbsp;&nbsp;Grammar structure</a></h2>
+<h2><a class="toc-backref" href="#id21">2.2&nbsp;&nbsp;&nbsp;Grammar structure</a></h2>
 <p>SP grammars are Python objects.
 SP grammars may contain two parts:</p>
 <dl class="docutils">
@@ -785,7 +787,7 @@ result = foo(&quot;42 43 44&quot;) # return [42, 43, 44]
 </pre>
 </div>
 <div class="section" id="lexer">
-<h2><a class="toc-backref" href="#id19">2.3&nbsp;&nbsp;&nbsp;Lexer</a></h2>
+<h2><a class="toc-backref" href="#id22">2.3&nbsp;&nbsp;&nbsp;Lexer</a></h2>
 <div class="section" id="regular-expression-syntax">
 <h3>Regular expression syntax</h3>
 <p>The lexer is based on the <em>re</em> <a class="footnote-reference" href="#id10" id="id8">[4]</a> module.
@@ -797,13 +799,13 @@ This document assumes the reader is familiar with regular expressions.</p>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id8">[4]</a></td><td><em>re</em> is a standard Python module.
 It handles regular expressions.
-For further information about <em>re</em> you can read <a class="reference external" href="http://docs.python.org/lib/module-re.html">http://docs.python.org/lib/module-re.html</a></td></tr>
+For further information about <em>re</em> you can read <a class="reference external" href="http://docs.python.org/library/re.html">http://docs.python.org/library/re.html</a></td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id11" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id9">[5]</a></td><td>Read the Python documentation for further information: <a class="reference external" href="http://docs.python.org/lib/re-syntax.html">http://docs.python.org/lib/re-syntax.html</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id9">[5]</a></td><td>Read the Python documentation for further information: <a class="reference external" href="http://docs.python.org/library/re.html#re-syntax">http://docs.python.org/library/re.html#re-syntax</a></td></tr>
 </tbody>
 </table>
 </div>
@@ -931,7 +933,7 @@ IfThenElse = 'if' &amp; Cond &amp;
 </div>
 </div>
 <div class="section" id="parser">
-<h2><a class="toc-backref" href="#id20">2.4&nbsp;&nbsp;&nbsp;Parser</a></h2>
+<h2><a class="toc-backref" href="#id23">2.4&nbsp;&nbsp;&nbsp;Parser</a></h2>
 <div class="section" id="declaration">
 <h3>Declaration</h3>
 <p>A parser is declared as a Python object.</p>
@@ -1110,7 +1112,7 @@ rule = ... &amp; pos &amp; ...
 </div>
 </div>
 <div class="section" id="performances-and-memory-consumption">
-<h2><a class="toc-backref" href="#id21">2.5&nbsp;&nbsp;&nbsp;Performances and memory consumption</a></h2>
+<h2><a class="toc-backref" href="#id24">2.5&nbsp;&nbsp;&nbsp;Performances and memory consumption</a></h2>
 <p>Backtracking has a cost.
 The parser may often try to parse again the same string at the same position.
 To improve the speed of the parser, some time consumming functions are <em>memoized</em>.
@@ -1131,11 +1133,11 @@ for s in a_lot_of_strings:
 </div>
 </div>
 <div class="section" id="older-python-versions">
-<h1><a class="toc-backref" href="#id22">3&nbsp;&nbsp;&nbsp;Older Python versions</a></h1>
+<h1><a class="toc-backref" href="#id25">3&nbsp;&nbsp;&nbsp;Older Python versions</a></h1>
 <p>This document describes the usage of SP with Python 2.6.
 Grammars need some adaptations to work with Python 2.5. or older.</p>
 <div class="section" id="separators">
-<h2><a class="toc-backref" href="#id23">3.1&nbsp;&nbsp;&nbsp;Separators</a></h2>
+<h2><a class="toc-backref" href="#id26">3.1&nbsp;&nbsp;&nbsp;Separators</a></h2>
 <p>Separators use context managers which don't exist in Python 2.4.
 Context managers have been introduced in Python 2.5
 (<tt class="docutils literal"><span class="pre">from</span> <span class="pre">__future__</span> <span class="pre">import</span> <span class="pre">with_statement</span></tt>)
@@ -1169,7 +1171,7 @@ sep.__exit__()
 </div>
 </div>
 <div class="section" id="sp-mini-language">
-<h1><a class="toc-backref" href="#id24">4&nbsp;&nbsp;&nbsp;SP mini language</a></h1>
+<h1><a class="toc-backref" href="#id27">4&nbsp;&nbsp;&nbsp;SP mini language</a></h1>
 <p>Instead of using Python expressions that can sometimes be difficult to read,
 it's possible to write grammars in a cleaner syntax and compile these
 grammar with the <tt class="docutils literal"><span class="pre">sp.compile</span></tt> function. This function takes the grammar as
@@ -1290,30 +1292,46 @@ separated by <tt class="docutils literal"><span class="pre">S</span></tt></td>
 </table>
 </div>
 <div class="section" id="some-examples-to-illustrate-sp">
-<h1><a class="toc-backref" href="#id25">5&nbsp;&nbsp;&nbsp;Some examples to illustrate SP</a></h1>
-<div class="section" id="complete-interactive-calculator">
-<h2><a class="toc-backref" href="#id26">5.1&nbsp;&nbsp;&nbsp;Complete interactive calculator</a></h2>
-<p>This chapter presents an extention of the calculator described in the <a class="reference internal" href="#tutorial">tutorial</a>.
-This calculator has more functions and a memory.</p>
-<p>The grammar has been rewritten using the SP language.</p>
-<div class="section" id="new-functions">
-<h3>New functions</h3>
-<p>The calculator has memories.
-A memory cell is identified by a name.
-For example, if the user types <tt class="docutils literal"><span class="pre">pi</span> <span class="pre">=</span> <span class="pre">3.14</span></tt>,
-the memory cell named <tt class="docutils literal"><span class="pre">pi</span></tt> will contain the value of <tt class="docutils literal"><span class="pre">pi</span></tt>
-and <tt class="docutils literal"><span class="pre">2*pi</span></tt> will return <tt class="docutils literal"><span class="pre">6.28</span></tt>.</p>
-<p>The variables are saved in a dictionnary.</p>
-</div>
-<div class="section" id="source-code">
-<h3>Source code</h3>
-<p>Here is the complete source code (<em>calc.py</em>):</p>
+<h1><a class="toc-backref" href="#id28">5&nbsp;&nbsp;&nbsp;Some examples to illustrate SP</a></h1>
+<div class="section" id="newick-format">
+<h2><a class="toc-backref" href="#id29">5.1&nbsp;&nbsp;&nbsp;Newick format</a></h2>
+<blockquote class="epigraph">
+<p>In mathematics, Newick tree format (or Newick notation or New Hampshire tree format)
+is a way to represent graph-theoretical trees with edge lengths using parentheses and
+commas. It was created by James Archie, William H. E. Day, Joseph Felsenstein, Wayne
+Maddison, Christopher Meacham, F. James Rohlf, and David Swofford, at two meetings in
+1986, the second of which was at Newick's restaurant in Dover, New Hampshire, USA.</p>
+<p class="attribution">&mdash;Wikipedia, the free encyclopedia</p>
+</blockquote>
+<p>The grammar given by Wikipedia is:</p>
+<pre class="literal-block">
+Tree --&gt; Subtree &quot;;&quot; | Branch &quot;;&quot;
+Subtree --&gt; Leaf | Internal
+Leaf --&gt; Name
+Internal --&gt; &quot;(&quot; BranchSet &quot;)&quot; Name
+BranchSet --&gt; Branch | Branch &quot;,&quot; BranchSet
+Branch --&gt; Subtree Length
+Name --&gt; empty | string
+Length --&gt; empty | &quot;:&quot; number
+</pre>
+<p>With very few transformation, this grammar can be converted to a Simple Parser grammar.
+Only <tt class="docutils literal"><span class="pre">BranchSet</span></tt> is rewritten to use a comma separated list parser:</p>
+<pre class="literal-block">
+Tree = Subtree ';' | Branch ';' ;
+Subtree = Leaf | Internal ;
+Leaf = Name ;
+Internal = '(' [Branch/',']+ ')' Name ;
+Branch = Subtree Length ;
+Name = r'[^;:,()]*';
+Length = '' | ':' r'[0-9.]+' ;
+</pre>
+<p>Here is the complete parser (newick.py):</p>
 <pre class="literal-block">
 #!/usr/bin/env python
 
 # Simple Parser
-# Copyright (C) 2009 Christophe Delord
-# http://christophe.delord.free.fr/sp
+# Copyright (C) 2009-2010 Christophe Delord
+# http://www.cdsoft.fr/sp.html
 
 # This file is part of Simple Parser.
 # 
@@ -1330,383 +1348,312 @@ and <tt class="docutils literal"><span class="pre">2*pi</span></tt> will return 
 # You should have received a copy of the GNU Lesser General Public License
 # along with Simple Parser.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
 
-&quot;&quot;&quot; Calc
-
-num  : generic numerical calculus   | assignment: name = expression
-int  : integral calculus            | binary    : b... or ...b
-int8 : integral calculus on 8 bits  | octal     : o... or ...o
-int16: integral calculus on 16 bits | hexa      : h... or ...h or 0x...
-int32: integral calculus on 32 bits | operators : + - | ^ * % / &amp; &gt;&gt; &lt;&lt; ~ **
-int64: integral calculus on 64 bits | functions : rev factor sqrt
-flt32: 32 bit float calculus        |
-flt64: 64 bit float calculus        |
-rat  : rational calculus            | this help : ?
-&quot;&quot;&quot;
-
-import struct
-import sys
+# from http://en.wikipedia.org/wiki/Newick_format
 
 import sp
-from fractions import Fraction
+
+EXAMPLES = &quot;&quot;&quot;\
+(,,(,));                               no nodes are named
+(A,B,(C,D));                           leaf nodes are named
+(A,B,(C,D)E)F;                         all nodes are named
+(:0.1,:0.2,(:0.3,:0.4):0.5);           all but root node have a distance to parent
+(:0.1,:0.2,(:0.3,:0.4):0.5):0.0;       all have a distance to parent
+(A:0.1,B:0.2,(C:0.3,D:0.4):0.5);       distances and leaf names (popular)
+(A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5)F;     distances and all names
+((B:0.2,(C:0.3,D:0.4)E:0.5)F:0.1)A;    a tree rooted on a leaf node (rare)
+&quot;&quot;&quot;
+
+class Leaf:
+    def __init__(self, name): self.name = name
+    def __str__(self): return self.name
+    def nb_leaves(self): return 1
+
+class Internal:
+    def __init__(self, subtrees, name): self.subtrees, self.name = subtrees, name
+    def __str__(self): return &quot;(%s)%s&quot; % (','.join(str(st) for st in self.subtrees), self.name)
+    def nb_leaves(self): return sum(st.nb_leaves() for st in self.subtrees)
+
+class Branch:
+    def __init__(self, subtree, length): self.subtree, self.length = subtree, length
+    def __str__(self): return &quot;%s:%s&quot;%(self.subtree, self.length)
+    def nb_leaves(self): return self.subtree.nb_leaves()
+
+parser = sp.compile(r&quot;&quot;&quot;
+    !Tree = Subtree ';' | Branch ';' ;
+    Subtree = Leaf | Internal ;
+    Leaf = Name : `Leaf` ;
+    Internal = '(' [Branch/',']+ ')' Name :: `Internal` ;
+    Branch = Subtree Length :: `Branch` ;
+    Name = r'[^;:,()]*';
+    Length = ':' r'[0-9.]+' : `float` | `0.0` ;
+&quot;&quot;&quot;)
+
+for example in EXAMPLES.splitlines():
+    example, description = example.split(' ', 1)
+    description = description.strip()
+    tree = parser(example)
+    print &quot;%s:&quot;%description
+    print &quot;-&quot;*len(description)
+    print &quot;    Input :&quot;, example
+    print &quot;    Parsed:&quot;, tree
+    print &quot;    Leaves:&quot;, tree.nb_leaves()
+    print
+
+</pre>
+</div>
+<div class="section" id="infix-prefix-postfix-notation-converter">
+<h2><a class="toc-backref" href="#id30">5.2&nbsp;&nbsp;&nbsp;Infix/Prefix/Postfix notation converter</a></h2>
+<div class="section" id="id12">
+<h3>Introduction</h3>
+<p>In the previous example, the parser computes the value of the expression on the fly, while parsing.
+It is also possible to build an abstract syntax tree to store an abstract representation of the input.
+This may be usefull when several passes are necessary.</p>
+<p>This example shows how to parse an expression (infix, prefix or postfix) and convert it in infix,
+prefix and postfix notation. The expression is saved in a tree. Each node of the tree correspond
+to an operator in the expression. Each leaf is a number. Then to write the expression in infix,
+prefix or postfix notation, we just need to walk throught the tree in a particular order.</p>
+</div>
+<div class="section" id="id13">
+<h3>Abstract syntax trees</h3>
+<p>The AST of this converter has three types of node:</p>
+<dl class="docutils">
+<dt>class Op</dt>
+<dd>is used to store operators (<tt class="docutils literal"><span class="pre">+</span></tt>, <tt class="docutils literal"><span class="pre">-</span></tt>, <tt class="docutils literal"><span class="pre">*</span></tt>, <tt class="docutils literal"><span class="pre">/</span></tt>, <tt class="docutils literal"><span class="pre">^</span></tt>).
+It has two sons associated to the sub expressions.</dd>
+<dt>class Atom</dt>
+<dd>is an atomic expression (a number or a symbolic name).</dd>
+<dt>class Func</dt>
+<dd>is used to store functions.</dd>
+</dl>
+<p>These classes are instanciated by the init method. The infix, prefix and postfix methods
+return strings containing the representation of the node in infix, prefix and postfix notation.</p>
+</div>
+<div class="section" id="grammar">
+<h3>Grammar</h3>
+<div class="section" id="lexical-definitions">
+<h4>Lexical definitions</h4>
+<pre class="literal-block">
+ident = r'\w+' : `Atom` ;
+
+func1 = r'sin' | r'cos' | r'tan' ;
+func2 = r'min' | r'max' ;
+
+op = op_add | op_mul | op_pow ;
+op_add = r'[+-]' ;
+op_mul = r'[*/]' ;
+op_pow = r'\^' ;
+</pre>
+</div>
+<div class="section" id="infix-expressions">
+<h4>Infix expressions</h4>
+<p>The grammar for infix expressions is similar to the grammar used in the previous example:</p>
+<pre class="literal-block">
+expr = term (op_add term :: `lambda op, y: lambda x: Op(op, x, y)`)* :: `red` ;
+term = fact (op_mul fact :: `lambda op, y: lambda x: Op(op, x, y)`)* :: `red` ;
+fact = atom (op_pow fact :: `lambda op, y: lambda x: Op(op, x, y)`)? :: `red` ;
+atom = ident ;
+atom = '(' expr ')' ;
+atom = func1 '(' expr ')' :: `Func` ;
+atom = func2 '(' expr ',' expr ')' :: `Func` ;
+</pre>
+</div>
+<div class="section" id="prefix-expressions">
+<h4>Prefix expressions</h4>
+<p>The grammar for prefix expressions is very simple. A compound prefix expression is an operator
+followed by two subexpressions, or a binary function followed by two subexpressions, or a unary
+function followed by one subexpression:</p>
+<pre class="literal-block">
+expr_pre = ident ;
+expr_pre = op expr_pre expr_pre :: `lambda op, x, y: Op(op, x, y)` ;
+expr_pre = func1 expr_pre :: `Func` ;
+expr_pre = func2 expr_pre expr_pre :: `Func` ;
+</pre>
+</div>
+<div class="section" id="postfix-expressions">
+<h4>Postfix expressions</h4>
+<p>At first sight postfix and infix grammars may be very similar. Only the position of the operators
+changes. So a compound postfix expression is a first expression followed by a second one and an
+operator. This rule is left recursive. As SP is a descendant recursive parser, such rules are
+forbidden to avoid infinite recursion. To remove the left recursion a classical solution is to rewrite
+the grammar like this:</p>
+<pre class="literal-block">
+expr_post = ident sexpr_post :: `lambda x, f: f(x)` ;
+
+sexpr_post = expr_post op :: `lambda y, op: lambda x: Op(op, x, y)` ;
+sexpr_post = expr_post func2 :: `lambda y, f: lambda x: Func(f, x, y)` ;
+sexpr_post = func1 :: `lambda f: lambda x: Func(f, y)` ;
+</pre>
+<p>The parser searches for an atomic expression and builds the AST corresponding to the remaining
+subexpression. <tt class="docutils literal"><span class="pre">sexpr_post</span></tt> returns a function that builds the complete AST when applied
+to the first atomic expression. This is a way to simulate inherited attributes.</p>
+</div>
+</div>
+<div class="section" id="source-code">
+<h3>Source code</h3>
+<p>Here is the complete source code (notation.py):</p>
+<pre class="literal-block">
+#!/usr/bin/env python3
+
+# Simple Parser
+# Copyright (C) 2009-2010 Christophe Delord
+# http://www.cdsoft.fr/sp.html
+
+# This file is part of Simple Parser.
+# 
+# Simple Parser is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# Simple Parser is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public License
+# along with Simple Parser.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+
+# Infix/prefix/postfix expression conversion
+
+import sp
 
 try:
     import readline
 except ImportError:
     pass
 
-class Calc:
-    def __init__(self):
-        self.number = Num
-        self.memory = {}
-    def __getitem__(self, var): return self.memory[var.name]
-    def __setitem__(self, var, val): self.memory[var.name] = val
+class Op:
+    &quot;&quot;&quot; Binary operator &quot;&quot;&quot;
+    precedence = {'+':1, '-':1, '*':2, '/':2, '^':3}
+    def __init__(self, op, a, b):
+        self.op = op                    # operator (&quot;+&quot;, &quot;-&quot;, &quot;*&quot;, &quot;/&quot;, &quot;^&quot;)
+        self.prec = Op.precedence[op]   # precedence of the operator
+        self.a, self.b = a, b           # operands
+    def infix(self):
+        a = self.a.infix()
+        if self.a.prec &lt; self.prec: a = &quot;(%s)&quot;%a
+        b = self.b.infix()
+        if self.b.prec &lt;= self.prec: b = &quot;(%s)&quot;%b
+        return &quot;%s %s %s&quot;%(a, self.op, b)
+    def prefix(self):
+        a = self.a.prefix()
+        b = self.b.prefix()
+        return &quot;%s %s %s&quot;%(self.op, a, b)
+    def postfix(self):
+        a = self.a.postfix()
+        b = self.b.postfix()
+        return &quot;%s %s %s&quot;%(a, b, self.op)
 
-class Help:
-    def __init__(self):
-        self.doc = __doc__.strip()
-    def eval(self, calc=None):
-        return self.doc
+class Atom:
+    &quot;&quot;&quot; Atomic expression &quot;&quot;&quot;
+    def __init__(self, s):
+        self.a = s
+        self.prec = 99
+    def infix(self): return self.a
+    def prefix(self): return self.a
+    def postfix(self): return self.a
 
-class Num:
-    name, descr = &quot;num&quot;, &quot;Number&quot;
-    def __init__(self, val):
-        if isinstance(val, Num): self.val = val.val
-        else: self.val = val
-    def __int__(self):      return int(self.val)
-    def __float__(self):    return float(self.val)
-    def __str__(self):      return str(self.val)
-    def __add__(x, y):      return x.__class__(x.val + y.val)
-    def __sub__(x, y):      return x.__class__(x.val - y.val)
-    def __or__(x, y):       return x.__class__(x.val | y.val)
-    def __xor__(x, y):      return x.__class__(x.val ^ y.val)
-    def __mul__(x, y):      return x.__class__(x.val * y.val)
-    def __mod__(x, y):      return x.__class__(x.val % y.val)
-    def __truediv__(x, y):  return x.__class__(x.val / y.val)
-    def __and__(x, y):      return x.__class__(x.val &amp; y.val)
-    def __rshift__(x, y):   return x.__class__(x.val &gt;&gt; y.val)
-    def __lshift__(x, y):   return x.__class__(x.val &lt;&lt; y.val)
-    def __pos__(x):         return x.__class__(+x.val)
-    def __neg__(x):         return x.__class__(-x.val)
-    def __invert__(x):      return x.__class__(~x.val)
-    def __pow__(x, y):      return x.__class__(x.val ** y.val)
-    def rev(self):
-        raise TypeError(&quot;%s can not be bit reversed&quot;%self.__class__.__name__)
-    def factor(self):
-        n = int(self.val)
-        if n != self.val: raise TypeError(&quot;%s is not integer&quot;%self.val)
-        if n &lt; 0: ds = [-1]; n = -n
-        else: ds = []
-        rn = n**0.5
-        while n &gt; 1 and n%2==0: ds.append(2); n //= 2
-        d = 3
-        while d &lt;= rn:
-            while n%d==0: ds.append(d); n //= d
-            d += 2
-        if n &gt; 1: ds.append(n)
-        return &quot; &quot;.join(map(str, ds))
-    def sqrt(self):
-        return self.__class__(self.val ** (1/2))
+class Func:
+    &quot;&quot;&quot; Function expression &quot;&quot;&quot;
+    def __init__(self, name, *args):
+        self.name = name
+        self.args = args
+        self.prec = 99
+    def infix(self):
+        args = [a.infix() for a in self.args]
+        return &quot;%s(%s)&quot;%(self.name, &quot;,&quot;.join(args))
+    def prefix(self):
+        args = [a.prefix() for a in self.args]
+        return &quot;%s %s&quot;%(self.name, &quot; &quot;.join(args))
+    def postfix(self):
+        args = [a.postfix() for a in self.args]
+        return &quot;%s %s&quot;%(&quot; &quot;.join(args), self.name)
 
-class Float(Num):
-    name, descr = &quot;flt32&quot;, &quot;32 bit Float&quot;
-    def __init__(self, val): self.val = float(val)
-    def __str__(self): return &quot;&quot;&quot;%s
-    ieee: 0x%08X&quot;&quot;&quot;%(   self.val,
-        ieee_int32(self.val),
-    )
+# Grammar for arithmetic expressions
 
-class Double(Num):
-    name, descr = &quot;flt64&quot;, &quot;64 bit Float&quot;
-    def __init__(self, val): self.val = float(val)
-    def __str__(self): return &quot;&quot;&quot;%s
-    ieee: 0x%16X&quot;&quot;&quot;%(   self.val,
-                        ieee_int64(self.val),
-    )
-
-class Rat(Num):
-    name, descr = &quot;rat&quot;, &quot;Rational&quot;
-    def __init__(self, val):
-        if isinstance(val, float):
-            self.val = Fraction(&quot;%.53f&quot;%(val)).limit_denominator(1000000000)
-        elif isinstance(val, Num): self.val = val.val
-        else: self.val = Fraction(val)
-    def __int__(self): return self.val.numerator//self.val.denominator
-    def __float__(self): return self.val.numerator/self.val.denominator
-    def __str__(self): return str(self.val)
-
-class Int(Num):
-    name, descr = &quot;int&quot;, &quot;Integer&quot;
-    def __init__(self, val): self.val = int(val)
-    def __truediv__(x, y): return x.__class__(x.val // y.val)
-    def __str__(self): return base(self.val, radix=10, group=3, width=None)
-
-class Int8(Num):
-    name, descr = &quot;int8&quot;, &quot;8 bit Integer&quot;
-    width = 8
-    def __init__(self, val): self.val = int(val) &amp; (2**self.width-1)
-    def __truediv__(x, y): return x.__class__(x.val // y.val)
-    def __str__(self): return &quot;&quot;&quot;%s
-    hex: %s
-    oct: %s
-    bin: %s&quot;&quot;&quot;%(    base(self.val, radix=10, group=3, width=None),
-                    base(self.val, radix=16, group=4, width=self.width),
-                    base(self.val, radix=8,  group=3, width=self.width),
-                    base(self.val, radix=2,  group=4, width=self.width),
-    )
-    def rev(self):
-        &quot;&quot;&quot; reverse bit order &quot;&quot;&quot;
-        return self.__class__(
-            sum(    ((self.val&gt;&gt;i)&amp;0x1)&lt;&lt;(self.width-1-i)
-                    for i in range(self.width)
-            )
-        )
-
-class Int16(Int8):
-    name, descr = &quot;int16&quot;, &quot;16 bit Integer&quot;
-    width = 16
-    def __str__(self): return &quot;&quot;&quot;%s
-    hex: %s
-    bin: %s&quot;&quot;&quot;%(    base(self.val, radix=10, group=3, width=None),
-                    base(self.val, radix=16, group=4, width=self.width),
-                    base(self.val, radix=2,  group=4, width=self.width),
-    )
-
-class Int32(Int8):
-    name, descr = &quot;int32&quot;, &quot;32 bit Integer&quot;
-    width = 32
-    def __str__(self): return &quot;&quot;&quot;%s
-    hex: %s
-    bin: %s
-    flt: %s&quot;&quot;&quot;%(    base(self.val, radix=10, group=3, width=None),
-                    base(self.val, radix=16, group=4, width=self.width),
-                    base(self.val, radix=2,  group=4, width=self.width),
-                    ieee_float(self.val),
-    )
-
-class Int64(Int32):
-    name, descr = &quot;int64&quot;, &quot;64 bit Integer&quot;
-    width = 64
-    def __str__(self): return &quot;&quot;&quot;%s
-    hex: %s
-    bin: %s
-    flt: %s&quot;&quot;&quot;%(    base(self.val, radix=10, group=3, width=None),
-                    base(self.val, radix=16, group=4, width=self.width),
-                    base(self.val, radix=2,  group=4, width=self.width),
-                    ieee_double(self.val),
-    )
-
-def ieee_int32(x):
-    return struct.unpack(&quot;I&quot;, struct.pack(&quot;f&quot;, x))[0]
-
-def ieee_int64(x):
-    return struct.unpack(&quot;Q&quot;, struct.pack(&quot;d&quot;, x))[0]
-
-def ieee_float(n):
-    return struct.unpack(&quot;f&quot;, struct.pack(&quot;I&quot;, n))[0]
-
-def ieee_double(n):
-    return struct.unpack(&quot;d&quot;, struct.pack(&quot;Q&quot;, n))[0]
-
-def base(N, radix=10, group=3, width=None):
-    if width:
-        N %= 2**width
-        bits_per_digit = {16:4, 8:3, 2:1}[radix]
-        min_len = width//bits_per_digit
-    if N &lt; 0:
-        N = -N
-        sign = &quot;-&quot;
-    else:
-        sign = &quot;&quot;
-    s = &quot;&quot;
-    while N:
-        N, d = divmod(N, radix)
-        s = s + &quot;0123456789ABCDEF&quot;[d]
-    s = s or &quot;0&quot;
-    if width:
-        s = s + &quot;0&quot;*(min_len-len(s))
-    s = &quot; &quot;.join(s[i:i+group] for i in range(0, len(s), group))
-    return sign + s[::-1]
-
-class Bin:
-    def __init__(self, n): self.val = int(n.replace('_', ''), 2)
-    def eval(self, calc): return calc.number(self.val)
-
-class Oct:
-    def __init__(self, n): self.val = int(n.replace('_', ''), 8)
-    def eval(self, calc): return calc.number(self.val)
-
-class Hex:
-    def __init__(self, n): self.val = int(n.replace('_', ''), 16)
-    def eval(self, calc): return calc.number(self.val)
-
-class Dec:
-    def __init__(self, n): self.val = int(n.replace('_', ''), 10)
-    def eval(self, calc): return calc.number(self.val)
-
-class Real:
-    def __init__(self, n): self.val = float(n.replace('_', ''))
-    def eval(self, calc): return calc.number(self.val)
-
-class Var:
-    def __init__(self, n): self.name = n
-    def eval(self, calc):
-        try: val = calc[self]
-        except KeyError: raise NameError(self.name)
-        return val.eval(calc)
-
-class Mode:
-    def __init__(self, mode): self.mode = mode
-    def eval(self, calc):
-        calc.number = self.mode
-        return &quot;%s mode&quot;%calc.number.descr
-
-class Assign:
-    def __init__(self, name, expr): self.name, self.expr = name, expr
-    def eval(self, calc):
-        calc[self.name] = self.expr
-        return self.expr.eval(calc)
-
-class Op2:
-    def __init__(self, x, y): self.x, self.y = x, y
-
-class Op1:
-    def __init__(self, x): self.x = x
-
-class Add(Op2):
-    def eval(self, calc): return self.x.eval(calc) + self.y.eval(calc)
-
-class Sub(Op2):
-    def eval(self, calc): return self.x.eval(calc) - self.y.eval(calc)
-
-class Or(Op2):
-    def eval(self, calc): return self.x.eval(calc) | self.y.eval(calc)
-
-class Xor(Op2):
-    def eval(self, calc): return self.x.eval(calc) ^ self.y.eval(calc)
-
-class Mul(Op2):
-    def eval(self, calc): return self.x.eval(calc) * self.y.eval(calc)
-
-class Mod(Op2):
-    def eval(self, calc): return self.x.eval(calc) % self.y.eval(calc)
-
-class Div(Op2):
-    def eval(self, calc): return self.x.eval(calc) / self.y.eval(calc)
-
-class And(Op2):
-    def eval(self, calc): return self.x.eval(calc) &amp; self.y.eval(calc)
-
-class RShift(Op2):
-    def eval(self, calc): return self.x.eval(calc) &gt;&gt; self.y.eval(calc)
-
-class LShift(Op2):
-    def eval(self, calc): return self.x.eval(calc) &lt;&lt; self.y.eval(calc)
-
-class Pow(Op2):
-    def eval(self, calc): return self.x.eval(calc) ** self.y.eval(calc)
-
-class Pos(Op1):
-    def eval(self, calc): return +self.x.eval(calc)
-
-class Neg(Op1):
-    def eval(self, calc): return -self.x.eval(calc)
-
-class Inv(Op1):
-    def eval(self, calc): return ~self.x.eval(calc)
-
-class Rev(Op1):
-    def eval(self, calc): return self.x.eval(calc).rev()
-
-class Factor(Op1):
-    def eval(self, calc): return self.x.eval(calc).factor()
-
-class Sqrt(Op1):
-    def eval(self, calc): return self.x.eval(calc).sqrt()
-
-def red(x, ys):
-    for f, y in ys:
-        x = f(x, y)
+def red(x, fs):
+    for f in fs: x = f(x)
     return x
 
-def red1(f, x):
-    return f(x)
+parser = sp.compile(r&quot;&quot;&quot;
 
-parser = sp.compile(
-    r&quot;&quot;&quot;
-        bin = r'b([_0-1]+)\b' : `Bin` ;
-        bin = r'([_0-1]+)b\b' : `Bin` ;
-        oct = r'o([_0-7]+)\b' : `Oct` ;
-        oct = r'([_0-7]+)o\b' : `Oct` ;
-        hex = r'h([_0-9a-fA-F]+)\b' : `Hex` ;
-        hex = r'([_0-9a-fA-F]+)h\b' : `Hex` ;
-        hex = r'0x([_0-9a-fA-F]+)\b' : `Hex` ;
-        real = r'(?:\d+\.\d*|\d*\.\d+)(?:[eE][-+]?\d+)?|\d+[eE][-+]?\d+' : `Real` ;
-        dec = r'\d+' : `Dec` ;
-        var = r'[a-zA-Z_]\w*' : `Var`;
+    ident = r'\w+' : `Atom` ;
 
-        addop = '+' `Add` ;
-        addop = '-' `Sub` ;
-        addop = '|' `Or` ;
-        addop = '^' `Xor` ;
+    func1 = r'sin' | r'cos' | r'tan' ;
+    func2 = r'min' | r'max' ;
 
-        mulop = '*' `Mul` ;
-        mulop = '%' `Mod` ;
-        mulop = '/' `Div` ;
-        mulop = '&amp;' `And` ;
-        mulop = '&gt;&gt;' `RShift` ;
-        mulop = '&lt;&lt;' `LShift` ;
+    op = op_add | op_mul | op_pow ;
+    op_add = r'[+-]' ;
+    op_mul = r'[*/]' ;
+    op_pow = r'\^' ;
 
-        unop = '+' `Pos` ;
-        unop = '-' `Neg` ;
-        unop = '~' `Inv` ;
+    separator: r'\s+' ;
 
-        powop = '**' `Pow` ;
+    !axiom = expr      `&quot;infix&quot;`
+           | expr_pre  `&quot;prefix&quot;`
+           | expr_post `&quot;postfix&quot;`
+           ;
 
-        separator: r'\s+' ;
+    # Infix expressions
 
-        !S = '?'        `Help()`;
+    expr = term (op_add term :: `lambda op, y: lambda x: Op(op, x, y)`)* :: `red` ;
+    term = fact (op_mul fact :: `lambda op, y: lambda x: Op(op, x, y)`)* :: `red` ;
+    fact = atom (op_pow fact :: `lambda op, y: lambda x: Op(op, x, y)`)? :: `red` ;
+    atom = ident ;
+    atom = '(' expr ')' ;
+    atom = func1 '(' expr ')' :: `Func` ;
+    atom = func2 '(' expr ',' expr ')' :: `Func` ;
 
-        !S = 'num'      `Mode(Num)`;
-        !S = 'int8'     `Mode(Int8)`;
-        !S = 'int16'    `Mode(Int16)`;
-        !S = 'int32'    `Mode(Int32)`;
-        !S = 'int64'    `Mode(Int64)`;
-        !S = 'int'      `Mode(Int)`;
-        !S = 'flt32'    `Mode(Float)`;
-        !S = 'flt64'    `Mode(Double)`;
-        !S = 'rat'      `Mode(Rat)`;
+    # Prefix expressions
 
-        !S = var '=' expr :: `Assign` ;
-        !S = expr ;
+    expr_pre = ident ;
+    expr_pre = op expr_pre expr_pre :: `Op` ;
+    expr_pre = func1 expr_pre :: `Func` ;
+    expr_pre = func2 expr_pre expr_pre :: `Func` ;
 
-        expr = term (addop term)* :: `red` ;
-        term = fact (mulop fact)* :: `red` ;
-        fact = unop fact :: `red1` | pow ;
-        pow = atom (powop fact)? :: `red` ;
+    # Postfix expressions
 
-        atom = '(' expr ')' ;
-        atom = 'rev' '(' expr ')' : `Rev` ;
-        atom = 'factor' '(' expr ')' : `Factor` ;
-        atom = 'sqrt' '(' expr ')' : `Sqrt` ;
-        atom = bin | oct | hex | real | dec | var ;
-    &quot;&quot;&quot;)
+    expr_post = ident sexpr_post :: `lambda x, f: f(x)` ;
 
-if __name__ == '__main__':
-    print(Help().eval())
-    print()
-    calc = Calc()
-    while True:
-        expr = input(&quot;(%s) &quot;%calc.number.name)
-        if not expr: continue
-        try:
-            val = parser(expr).eval(calc)
-        except Exception as e:
-            print(&quot;%s: %s&quot;%(e.__class__.__name__, e))
-        else:
-            print(&quot;=&quot;, val)
-        print()
+    sexpr_post = expr_post op :: `lambda y, op: lambda x: Op(op, x, y)` ;
+    sexpr_post = expr_post func2 :: `lambda y, f: lambda x: Func(f, x, y)` ;
+    sexpr_post = func1 :: `lambda f: lambda x: Func(f, y)` ;
+
+&quot;&quot;&quot;)
+
+while 1:
+    e = input(&quot;:&quot;)
+    if e == &quot;&quot;: break
+    try:
+        expr, t = parser(e)
+    except Exception as e:
+        print(e)
+    else:
+        print(e, &quot;is a&quot;, t, &quot;expression&quot;)
+        print(&quot;\tinfix   :&quot;, expr.infix())
+        print(&quot;\tprefix  :&quot;, expr.prefix())
+        print(&quot;\tpostfix :&quot;, expr.postfix())
 
 </pre>
+</div>
+</div>
+<div class="section" id="complete-interactive-calculator">
+<h2><a class="toc-backref" href="#id31">5.3&nbsp;&nbsp;&nbsp;Complete interactive calculator</a></h2>
+<p>This chapter presents an extention of the calculator described in the <a class="reference internal" href="#tutorial">tutorial</a>.
+This calculator has more functions and a memory.</p>
+<p>The grammar has been rewritten using the SP language.</p>
+<div class="section" id="new-functions">
+<h3>New functions</h3>
+<p>The calculator has memories.
+A memory cell is identified by a name.
+For example, if the user types <tt class="docutils literal"><span class="pre">pi</span> <span class="pre">=</span> <span class="pre">3.14</span></tt>,
+the memory cell named <tt class="docutils literal"><span class="pre">pi</span></tt> will contain the value of <tt class="docutils literal"><span class="pre">pi</span></tt>
+and <tt class="docutils literal"><span class="pre">2*pi</span></tt> will return <tt class="docutils literal"><span class="pre">6.28</span></tt>.</p>
+<p>The variables are saved in a dictionnary.</p>
+</div>
+<div class="section" id="id14">
+<h3>Source code</h3>
+<p>The complete source code is available in the example directory of the archive.</p>
 </div>
 </div>
 </div>

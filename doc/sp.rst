@@ -492,9 +492,9 @@ You can use the syntax of regular expressions as expected by the *re* [#]_ modul
 
 .. [#] *re* is a standard Python module.
        It handles regular expressions.
-       For further information about *re* you can read http://docs.python.org/lib/module-re.html
+       For further information about *re* you can read http://docs.python.org/library/re.html
 
-.. [#] Read the Python documentation for further information: http://docs.python.org/lib/re-syntax.html
+.. [#] Read the Python documentation for further information: http://docs.python.org/library/re.html#re-syntax
 
 Predefined tokens
 ~~~~~~~~~~~~~~~~~
@@ -887,6 +887,149 @@ Here the equivalence between Python expressions and the SP mini language:
 Some examples to illustrate SP
 ==============================
 
+Newick format
+-------------
+
+.. epigraph::
+
+    In mathematics, Newick tree format (or Newick notation or New Hampshire tree format)
+    is a way to represent graph-theoretical trees with edge lengths using parentheses and
+    commas. It was created by James Archie, William H. E. Day, Joseph Felsenstein, Wayne
+    Maddison, Christopher Meacham, F. James Rohlf, and David Swofford, at two meetings in
+    1986, the second of which was at Newick's restaurant in Dover, New Hampshire, USA.
+
+    -- Wikipedia, the free encyclopedia
+
+The grammar given by Wikipedia is::
+
+   Tree --> Subtree ";" | Branch ";"
+   Subtree --> Leaf | Internal
+   Leaf --> Name
+   Internal --> "(" BranchSet ")" Name
+   BranchSet --> Branch | Branch "," BranchSet
+   Branch --> Subtree Length
+   Name --> empty | string
+   Length --> empty | ":" number
+
+With very few transformation, this grammar can be converted to a Simple Parser grammar.
+Only ``BranchSet`` is rewritten to use a comma separated list parser::
+
+    Tree = Subtree ';' | Branch ';' ;
+    Subtree = Leaf | Internal ;
+    Leaf = Name ;
+    Internal = '(' [Branch/',']+ ')' Name ;
+    Branch = Subtree Length ;
+    Name = r'[^;:,()]*';
+    Length = '' | ':' r'[0-9.]+' ;
+
+Here is the complete parser (newick.py):
+
+.. include:: newick.py
+    :literal:
+
+Infix/Prefix/Postfix notation converter
+---------------------------------------
+
+Introduction
+~~~~~~~~~~~~
+
+In the previous example, the parser computes the value of the expression on the fly, while parsing.
+It is also possible to build an abstract syntax tree to store an abstract representation of the input.
+This may be usefull when several passes are necessary.
+
+This example shows how to parse an expression (infix, prefix or postfix) and convert it in infix,
+prefix and postfix notation. The expression is saved in a tree. Each node of the tree correspond
+to an operator in the expression. Each leaf is a number. Then to write the expression in infix,
+prefix or postfix notation, we just need to walk throught the tree in a particular order.
+
+Abstract syntax trees
+~~~~~~~~~~~~~~~~~~~~~
+
+The AST of this converter has three types of node:
+
+class Op
+    is used to store operators (``+``, ``-``, ``*``, ``/``, ``^``).
+    It has two sons associated to the sub expressions.
+
+class Atom
+    is an atomic expression (a number or a symbolic name).
+
+class Func
+    is used to store functions.
+
+These classes are instanciated by the init method. The infix, prefix and postfix methods
+return strings containing the representation of the node in infix, prefix and postfix notation.
+
+Grammar
+~~~~~~~
+
+Lexical definitions
+'''''''''''''''''''
+
+::
+
+    ident = r'\w+' : `Atom` ;
+
+    func1 = r'sin' | r'cos' | r'tan' ;
+    func2 = r'min' | r'max' ;
+
+    op = op_add | op_mul | op_pow ;
+    op_add = r'[+-]' ;
+    op_mul = r'[*/]' ;
+    op_pow = r'\^' ;
+
+Infix expressions
+'''''''''''''''''
+
+The grammar for infix expressions is similar to the grammar used in the previous example::
+
+    expr = term (op_add term :: `lambda op, y: lambda x: Op(op, x, y)`)* :: `red` ;
+    term = fact (op_mul fact :: `lambda op, y: lambda x: Op(op, x, y)`)* :: `red` ;
+    fact = atom (op_pow fact :: `lambda op, y: lambda x: Op(op, x, y)`)? :: `red` ;
+    atom = ident ;
+    atom = '(' expr ')' ;
+    atom = func1 '(' expr ')' :: `Func` ;
+    atom = func2 '(' expr ',' expr ')' :: `Func` ;
+
+Prefix expressions
+''''''''''''''''''
+
+The grammar for prefix expressions is very simple. A compound prefix expression is an operator
+followed by two subexpressions, or a binary function followed by two subexpressions, or a unary
+function followed by one subexpression::
+
+    expr_pre = ident ;
+    expr_pre = op expr_pre expr_pre :: `lambda op, x, y: Op(op, x, y)` ;
+    expr_pre = func1 expr_pre :: `Func` ;
+    expr_pre = func2 expr_pre expr_pre :: `Func` ;
+
+Postfix expressions
+'''''''''''''''''''
+
+At first sight postfix and infix grammars may be very similar. Only the position of the operators
+changes. So a compound postfix expression is a first expression followed by a second one and an
+operator. This rule is left recursive. As SP is a descendant recursive parser, such rules are
+forbidden to avoid infinite recursion. To remove the left recursion a classical solution is to rewrite
+the grammar like this::
+
+    expr_post = ident sexpr_post :: `lambda x, f: f(x)` ;
+
+    sexpr_post = expr_post op :: `lambda y, op: lambda x: Op(op, x, y)` ;
+    sexpr_post = expr_post func2 :: `lambda y, f: lambda x: Func(f, x, y)` ;
+    sexpr_post = func1 :: `lambda f: lambda x: Func(f, y)` ;
+
+The parser searches for an atomic expression and builds the AST corresponding to the remaining
+subexpression. ``sexpr_post`` returns a function that builds the complete AST when applied
+to the first atomic expression. This is a way to simulate inherited attributes.
+
+Source code
+~~~~~~~~~~~
+
+Here is the complete source code (notation.py):
+
+.. include:: notation.py
+    :literal:
+
 Complete interactive calculator
 -------------------------------
 
@@ -909,7 +1052,5 @@ The variables are saved in a dictionnary.
 Source code
 ~~~~~~~~~~~
 
-Here is the complete source code (*calc.py*):
+The complete source code is available in the example directory of the archive.
 
-.. include:: calc.py
-    :literal:
