@@ -991,6 +991,13 @@ The grammar for infix expressions is similar to the grammar used in the previous
     atom = func1 '(' expr ')' :: `Func` ;
     atom = func2 '(' expr ',' expr ')' :: `Func` ;
 
+``red`` is a function that applies a list of functions to a value::
+
+    def red(x, fs):
+        for f in fs:
+            x = f(x)
+        return x
+
 Prefix expressions
 ''''''''''''''''''
 
@@ -999,7 +1006,7 @@ followed by two subexpressions, or a binary function followed by two subexpressi
 function followed by one subexpression::
 
     expr_pre = ident ;
-    expr_pre = op expr_pre expr_pre :: `lambda op, x, y: Op(op, x, y)` ;
+    expr_pre = op expr_pre expr_pre :: `Op` ;
     expr_pre = func1 expr_pre :: `Func` ;
     expr_pre = func2 expr_pre expr_pre :: `Func` ;
 
@@ -1009,18 +1016,37 @@ Postfix expressions
 At first sight postfix and infix grammars may be very similar. Only the position of the operators
 changes. So a compound postfix expression is a first expression followed by a second one and an
 operator. This rule is left recursive. As SP is a descendant recursive parser, such rules are
-forbidden to avoid infinite recursion. To remove the left recursion a classical solution is to rewrite
-the grammar like this::
+forbidden to avoid infinite recursion. To remove the left recursion a classical solution is to
+rewrite the grammar like this::
 
-    expr_post = ident sexpr_post :: `lambda x, f: f(x)` ;
-
-    sexpr_post = expr_post op :: `lambda y, op: lambda x: Op(op, x, y)` ;
-    sexpr_post = expr_post func2 :: `lambda y, f: lambda x: Func(f, x, y)` ;
-    sexpr_post = func1 :: `lambda f: lambda x: Func(f, y)` ;
+    expr_post = ident expr_post_rest :: `lambda x, f: f(x)` ;
+    expr_post_rest = 
+        (   expr_post op    :: `lambda y, op: lambda x: Op(op, x, y)`
+        |   expr_post func2 :: `lambda y, f: lambda x: Func(f, x, y)`
+        |   func1           :: `lambda f: lambda x: Func(f, x)`
+        )   expr_post_rest  :: `lambda f, g: lambda x: g(f(x))` ;
+    expr_post_rest = `lambda x: x` ;
 
 The parser searches for an atomic expression and builds the AST corresponding to the remaining
-subexpression. ``sexpr_post`` returns a function that builds the complete AST when applied
+subexpression. ``expr_post_rest`` returns a function that builds the complete AST when applied
 to the first atomic expression. This is a way to simulate inherited attributes.
+
+Using the previous ``red`` function and the repetitions, this rule can be rewritten as::
+
+    expr_post = ident expr_post_rest* :: `red` ;
+    expr_post_rest =
+        (   expr_post op    :: `lambda y, op: lambda x: Op(op, x, y)`
+        |   expr_post func2 :: `lambda y, f: lambda x: Func(f, x, y)`
+        |   func1           :: `lambda f: lambda x: Func(f, x)`
+        ) ;
+
+or simply::
+
+    expr_post = ident
+        (   expr_post op    :: `lambda y, op: lambda x: Op(op, x, y)`
+        |   expr_post func2 :: `lambda y, f: lambda x: Func(f, x, y)`
+        |   func1           :: `lambda f: lambda x: Func(f, x)`
+        )* :: `red` ;
 
 Source code
 ~~~~~~~~~~~

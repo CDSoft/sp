@@ -6,7 +6,7 @@
 <meta name="generator" content="Docutils 0.5: http://docutils.sourceforge.net/" />
 <title>Simple Parser</title>
 <meta name="author" content="Christophe Delord" />
-<meta name="date" content="Sunday 07 March 2010" />
+<meta name="date" content="Tuesday 09 March 2010" />
 <style type="text/css">
 
 /*
@@ -279,7 +279,7 @@ div.footer, div.header {
 <tr class="field"><th class="docinfo-name">Web site:</th><td class="field-body"><a class="reference external" href="http://www.cdsoft.fr/sp.html">http://www.cdsoft.fr/sp.html</a></td>
 </tr>
 <tr><th class="docinfo-name">Date:</th>
-<td>Sunday 07 March 2010</td></tr>
+<td>Tuesday 09 March 2010</td></tr>
 <tr class="field"><th class="docinfo-name">License:</th><td class="field-body">This software is released under the LGPL license.</td>
 </tr>
 </tbody>
@@ -1456,6 +1456,13 @@ atom = '(' expr ')' ;
 atom = func1 '(' expr ')' :: `Func` ;
 atom = func2 '(' expr ',' expr ')' :: `Func` ;
 </pre>
+<p><tt class="docutils literal"><span class="pre">red</span></tt> is a function that applies a list of functions to a value:</p>
+<pre class="literal-block">
+def red(x, fs):
+    for f in fs:
+        x = f(x)
+    return x
+</pre>
 </div>
 <div class="section" id="prefix-expressions">
 <h4>Prefix expressions</h4>
@@ -1464,7 +1471,7 @@ followed by two subexpressions, or a binary function followed by two subexpressi
 function followed by one subexpression:</p>
 <pre class="literal-block">
 expr_pre = ident ;
-expr_pre = op expr_pre expr_pre :: `lambda op, x, y: Op(op, x, y)` ;
+expr_pre = op expr_pre expr_pre :: `Op` ;
 expr_pre = func1 expr_pre :: `Func` ;
 expr_pre = func2 expr_pre expr_pre :: `Func` ;
 </pre>
@@ -1474,18 +1481,37 @@ expr_pre = func2 expr_pre expr_pre :: `Func` ;
 <p>At first sight postfix and infix grammars may be very similar. Only the position of the operators
 changes. So a compound postfix expression is a first expression followed by a second one and an
 operator. This rule is left recursive. As SP is a descendant recursive parser, such rules are
-forbidden to avoid infinite recursion. To remove the left recursion a classical solution is to rewrite
-the grammar like this:</p>
+forbidden to avoid infinite recursion. To remove the left recursion a classical solution is to
+rewrite the grammar like this:</p>
 <pre class="literal-block">
-expr_post = ident sexpr_post :: `lambda x, f: f(x)` ;
-
-sexpr_post = expr_post op :: `lambda y, op: lambda x: Op(op, x, y)` ;
-sexpr_post = expr_post func2 :: `lambda y, f: lambda x: Func(f, x, y)` ;
-sexpr_post = func1 :: `lambda f: lambda x: Func(f, y)` ;
+expr_post = ident expr_post_rest :: `lambda x, f: f(x)` ;
+expr_post_rest =
+    (   expr_post op    :: `lambda y, op: lambda x: Op(op, x, y)`
+    |   expr_post func2 :: `lambda y, f: lambda x: Func(f, x, y)`
+    |   func1           :: `lambda f: lambda x: Func(f, x)`
+    )   expr_post_rest  :: `lambda f, g: lambda x: g(f(x))` ;
+expr_post_rest = `lambda x: x` ;
 </pre>
 <p>The parser searches for an atomic expression and builds the AST corresponding to the remaining
-subexpression. <tt class="docutils literal"><span class="pre">sexpr_post</span></tt> returns a function that builds the complete AST when applied
+subexpression. <tt class="docutils literal"><span class="pre">expr_post_rest</span></tt> returns a function that builds the complete AST when applied
 to the first atomic expression. This is a way to simulate inherited attributes.</p>
+<p>Using the previous <tt class="docutils literal"><span class="pre">red</span></tt> function and the repetitions, this rule can be rewritten as:</p>
+<pre class="literal-block">
+expr_post = ident expr_post_rest* :: `red` ;
+expr_post_rest =
+    (   expr_post op    :: `lambda y, op: lambda x: Op(op, x, y)`
+    |   expr_post func2 :: `lambda y, f: lambda x: Func(f, x, y)`
+    |   func1           :: `lambda f: lambda x: Func(f, x)`
+    ) ;
+</pre>
+<p>or simply:</p>
+<pre class="literal-block">
+expr_post = ident
+    (   expr_post op    :: `lambda y, op: lambda x: Op(op, x, y)`
+    |   expr_post func2 :: `lambda y, f: lambda x: Func(f, x, y)`
+    |   func1           :: `lambda f: lambda x: Func(f, x)`
+    )* :: `red` ;
+</pre>
 </div>
 </div>
 <div class="section" id="source-code">
@@ -1572,7 +1598,8 @@ class Func:
 # Grammar for arithmetic expressions
 
 def red(x, fs):
-    for f in fs: x = f(x)
+    for f in fs:
+        x = f(x)
     return x
 
 parser = sp.compile(r&quot;&quot;&quot;
@@ -1613,11 +1640,11 @@ parser = sp.compile(r&quot;&quot;&quot;
 
     # Postfix expressions
 
-    expr_post = ident sexpr_post :: `lambda x, f: f(x)` ;
-
-    sexpr_post = expr_post op :: `lambda y, op: lambda x: Op(op, x, y)` ;
-    sexpr_post = expr_post func2 :: `lambda y, f: lambda x: Func(f, x, y)` ;
-    sexpr_post = func1 :: `lambda f: lambda x: Func(f, y)` ;
+    expr_post = ident
+        (   expr_post op    :: `lambda y, op: lambda x: Op(op, x, y)`
+        |   expr_post func2 :: `lambda y, f: lambda x: Func(f, x, y)`
+        |   func1           :: `lambda f: lambda x: Func(f, x)`
+        )* :: `red` ;
 
 &quot;&quot;&quot;)
 
@@ -1629,7 +1656,7 @@ while 1:
     except Exception as e:
         print(e)
     else:
-        print(e, &quot;is a&quot;, t, &quot;expression&quot;)
+        print('« %s »'%e, &quot;is a&quot;, t, &quot;expression&quot;)
         print(&quot;\tinfix   :&quot;, expr.infix())
         print(&quot;\tprefix  :&quot;, expr.prefix())
         print(&quot;\tpostfix :&quot;, expr.postfix())

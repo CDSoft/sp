@@ -78,7 +78,8 @@ class Func:
 # Grammar for arithmetic expressions
 
 def red(x, fs):
-    for f in fs: x = f(x)
+    for f in fs:
+        x = f(x)
     return x
 
 parser = sp.compile(r"""
@@ -119,11 +120,11 @@ parser = sp.compile(r"""
 
     # Postfix expressions
 
-    expr_post = ident sexpr_post :: `lambda x, f: f(x)` ;
-
-    sexpr_post = expr_post op :: `lambda y, op: lambda x: Op(op, x, y)` ;
-    sexpr_post = expr_post func2 :: `lambda y, f: lambda x: Func(f, x, y)` ;
-    sexpr_post = func1 :: `lambda f: lambda x: Func(f, y)` ;
+    expr_post = ident
+        (   expr_post op    :: `lambda y, op: lambda x: Op(op, x, y)`
+        |   expr_post func2 :: `lambda y, f: lambda x: Func(f, x, y)`
+        |   func1           :: `lambda f: lambda x: Func(f, x)`
+        )* :: `red` ;
 
 """)
 
@@ -135,7 +136,7 @@ while 1:
     except Exception as e:
         print(e)
     else:
-        print(e, "is a", t, "expression")
+        print('« %s »'%e, "is a", t, "expression")
         print("\tinfix   :", expr.infix())
         print("\tprefix  :", expr.prefix())
         print("\tpostfix :", expr.postfix())
