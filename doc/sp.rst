@@ -102,7 +102,7 @@ Requirements
 
 SP is a *pure Python* package.
 It may run on *any platform* supported by Python.
-The only requirement of SP is *Python 2.6* or newer [#]_.
+The only requirement of SP is *Python 2.6*, *Python 3.1* or newer [#]_.
 Python can be downloaded at http://www.python.org.
 
 .. [#] Older *Python* versions may work (tested with Python 2.4 and 2.5).
@@ -787,7 +787,7 @@ by calling the ``sp.clean`` function::
 Older Python versions
 =====================
 
-This document describes the usage of SP with Python 2.6.
+This document describes the usage of SP with Python 2.6 or Python 3.1.
 Grammars need some adaptations to work with Python 2.5. or older.
 
 Separators
@@ -1023,7 +1023,7 @@ rewrite the grammar like this::
     expr_post_rest = 
         (   expr_post op    :: `lambda y, op: lambda x: Op(op, x, y)`
         |   expr_post func2 :: `lambda y, f: lambda x: Func(f, x, y)`
-        |   func1           :: `lambda f: lambda x: Func(f, x)`
+        |   func1           : `lambda f: lambda x: Func(f, x)`
         )   expr_post_rest  :: `lambda f, g: lambda x: g(f(x))` ;
     expr_post_rest = `lambda x: x` ;
 
@@ -1037,7 +1037,7 @@ Using the previous ``red`` function and the repetitions, this rule can be rewrit
     expr_post_rest =
         (   expr_post op    :: `lambda y, op: lambda x: Op(op, x, y)`
         |   expr_post func2 :: `lambda y, f: lambda x: Func(f, x, y)`
-        |   func1           :: `lambda f: lambda x: Func(f, x)`
+        |   func1           : `lambda f: lambda x: Func(f, x)`
         ) ;
 
 or simply::
@@ -1045,7 +1045,7 @@ or simply::
     expr_post = ident
         (   expr_post op    :: `lambda y, op: lambda x: Op(op, x, y)`
         |   expr_post func2 :: `lambda y, f: lambda x: Func(f, x, y)`
-        |   func1           :: `lambda f: lambda x: Func(f, x)`
+        |   func1           : `lambda f: lambda x: Func(f, x)`
         )* :: `red` ;
 
 Source code

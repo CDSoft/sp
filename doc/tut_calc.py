@@ -21,6 +21,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with Simple Parser.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import sp
 from sp import *
 
 def Calc():
@@ -48,7 +49,7 @@ def Calc():
         term = (fact & ( (mulop & fact) * op2 )[:]) * red
         expr |= (term & ( (addop & term) * op2 )[:]) * red
 
-    return expr, compile("""
+    return expr, sp.compile("""
         number = r'[0-9]+' : `int` ;
         addop = r'[+-]' ;
         mulop = r'[*/]' ;
@@ -62,12 +63,15 @@ def Calc():
         fact = number ;
     """)
 
+try: raw_input
+except NameError: raw_input = input
+
 print(__license__.strip())
 print("*"*70)
 calc1, calc2 = Calc()
 while True:
-    expr = input('Enter an expression: ')
-    try: print('calc1:', expr, '=', calc1(expr))
-    except Exception as e: print('calc1:', "%s:"%e.__class__.__name__, e)
-    try: print('calc2:', expr, '=', calc2(expr))
-    except Exception as e: print('calc2:', "%s:"%e.__class__.__name__, e)
+    expr = raw_input('Enter an expression: ')
+    try: print('calc1: %s = %s'%(expr, calc1(expr)))
+    except Exception as e: print('calc1: %s:'%e.__class__.__name__, e)
+    try: print('calc2: %s = %s'%(expr, calc2(expr)))
+    except Exception as e: print('calc2: %s:'%e.__class__.__name__, e)

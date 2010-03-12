@@ -207,8 +207,6 @@ class _err:
             if t.endswith(r'\b'): t = t[:-2]
             msg += " "+t
         err = SyntaxError(msg)
-        err.filename = "<string>"
-        err.lineno = p.line
         return err
 
 def _p(obj):
@@ -1259,11 +1257,7 @@ def compile_file(filename):
 if __name__ == '__main__':
     import doctest
     print(__license__.strip())
-    if sys.version_info[0] < 3:
+    failure_count, test_count = doctest.testmod()
+    if failure_count == 0:
         print("*"*70)
-        print("Python 3 is required to run the tests")
-    else:
-        failure_count, test_count = doctest.testmod()
-        if failure_count == 0:
-            print("*"*70)
-            print("All %d tests succeeded"%test_count)
+        print("All %d tests succeeded"%test_count)

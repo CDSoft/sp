@@ -63,9 +63,9 @@ for example in EXAMPLES.splitlines():
     example, description = example.split(' ', 1)
     description = description.strip()
     tree = parser(example)
-    print "%s:"%description
-    print "-"*len(description)
-    print "    Input :", example
-    print "    Parsed:", tree
-    print "    Leaves:", tree.nb_leaves()
-    print
+    print("%s:"%description)
+    print("-"*len(description))
+    print("    Input : %s"%example)
+    print("    Parsed: %s"%tree)
+    print("    Leaves: %s"%tree.nb_leaves())
+    print("")

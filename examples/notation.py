@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+#coding: UTF-8
 
 # Simple Parser
 # Copyright (C) 2009-2010 Christophe Delord
@@ -123,20 +124,23 @@ parser = sp.compile(r"""
     expr_post = ident
         (   expr_post op    :: `lambda y, op: lambda x: Op(op, x, y)`
         |   expr_post func2 :: `lambda y, f: lambda x: Func(f, x, y)`
-        |   func1           :: `lambda f: lambda x: Func(f, x)`
+        |   func1           : `lambda f: lambda x: Func(f, x)`
         )* :: `red` ;
 
 """)
 
+try: raw_input
+except NameError: raw_input = input
+
 while 1:
-    e = input(":")
+    e = raw_input(":")
     if e == "": break
     try:
         expr, t = parser(e)
     except Exception as e:
         print(e)
     else:
-        print('« %s »'%e, "is a", t, "expression")
-        print("\tinfix   :", expr.infix())
-        print("\tprefix  :", expr.prefix())
-        print("\tpostfix :", expr.postfix())
+        print("« %s » is a %s expression"%(e, t))
+        print("\tinfix   : %s"%expr.infix())
+        print("\tprefix  : %s"%expr.prefix())
+        print("\tpostfix : %s"%expr.postfix())

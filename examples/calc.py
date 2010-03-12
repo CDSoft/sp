@@ -380,17 +380,20 @@ parser = sp.compile(
         atom = bin | oct | hex | real | dec | var ;
     """)
 
+try: raw_input
+except NameError: raw_input = input
+
 if __name__ == '__main__':
     print(Help().eval())
-    print()
+    print("")
     calc = Calc()
     while True:
-        expr = input("(%s) "%calc.number.name)
+        expr = raw_input("(%s) "%calc.number.name)
         if not expr: continue
         try:
             val = parser(expr).eval(calc)
         except Exception as e:
             print("%s: %s"%(e.__class__.__name__, e))
         else:
-            print("=", val)
-        print()
+            print("= %s"%val)
+        print("")
