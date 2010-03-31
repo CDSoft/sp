@@ -194,11 +194,11 @@ class _err:
         >>> s('18')
         Traceback (most recent call last):
             ....
-        SyntaxError: [1:1] expected: begin
+        SyntaxError: [1:1] expected: begin...
         >>> s('begin +18')
         Traceback (most recent call last):
             ....
-        SyntaxError: [1:7] expected: \d+ \w+
+        SyntaxError: [1:7] expected: \d+ \w+...
         """
         p = _pos(s, self.i)
         msg = "[%d:%d] expected:"%(p.line, p.column)
@@ -207,6 +207,7 @@ class _err:
             if t.endswith(r'\b'): t = t[:-2]
             msg += " "+t
         err = SyntaxError(msg)
+        err.lineno = p.line
         return err
 
 def _p(obj):
@@ -266,13 +267,13 @@ class Parser:
         >>> num("\\nSpam")
         Traceback (most recent call last):
             ...
-        SyntaxError: [2:1] expected: \d+
+        SyntaxError: [2:1] expected: \d+...
 
         or when their are remaining stuff not parseable:
         >>> num("\\n\\n42\\n...")
         Traceback (most recent call last):
             ...
-        SyntaxError: [4:1] expected:
+        SyntaxError: [4:1] expected:...
         """
         i = self.skipsep(s, 0)
         x, i, e = self.parse(s, i, _err(i))
@@ -650,7 +651,7 @@ class Or(Parser):
     >>> s('ba')
     Traceback (most recent call last):
         ...
-    SyntaxError: [1:2] expected: b
+    SyntaxError: [1:2] expected: b...
     >>> s = R('a')[:] & C('branch 1') | R('a')[:] & R('b')[:] & C('branch 2')
     >>> s('aa')
     (['a', 'a'], 'branch 1')
@@ -744,7 +745,7 @@ class Rep(Parser):
     >>> As('')
     Traceback (most recent call last):
         ...
-    SyntaxError: [1:1] expected: A
+    SyntaxError: [1:1] expected: A...
     >>> As('A')
     ['A']
     >>> As('AAA')
@@ -758,7 +759,7 @@ class Rep(Parser):
     >>> As('AAA')
     Traceback (most recent call last):
         ...
-    SyntaxError: [1:2] expected:
+    SyntaxError: [1:2] expected:...
 
     The separator provides a convenient way to parse comma separated lists for instance.
     >>> t = R(r'\w')
@@ -882,7 +883,7 @@ def _compile_string(source, frame):
     >>> test(':foo')
     Traceback (most recent call last):
         ...
-    SyntaxError: [1:1] expected: \w+
+    SyntaxError: [1:1] expected: \w+...
 
     With specific lexer options:
     >>> test = compile('''
@@ -909,7 +910,7 @@ def _compile_string(source, frame):
     >>> test('end')
     Traceback (most recent call last):
         ...
-    SyntaxError: [1:1] expected: begin
+    SyntaxError: [1:1] expected: begin...
 
     Position computation
     --------------------
@@ -956,7 +957,7 @@ def _compile_string(source, frame):
     >>> test(' ')
     Traceback (most recent call last):
         ...
-    SyntaxError: [1:2] expected: \w+
+    SyntaxError: [1:2] expected: \w+...
     >>> test(' abc ')
     ['abc']
     >>> test(' abc def ')
@@ -976,7 +977,7 @@ def _compile_string(source, frame):
     >>> test(' abc def ')
     Traceback (most recent call last):
         ...
-    SyntaxError: [1:6] expected:
+    SyntaxError: [1:6] expected:...
 
     >>> test = compile('''
     ...     separator: ' ';
@@ -1000,7 +1001,7 @@ def _compile_string(source, frame):
     >>> test(' ')
     Traceback (most recent call last):
         ...
-    SyntaxError: [1:2] expected: \w+
+    SyntaxError: [1:2] expected: \w+...
     >>> test('a')
     ['a']
     >>> test('a, b')
@@ -1026,7 +1027,7 @@ def _compile_string(source, frame):
     >>> test('A D')
     Traceback (most recent call last):
         ...
-    SyntaxError: [1:3] expected: A B C
+    SyntaxError: [1:3] expected: A B C...
 
     Inline Python functions or objects
     ----------------------------------
@@ -1063,7 +1064,7 @@ def _compile_string(source, frame):
     >>> test('A C')
     Traceback (most recent call last):
         ...
-    SyntaxError: [1:3] expected: A B
+    SyntaxError: [1:3] expected: A B...
 
     """
 
@@ -1242,8 +1243,13 @@ def compile(source):
             index = python_source.find(source)
             if index >= 0:
                 # if found, update the filename and the error line number
-                sys.exc_value.filename = filename
-                sys.exc_value.lineno += python_source[:index].count('\n')
+                err = getattr(sys, 'exc_value', None)       # for Python 2.6
+                if err is None:
+                    info = getattr(sys, 'exc_info', None)   # for Python 3.1
+                    if info is not None: err = info()[1]
+                if err:
+                    err.filename = filename
+                    err.lineno += python_source[:index].count('\n')
         raise
 
 def compile_file(filename):
@@ -1257,7 +1263,7 @@ def compile_file(filename):
 if __name__ == '__main__':
     import doctest
     print(__license__.strip())
-    failure_count, test_count = doctest.testmod()
+    failure_count, test_count = doctest.testmod(optionflags=doctest.ELLIPSIS)
     if failure_count == 0:
         print("*"*70)
         print("All %d tests succeeded"%test_count)
