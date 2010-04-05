@@ -115,7 +115,7 @@ Introduction
 ~~~~~~~~~~~~
 
 This short tutorial presents how to make a simple calculator.
-The calculator will compute basic mathematical expressions (``+``, ``-``, ``*``, ``|``) possibly nested in parenthesis.
+The calculator will compute basic mathematical expressions (``+``, ``-``, ``*``, ``/``) possibly nested in parenthesis.
 We assume the reader is familiar with regular expressions.
 
 Defining the grammar
@@ -968,7 +968,7 @@ Lexical definitions
 
 ::
 
-    ident = r'\w+' : `Atom` ;
+    ident = r'\b(?!sin|cos|tan|min|max)\w+\b' : `Atom` ;
 
     func1 = r'sin' | r'cos' | r'tan' ;
     func2 = r'min' | r'max' ;
@@ -1073,10 +1073,22 @@ For example, if the user types ``pi = 3.14``,
 the memory cell named ``pi`` will contain the value of ``pi``
 and ``2*pi`` will return ``6.28``.
 
-The variables are saved in a dictionnary.
+The memory can also contain functions.
+For instance ``fact(n) = (n>0) ? n*fact(n-1) : 1`` defines
+the factorial function. ``fact(5)`` returns ``120``.
+
+Most of the functions of the ``math`` module are also available.
 
 Source code
 ~~~~~~~~~~~
 
-The complete source code is available in the example directory of the archive.
+The complete source code is quite big and is available in the example directory of the archive.
 
+.. note::
+
+    This calculator was initially a basic calculator example for Simple Parser
+    but it has been improved to fit programmers' needs.
+    I now use it every day at work.
+
+    In the future it may become a separate project
+    when I have time to write some documentation.

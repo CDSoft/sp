@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #coding: UTF-8
 
 # Simple Parser
@@ -85,7 +85,7 @@ def red(x, fs):
 
 parser = sp.compile(r"""
 
-    ident = r'\w+' : `Atom` ;
+    ident = ident.r'\b(?!sin|cos|tan|min|max)\w+\b' : `Atom` ;
 
     func1 = r'sin' | r'cos' | r'tan' ;
     func2 = r'min' | r'max' ;

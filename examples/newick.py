@@ -40,14 +40,23 @@ class Leaf:
     def nb_leaves(self): return 1
 
 class Internal:
-    def __init__(self, subtrees, name): self.subtrees, self.name = subtrees, name
-    def __str__(self): return "(%s)%s" % (','.join(str(st) for st in self.subtrees), self.name)
-    def nb_leaves(self): return sum(st.nb_leaves() for st in self.subtrees)
+    def __init__(self, subtrees, name):
+        self.subtrees, self.name = subtrees, name
+    def __str__(self):
+        return "(%s)%s"%(
+            ','.join(str(st) for st in self.subtrees),
+            self.name
+        )
+    def nb_leaves(self):
+        return sum(st.nb_leaves() for st in self.subtrees)
 
 class Branch:
-    def __init__(self, subtree, length): self.subtree, self.length = subtree, length
-    def __str__(self): return "%s:%s"%(self.subtree, self.length)
-    def nb_leaves(self): return self.subtree.nb_leaves()
+    def __init__(self, subtree, length):
+        self.subtree, self.length = subtree, length
+    def __str__(self):
+        return "%s:%s"%(self.subtree, self.length)
+    def nb_leaves(self):
+        return self.subtree.nb_leaves()
 
 parser = sp.compile(r"""
     !Tree = Subtree ';' | Branch ';' ;

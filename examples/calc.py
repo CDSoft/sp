@@ -19,51 +19,202 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Simple Parser.  If not, see <http://www.gnu.org/licenses/>.
 
-""" Calc
-
-num  : generic numerical calculus   | assignment: name = expression
-int  : integral calculus            | binary    : b... or ...b
-int8 : integral calculus on 8 bits  | octal     : o... or ...o
-int16: integral calculus on 16 bits | hexa      : h... or ...h or 0x...
-int32: integral calculus on 32 bits | operators : + - | ^ * % / & >> << ~ **
-int64: integral calculus on 64 bits | functions : rev factor sqrt
-flt32: 32 bit float calculus        |
-flt64: 64 bit float calculus        |
-rat  : rational calculus            | this help : ?
+"""
++-------------------------------+-------------------------------------+
+|            C A L C            | Powered by Python and Simple Parser |
++-------------------------------+-+-----------------------------------+
+| Modes:                          | Numbers:                          |
+|     num flt32 flt64 rat         |     binary: b... or ...b          |
+|     int int8 int16 int32 int64  |     octal : o... or ...o          |
++---------------------------------+     hexa  : h... or ...h or 0x... |
+| Variable and function:          |     float : 1.2e-3                |
+|     variable = expression       +-----------------------------------+
+|     function(x, y) = expression | Operators:                        |
++---------------------------------+     or xor and not                |
+| Builtin functions:              |     < <= > >= == !=               |
+|     fact, fib, rev, ...         |     cond?expr:expr                |
+| type help to list all functions |     + - | ^ * / % & >> << ~ **    |
++---------------------------------+-----------------------------------+
+| Commands:                       | Copyright (c) 2010 C. Delord      |
+|     ? help bye                  | http://www.cdsoft.fr/sp.html      |
++---------------------------------+-----------------------------------+
 """
 
-import struct
-import sys
+HELP = """
+Functions from math (Python package):
+-------------------------------------
 
+    Number-theoretic and representation functions:
+        ceil, sign, abs, floor, isinf, isnan, trunc
+
+    Power and logarithmic functions:
+        exp, log, log1p, log10, pow, sqr, sqrt
+
+    Trigonometric functions:
+        acos, asin, atan, atan2
+        cos, sin, tan, hypot
+
+    Angular conversion:
+        degrees, radians
+
+    Hyperbolic functions:
+        acosh, asinh, atanh, cosh, sinh, tanh
+
+Constants:
+
+    pi, e
+
+See http://docs.python.org/library/math.html
+
+Other specific functions:
+-------------------------
+
+    rev : reverses bit order in int8, int16, int32 or int64 mode
+    fact, fib : examples to show how to write recursive functions
+
+The mode commands (num, int, rat, ...) can be used as variables in
+expression to test the current mode.
+"""
+
+BUILTIN = r"""
+
+    # Default numeric mode
+    num
+
+    # Recursive function examples:
+    fact(n) = (n>0) ? n*fact(n-1) : 1
+    fib(n) = (n<2) ? n : fib(n-1) + fib(n-2)
+
+    # Reverse bit order
+    _rev4(q) = q&b1000 >> 3 | q&b0100 >> 1 | q&b0010 << 1 | q&b0001 << 3
+    _rev8(w) = _rev4(w&0xF0 >> 4) | _rev4(w&0x0F) << 4
+    _rev16(w) = _rev8(w&0xFF00 >> 8) | _rev8(w&0x00FF) << 8
+    _rev32(w) = _rev16(w&0xFFFF0000 >> 16) | _rev16(w&0x0000FFFF) << 16
+    _rev64(w) = _rev32(w&0xFFFFFFFF00000000 >> 32) | _rev32(w&0x00000000FFFFFFFF) << 32
+    rev(w) = int8 ? _rev8(w) : \
+             int16 ? _rev16(w) : \
+             int32 ? _rev32(w) : \
+             int64 ? _rev64(w) : \
+             undef
+
+"""
+
+import math, os, re, struct, sys
 import sp
-from fractions import Fraction
 
 try:
     import readline
 except ImportError:
     pass
 
-class Calc:
-    def __init__(self):
-        self.number = Num
-        self.memory = {}
-    def __getitem__(self, var): return self.memory[var.name]
-    def __setitem__(self, var, val): self.memory[var.name] = val
+def help(full=False):
+    print(__doc__.strip())
+    print("")
+    if full:
+        print("...")
+        print("")
+
+def error(msg=None):
+    if msg:
+        print(msg)
+    else:
+        help()
+    sys.exit(-1)
+
+class Quit:
+    def eval(self, lenv):
+        sys.exit()
 
 class Help:
-    def __init__(self):
-        self.doc = __doc__.strip()
-    def eval(self, calc=None):
-        return self.doc
+    def __init__(self, full=False):
+        self.full = full
+    def eval(self, lenv):
+        help = "\n" + __doc__.strip()
+        if self.full: help += "\n" + HELP
+        return help
+try:
+    cmp
+except NameError:
+    def cmp(x, y):
+        if x < y: return -1
+        if x > y: return +1
+        return 0
+
+class Undef:
+    name, descr = "undef", "Undefined"
+    def __init__(self, val=None):
+        self.val = None
+        self.bool = False
+    def __int__(self):      return Undef()
+    def __float__(self):    return Undef()
+    def __str__(self):      return Undef.descr
+    def __lt__(x, y):       return Undef()
+    def __gt__(x, y):       return Undef()
+    def __le__(x, y):       return Undef()
+    def __ge__(x, y):       return Undef()
+    def __eq__(x, y):       return Undef()
+    def __ne__(x, y):       return Undef()
+    def __add__(x, y):      return Undef()
+    def __sub__(x, y):      return Undef()
+    def __or__(x, y):       return Undef()
+    def __xor__(x, y):      return Undef()
+    def __mul__(x, y):      return Undef()
+    def __mod__(x, y):      return Undef()
+    def __truediv__(x, y):  return Undef()
+    def __and__(x, y):      return Undef()
+    def __rshift__(x, y):   return Undef()
+    def __lshift__(x, y):   return Undef()
+    def __pos__(x):         return Undef()
+    def __neg__(x):         return Undef()
+    def __invert__(x):      return Undef()
+    def __pow__(x, y):      return Undef()
+    def eval(self, lenv):   return self
+    def ceil(x):            return Undef()
+    def trunc(x):           return Undef()
+    def sign(x):            return Undef()
+    def abs(x):             return Undef()
+    def floor(x):           return Undef()
+    def isinf(x):           return Undef()
+    def isnan(x):           return Undef()
+    def exp(x):             return Undef()
+    def log(x, b=None):     return Undef()
+    def log1p(x):           return Undef()
+    def log10(x):           return Undef()
+    def pow(x, y):          return Undef()
+    def sqr(x):             return Undef()
+    def sqrt(x):            return Undef()
+    def acos(x):            return Undef()
+    def asin(x):            return Undef()
+    def atan(x):            return Undef()
+    def atan2(x, y):        return Undef()
+    def cos(x):             return Undef()
+    def sin(x):             return Undef()
+    def tan(x):             return Undef()
+    def hypot(x, y):        return Undef()
+    def degrees(x):         return Undef()
+    def radians(x):         return Undef()
+    def acosh(x):           return Undef()
+    def asinh(x):           return Undef()
+    def atanh(x):           return Undef()
+    def cosh(x):            return Undef()
+    def sinh(x):            return Undef()
+    def tanh(x):            return Undef()
 
 class Num:
     name, descr = "num", "Number"
     def __init__(self, val):
         if isinstance(val, Num): self.val = val.val
         else: self.val = val
+        self.bool = bool(val)
     def __int__(self):      return int(self.val)
     def __float__(self):    return float(self.val)
     def __str__(self):      return str(self.val)
+    def __lt__(x, y):       return x.val < y.val
+    def __gt__(x, y):       return x.val > y.val
+    def __le__(x, y):       return x.val <= y.val
+    def __ge__(x, y):       return x.val >= y.val
+    def __eq__(x, y):       return x.val == y.val
+    def __ne__(x, y):       return x.val != y.val
     def __add__(x, y):      return x.__class__(x.val + y.val)
     def __sub__(x, y):      return x.__class__(x.val - y.val)
     def __or__(x, y):       return x.__class__(x.val | y.val)
@@ -78,50 +229,74 @@ class Num:
     def __neg__(x):         return x.__class__(-x.val)
     def __invert__(x):      return x.__class__(~x.val)
     def __pow__(x, y):      return x.__class__(x.val ** y.val)
-    def rev(self):
-        raise TypeError("%s can not be bit reversed"%self.__class__.__name__)
-    def factor(self):
-        n = int(self.val)
-        if n != self.val: raise TypeError("%s is not integer"%self.val)
-        if n < 0: ds = [-1]; n = -n
-        else: ds = []
-        rn = n**0.5
-        while n > 1 and n%2==0: ds.append(2); n //= 2
-        d = 3
-        while d <= rn:
-            while n%d==0: ds.append(d); n //= d
-            d += 2
-        if n > 1: ds.append(n)
-        return " ".join(map(str, ds))
-    def sqrt(self):
-        return self.__class__(self.val ** (1/2))
+    def eval(self, lenv):   return self
+    def ceil(x):            return x.__class__(math.ceil(x.val))
+    def trunc(x):           return x.__class__(math.trunc(x.val))
+    def sign(x):            return x.__class__(cmp(x.val, 0))
+    def abs(x):             return x.__class__(abs(x.val))
+    def floor(x):           return x.__class__(math.floor(x.val))
+    def isinf(x):           return x.__class__(math.isinf(x.val))
+    def isnan(x):           return x.__class__(math.isnan(x.val))
+    def exp(x):             return x.__class__(math.exp(x.val))
+    def log(x, b=None):     return x.__class__(math.log(float(x.val), float(getattr(b, 'val', math.e))))
+    def log1p(x):           return x.__class__(math.log1p(float(x.val)))
+    def log10(x):           return x.__class__(math.log10(float(x.val)))
+    def pow(x, y):          return x.__class__(math.pow(x.val, y.val))
+    def sqr(x):             return x.__class__(x.val**2)
+    def sqrt(x):            return x.__class__(math.sqrt(x.val))
+    def acos(x):            return x.__class__(math.acos(x.val))
+    def asin(x):            return x.__class__(math.asin(x.val))
+    def atan(x):            return x.__class__(math.atan(x.val))
+    def atan2(x, y):        return x.__class__(math.atan2(x.val, y.val))
+    def cos(x):             return x.__class__(math.cos(x.val))
+    def sin(x):             return x.__class__(math.sin(x.val))
+    def tan(x):             return x.__class__(math.tan(x.val))
+    def hypot(x, y):        return x.__class__(math.hypot(x.val, y.val))
+    def degrees(x):         return x.__class__(math.degrees(x.val))
+    def radians(x):         return x.__class__(math.radians(x.val))
+    def acosh(x):           return x.__class__(math.acosh(x.val))
+    def asinh(x):           return x.__class__(math.asinh(x.val))
+    def atanh(x):           return x.__class__(math.atanh(x.val))
+    def cosh(x):            return x.__class__(math.cosh(x.val))
+    def sinh(x):            return x.__class__(math.sinh(x.val))
+    def tanh(x):            return x.__class__(math.tanh(x.val))
 
 class Float(Num):
     name, descr = "flt32", "32 bit Float"
     def __init__(self, val): self.val = float(val)
     def __str__(self): return """%s
     ieee: 0x%08X"""%(   self.val,
-        ieee_int32(self.val),
+                        ieee_int32(self.val),
     )
 
 class Double(Num):
     name, descr = "flt64", "64 bit Float"
     def __init__(self, val): self.val = float(val)
     def __str__(self): return """%s
-    ieee: 0x%16X"""%(   self.val,
+    ieee: 0x%016X"""%(  self.val,
                         ieee_int64(self.val),
     )
 
-class Rat(Num):
-    name, descr = "rat", "Rational"
-    def __init__(self, val):
-        if isinstance(val, float):
-            self.val = Fraction("%.53f"%(val)).limit_denominator(1000000000)
-        elif isinstance(val, Num): self.val = val.val
-        else: self.val = Fraction(val)
-    def __int__(self): return self.val.numerator//self.val.denominator
-    def __float__(self): return self.val.numerator/self.val.denominator
-    def __str__(self): return str(self.val)
+try:
+    from fractions import Fraction
+
+except ImportError:
+
+    class Rat(Undef):
+        descr = "Rational (not available, requires Python 2.6 or 3.1)"
+
+else:
+
+    class Rat(Num):
+        name, descr = "rat", "Rational"
+        def __init__(self, val):
+            if isinstance(val, float):
+                self.val = Fraction("%.53f"%(val)).limit_denominator(1000000000)
+            elif isinstance(val, Num): self.val = val.val
+            else: self.val = Fraction(val)
+        def __int__(self): return self.val.numerator//self.val.denominator
+        def __float__(self): return self.val.numerator/self.val.denominator
+        def __str__(self): return str(self.val)
 
 class Int(Num):
     name, descr = "int", "Integer"
@@ -142,13 +317,6 @@ class Int8(Num):
                     base(self.val, radix=8,  group=3, width=self.width),
                     base(self.val, radix=2,  group=4, width=self.width),
     )
-    def rev(self):
-        """ reverse bit order """
-        return self.__class__(
-            sum(    ((self.val>>i)&0x1)<<(self.width-1-i)
-                    for i in range(self.width)
-            )
-        )
 
 class Int16(Int8):
     name, descr = "int16", "16 bit Integer"
@@ -216,184 +384,509 @@ def base(N, radix=10, group=3, width=None):
     s = " ".join(s[i:i+group] for i in range(0, len(s), group))
     return sign + s[::-1]
 
+class Env(dict):
+    NUMBER = Undef
+
 class Bin:
-    def __init__(self, n): self.val = int(n.replace('_', ''), 2)
-    def eval(self, calc): return calc.number(self.val)
+    def __init__(self, n):
+        self.val = int(n.replace('_', ''), 2)
+    def eval(self, lenv):
+        return genv.NUMBER(self.val)
 
 class Oct:
-    def __init__(self, n): self.val = int(n.replace('_', ''), 8)
-    def eval(self, calc): return calc.number(self.val)
+    def __init__(self, n):
+        self.val = int(n.replace('_', ''), 8)
+    def eval(self, lenv):
+        return genv.NUMBER(self.val)
 
 class Hex:
-    def __init__(self, n): self.val = int(n.replace('_', ''), 16)
-    def eval(self, calc): return calc.number(self.val)
+    def __init__(self, n):
+        self.val = int(n.replace('_', ''), 16)
+    def eval(self, lenv):
+        return genv.NUMBER(self.val)
 
 class Dec:
-    def __init__(self, n): self.val = int(n.replace('_', ''), 10)
-    def eval(self, calc): return calc.number(self.val)
+    def __init__(self, n):
+        self.val = int(n.replace('_', ''), 10)
+    def eval(self, lenv):
+        return genv.NUMBER(self.val)
 
 class Real:
-    def __init__(self, n): self.val = float(n.replace('_', ''))
-    def eval(self, calc): return calc.number(self.val)
+    def __init__(self, n):
+        self.val = float(n.replace('_', ''))
+    def eval(self, lenv):
+        return genv.NUMBER(self.val)
 
 class Var:
-    def __init__(self, n): self.name = n
-    def eval(self, calc):
-        try: val = calc[self]
-        except KeyError: raise NameError(self.name)
-        return val.eval(calc)
+    def __init__(self, n):
+        self.name = n
+    def eval(self, lenv):
+        try:
+            args, expr = lenv[self.name]
+        except KeyError:
+            try:
+                args, expr = genv[self.name]
+            except KeyError:
+                return self.builtin(lenv)
+        if len(args) != 0:
+            raise TypeError("Wrong argument number in %s"%self.name)
+        return expr.eval(lenv)
+    def builtin(self, lenv):
+        try:
+            f = {
+                'num':      (lambda: genv.NUMBER(genv.NUMBER == Num)),
+                'int':      (lambda: genv.NUMBER(genv.NUMBER == Int)),
+                'int8':     (lambda: genv.NUMBER(genv.NUMBER == Int8)),
+                'int16':    (lambda: genv.NUMBER(genv.NUMBER == Int16)),
+                'int32':    (lambda: genv.NUMBER(genv.NUMBER == Int32)),
+                'int64':    (lambda: genv.NUMBER(genv.NUMBER == Int64)),
+                'flt32':    (lambda: genv.NUMBER(genv.NUMBER == Float)),
+                'flt64':    (lambda: genv.NUMBER(genv.NUMBER == Double)),
+                'rat':      (lambda: genv.NUMBER(genv.NUMBER == Rat)),
+                'undef':    Undef,
+                'pi':       (lambda: genv.NUMBER(math.pi)),
+                'e':        (lambda: genv.NUMBER(math.e)),
+            }[self.name]
+        except KeyError:
+            raise NameError(self.name)
+        return f()
 
 class Mode:
-    def __init__(self, mode): self.mode = mode
-    def eval(self, calc):
-        calc.number = self.mode
-        return "%s mode"%calc.number.descr
+    def __init__(self, mode):
+        self.mode = mode
+    def eval(self, lenv):
+        genv.NUMBER = self.mode
+        return "%s mode"%genv.NUMBER.descr
 
-class Assign:
-    def __init__(self, name, expr): self.name, self.expr = name, expr
-    def eval(self, calc):
-        calc[self.name] = self.expr
-        return self.expr.eval(calc)
+class Set:
+    def __init__(self, fundef, expr):
+        self.fundef, self.expr = fundef, expr
+    def eval(self, lenv):
+        genv[self.fundef.name] = (self.fundef.args, self.expr)
+        if len(self.fundef.args) == 0:
+            return self.expr.eval(lenv)
+        else:
+            return "%s(%s)"%(self.fundef.name, ",".join(self.fundef.args))
 
-class Op2:
-    def __init__(self, x, y): self.x, self.y = x, y
+class FunDef:
+    def __init__(self, name, args):
+        self.name, self.args = name, args
 
-class Op1:
-    def __init__(self, x): self.x = x
+class FunEval:
+    def __init__(self, name, args):
+        self.name, self.args = name, args
+    def eval(self, lenv):
+        try:
+            args, expr = lenv[self.name]
+        except KeyError:
+            try:
+                args, expr = genv[self.name]
+            except KeyError:
+                return self.builtin(lenv)
+        if len(args) != len(self.args):
+            raise TypeError("Wrong argument number in %s"%self.name)
+        lenv = dict((arg_name, ([], arg_expr.eval(lenv))) for arg_name, arg_expr in zip(args, self.args))
+        return expr.eval(lenv)
+    def builtin(self, lenv):
+        try:
+            arity, fun = {
+                'ceil':     (1, genv.NUMBER.ceil),
+                'trunc':    (1, genv.NUMBER.trunc),
+                'sign':     (1, genv.NUMBER.sign),
+                'abs':      (1, genv.NUMBER.abs),
+                'floor':    (1, genv.NUMBER.floor),
+                'isinf':    (1, genv.NUMBER.isinf),
+                'isnan':    (1, genv.NUMBER.isnan),
+                'exp':      (1, genv.NUMBER.exp),
+                'log':      ((1,2), genv.NUMBER.log),
+                'log1p':    (1, genv.NUMBER.log1p),
+                'log10':    (1, genv.NUMBER.log10),
+                'pow':      (2, genv.NUMBER.pow),
+                'sqr':      (1, genv.NUMBER.sqr),
+                'sqrt':     (1, genv.NUMBER.sqrt),
+                'acos':     (1, genv.NUMBER.acos),
+                'asin':     (1, genv.NUMBER.asin),
+                'atan':     (1, genv.NUMBER.atan),
+                'atan2':    (2, genv.NUMBER.atan2),
+                'cos':      (1, genv.NUMBER.cos),
+                'sin':      (1, genv.NUMBER.sin),
+                'tan':      (1, genv.NUMBER.tan),
+                'hypot':    (2, genv.NUMBER.hypot),
+                'degrees':  (1, genv.NUMBER.degrees),
+                'radians':  (1, genv.NUMBER.radians),
+                'acosh':    (1, genv.NUMBER.acosh),
+                'asinh':    (1, genv.NUMBER.asinh),
+                'atanh':    (1, genv.NUMBER.atanh),
+                'cosh':     (1, genv.NUMBER.cosh),
+                'sinh':     (1, genv.NUMBER.sinh),
+                'tanh':     (1, genv.NUMBER.tanh),
+            }[self.name]
+        except KeyError:
+            raise NameError(self.name)
+        n_args = len(self.args)
+        if (type(arity) == tuple and n_args not in arity) or \
+           (type(arity) == int and n_args != arity):
+            raise TypeError("Wrong argument number in %s"%self.name)
+        args = [arg.eval(lenv) for arg in self.args]
+        return fun(*args)
 
-class Add(Op2):
-    def eval(self, calc): return self.x.eval(calc) + self.y.eval(calc)
+class LogicOr:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def eval(self, lenv):
+        x = self.x.eval(lenv)
+        if x.bool:
+            return x
+        else:
+            return self.y.eval(lenv)
 
-class Sub(Op2):
-    def eval(self, calc): return self.x.eval(calc) - self.y.eval(calc)
+class LogicXor:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def eval(self, lenv):
+        x = self.x.eval(lenv)
+        y = self.y.eval(lenv)
+        if x.bool and not y.bool:
+            return x
+        elif y.bool and not x.bool:
+            return y
+        else:
+            return genv.NUMBER(False)
 
-class Or(Op2):
-    def eval(self, calc): return self.x.eval(calc) | self.y.eval(calc)
+class LogicAnd:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def eval(self, lenv):
+        x = self.x.eval(lenv)
+        if x.bool:
+            return self.y.eval(lenv)
+        else:
+            return x
 
-class Xor(Op2):
-    def eval(self, calc): return self.x.eval(calc) ^ self.y.eval(calc)
+class LogicNot:
+    def __init__(self, x):
+        self.x = x
+    def eval(self, lenv):
+        return genv.NUMBER(not self.x.eval(lenv).bool)
 
-class Mul(Op2):
-    def eval(self, calc): return self.x.eval(calc) * self.y.eval(calc)
+class Lt:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def eval(self, lenv):
+        return genv.NUMBER(self.x.eval(lenv) < self.y.eval(lenv))
 
-class Mod(Op2):
-    def eval(self, calc): return self.x.eval(calc) % self.y.eval(calc)
+class Gt:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def eval(self, lenv):
+        return genv.NUMBER(self.x.eval(lenv) > self.y.eval(lenv))
 
-class Div(Op2):
-    def eval(self, calc): return self.x.eval(calc) / self.y.eval(calc)
+class Le:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def eval(self, lenv):
+        return genv.NUMBER(self.x.eval(lenv) <= self.y.eval(lenv))
 
-class And(Op2):
-    def eval(self, calc): return self.x.eval(calc) & self.y.eval(calc)
+class Ge:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def eval(self, lenv):
+        return genv.NUMBER(self.x.eval(lenv) >= self.y.eval(lenv))
 
-class RShift(Op2):
-    def eval(self, calc): return self.x.eval(calc) >> self.y.eval(calc)
+class Eq:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def eval(self, lenv):
+        return genv.NUMBER(self.x.eval(lenv) == self.y.eval(lenv))
 
-class LShift(Op2):
-    def eval(self, calc): return self.x.eval(calc) << self.y.eval(calc)
+class Ne:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def eval(self, lenv):
+        return genv.NUMBER(self.x.eval(lenv) != self.y.eval(lenv))
 
-class Pow(Op2):
-    def eval(self, calc): return self.x.eval(calc) ** self.y.eval(calc)
+class Cond:
+    def __init__(self, cond, true_expr, false_expr):
+        self.cond, self.true_expr, self.false_expr = cond, true_expr, false_expr
+    def eval(self, lenv):
+        if bool(self.cond.eval(lenv).val):
+            return self.true_expr.eval(lenv)
+        else:
+            return self.false_expr.eval(lenv)
 
-class Pos(Op1):
-    def eval(self, calc): return +self.x.eval(calc)
+class Add:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def eval(self, lenv):
+        return self.x.eval(lenv) + self.y.eval(lenv)
 
-class Neg(Op1):
-    def eval(self, calc): return -self.x.eval(calc)
+class Sub:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def eval(self, lenv):
+        return self.x.eval(lenv) - self.y.eval(lenv)
 
-class Inv(Op1):
-    def eval(self, calc): return ~self.x.eval(calc)
+class Or:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def eval(self, lenv):
+        return self.x.eval(lenv) | self.y.eval(lenv)
 
-class Rev(Op1):
-    def eval(self, calc): return self.x.eval(calc).rev()
+class Xor:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def eval(self, lenv):
+        return self.x.eval(lenv) ^ self.y.eval(lenv)
 
-class Factor(Op1):
-    def eval(self, calc): return self.x.eval(calc).factor()
+class Mul:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def eval(self, lenv):
+        return self.x.eval(lenv) * self.y.eval(lenv)
 
-class Sqrt(Op1):
-    def eval(self, calc): return self.x.eval(calc).sqrt()
+class Div:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def eval(self, lenv):
+        return self.x.eval(lenv) / self.y.eval(lenv)
 
-def red(x, ys):
-    for f, y in ys:
-        x = f(x, y)
+class Mod:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def eval(self, lenv):
+        return self.x.eval(lenv) % self.y.eval(lenv)
+
+class And:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def eval(self, lenv):
+        return self.x.eval(lenv) & self.y.eval(lenv)
+
+class Rshift:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def eval(self, lenv):
+        return self.x.eval(lenv) >> self.y.eval(lenv)
+
+class Lshift:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def eval(self, lenv):
+        return self.x.eval(lenv) << self.y.eval(lenv)
+
+class Pow:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def eval(self, lenv):
+        return self.x.eval(lenv) ** self.y.eval(lenv)
+
+class Pos:
+    def __init__(self, x):
+        self.x = x
+    def eval(self, lenv):
+        return +self.x.eval(lenv)
+
+class Neg:
+    def __init__(self, x):
+        self.x = x
+    def eval(self, lenv):
+        return -self.x.eval(lenv)
+
+class Inv:
+    def __init__(self, x):
+        self.x = x
+    def eval(self, lenv):
+        return ~self.x.eval(lenv)
+
+def _fy(f, y): return lambda x: f(x, y)
+
+def fx(f, x): return f(x)
+
+def reduce(x, fs):
+    for f in fs: x = f(x)
     return x
 
-def red1(f, x):
-    return f(x)
+parse = sp.compile(r"""
 
-parser = sp.compile(
-    r"""
-        bin = r'b([_0-1]+)\b' : `Bin` ;
-        bin = r'([_0-1]+)b\b' : `Bin` ;
-        oct = r'o([_0-7]+)\b' : `Oct` ;
-        oct = r'([_0-7]+)o\b' : `Oct` ;
-        hex = r'h([_0-9a-fA-F]+)\b' : `Hex` ;
-        hex = r'([_0-9a-fA-F]+)h\b' : `Hex` ;
-        hex = r'0x([_0-9a-fA-F]+)\b' : `Hex` ;
-        real = r'(?:\d+\.\d*|\d*\.\d+)(?:[eE][-+]?\d+)?|\d+[eE][-+]?\d+' : `Real` ;
-        dec = r'\d+' : `Dec` ;
-        var = r'[a-zA-Z_]\w*' : `Var`;
+    ident = r'[a-zA-Z_]\w*' ;
 
-        addop = '+' `Add` ;
-        addop = '-' `Sub` ;
-        addop = '|' `Or` ;
-        addop = '^' `Xor` ;
+    bin = r'b([_0-1]+)\b' : `Bin` ;
+    bin = r'([_0-1]+)b\b' : `Bin` ;
+    oct = r'o([_0-7]+)\b' : `Oct` ;
+    oct = r'([_0-7]+)o\b' : `Oct` ;
+    hex = r'h([_0-9a-fA-F]+)\b' : `Hex` ;
+    hex = r'([_0-9a-fA-F]+)h\b' : `Hex` ;
+    hex = r'0x([_0-9a-fA-F]+)\b' : `Hex` ;
+    real = r'(?:\d+\.\d*|\d*\.\d+)(?:[eE][-+]?\d+)?|\d+[eE][-+]?\d+' : `Real` ;
+    dec = r'\d+' : `Dec` ;
+    var = ident : `Var`;
 
-        mulop = '*' `Mul` ;
-        mulop = '%' `Mod` ;
-        mulop = '/' `Div` ;
-        mulop = '&' `And` ;
-        mulop = '>>' `RShift` ;
-        mulop = '<<' `LShift` ;
+    logic_or_op = 'or' `LogicOr` ;
+    logic_or_op = 'xor' `LogicXor` ;
+    logic_and_op = 'and' `LogicAnd` ;
+    logic_not_op = 'not' `LogicNot` ;
 
-        unop = '+' `Pos` ;
-        unop = '-' `Neg` ;
-        unop = '~' `Inv` ;
+    rel_op = '<' `Lt` ;
+    rel_op = '>' `Gt` ;
+    rel_op = '<=' `Le` ;
+    rel_op = '>=' `Ge` ;
+    rel_op = '==' `Eq` ;
+    rel_op = '!=' `Ne` ;
 
-        powop = '**' `Pow` ;
+    add_op = '+' `Add` ;
+    add_op = '-' `Sub` ;
+    add_op = '|' `Or` ;
+    add_op = '^' `Xor` ;
 
-        separator: r'\s+' ;
+    mul_op = '*' `Mul` ;
+    mul_op = '/' `Div` ;
+    mul_op = '%' `Mod` ;
+    mul_op = '&' `And` ;
+    mul_op = '>>' `Rshift` ;
+    mul_op = '<<' `Lshift` ;
 
-        !S = '?'        `Help()`;
+    pow_op = '**' `Pow` ;
 
-        !S = 'num'      `Mode(Num)`;
-        !S = 'int8'     `Mode(Int8)`;
-        !S = 'int16'    `Mode(Int16)`;
-        !S = 'int32'    `Mode(Int32)`;
-        !S = 'int64'    `Mode(Int64)`;
-        !S = 'int'      `Mode(Int)`;
-        !S = 'flt32'    `Mode(Float)`;
-        !S = 'flt64'    `Mode(Double)`;
-        !S = 'rat'      `Mode(Rat)`;
+    un_op = '+' `Pos` ;
+    un_op = '-' `Neg` ;
+    un_op = '~' `Inv` ;
+    
+    separator: r'\s+';
 
-        !S = var '=' expr :: `Assign` ;
-        !S = expr ;
+    !S = 'bye' `Quit()`
+       | '?'            `Help()`
+       | 'help'         `Help(full=True)`
+       | 'num'          `Mode(Num)`
+       | 'int8'         `Mode(Int8)`
+       | 'int16'        `Mode(Int16)`
+       | 'int32'        `Mode(Int32)`
+       | 'int64'        `Mode(Int64)`
+       | 'int'          `Mode(Int)`
+       | 'flt32'        `Mode(Float)`
+       | 'flt64'        `Mode(Double)`
+       | 'rat'          `Mode(Rat)`
+       | fundef '=' expr :: `Set`
+       | expr
+       ;
 
-        expr = term (addop term)* :: `red` ;
-        term = fact (mulop fact)* :: `red` ;
-        fact = unop fact :: `red1` | pow ;
-        pow = atom (powop fact)? :: `red` ;
+    fundef = ident ('(' [ident/',']* ')' | `[]`) :: `FunDef` ;
 
-        atom = '(' expr ')' ;
-        atom = 'rev' '(' expr ')' : `Rev` ;
-        atom = 'factor' '(' expr ')' : `Factor` ;
-        atom = 'sqrt' '(' expr ')' : `Sqrt` ;
-        atom = bin | oct | hex | real | dec | var ;
-    """)
+    expr = logic_or ;
+
+    logic_or = logic_and (logic_or_op logic_and :: `_fy`)* :: `reduce` ;
+    logic_and = condition (logic_and_op condition :: `_fy`)* :: `reduce` ;
+    condition = logic_not_op condition :: `fx` | relation ;
+
+    relation = ternary (rel_op ternary :: `_fy`)* :: `reduce` ;
+
+    ternary = arith '?' ternary ':' ternary :: `Cond` | arith ;
+    arith = term (add_op term :: `_fy`)* :: `reduce` ;
+    term = fact (mul_op fact :: `_fy`)* :: `reduce` ;
+    fact = un_op fact :: `fx` | pow ;
+    pow = atom (pow_op fact :: `_fy`)? :: `reduce` ;
+
+    atom = '(' expr ')' ;
+    atom = ident '(' [expr/',']* ')' :: `FunEval` ;
+    atom = (bin | oct | hex | real | dec) ;
+    atom = ident : `Var`;
+
+""")
+
+genv = Env()
+
+def exc():
+    e = getattr(sys, 'exc_value', None)
+    if e is None:
+        info = getattr(sys, 'exc_info', None)
+        if info is not None: e = info()[1]
+    return e
+
+try:
+    next
+except NameError:
+    def next(iterator):
+        for item in iterator:
+            return item
+
+def run(src):
+    lines = iter(src.splitlines())
+    for line in lines:
+        while line and line[-1] == '\\':
+            line = line[:-1] + next(lines)
+        if re.match(r"^\s*(#.*)?$", line):
+            if VERBOSE:
+                print(line)
+            continue
+        if VERBOSE and PROMPT:
+            print("(%s) %s"%(genv.NUMBER.name, line))
+        try:
+            e = parse(line)
+            val = e.eval(Env())
+        except Exception:
+            e = exc()
+            print("%s: %s"%(e.__class__.__name__, e))
+            print("")
+        else:
+            if VERBOSE:
+                print("= %s"%val)
+                print("")
+
+VERBOSE = False
+PROMPT = True
+SHOW_HELP = True
+INTERACTIVE = True
+
+run(BUILTIN)
+
+VERBOSE = True
 
 try: raw_input
 except NameError: raw_input = input
 
 if __name__ == '__main__':
-    print(Help().eval())
-    print("")
-    calc = Calc()
-    while True:
-        expr = raw_input("(%s) "%calc.number.name)
-        if not expr: continue
-        try:
-            val = parser(expr).eval(calc)
-        except Exception as e:
-            print("%s: %s"%(e.__class__.__name__, e))
+    args = iter(sys.argv[1:])
+    for arg in args:
+        if arg == '-h':
+            help()
+            INTERACTIVE = False
+            SHOW_HELP = False
+        elif arg == '-s':
+            VERBOSE = False
+            INTERACTIVE = False
+            SHOW_HELP = False
+        elif arg == '-v':
+            VERBOSE = True
+            INTERACTIVE = False
+            SHOW_HELP = False
+        elif arg == '-e':
+            try:
+                src = next(args)
+            except StopIteration:
+                error("-e requires a file name or an expression")
+            if os.path.isfile(src):
+                try:
+                    src = open(src).read()
+                except IOError:
+                    error("can not read %s"%src)
+            run(src)
+            INTERACTIVE = False
+            SHOW_HELP = False
+        elif arg == '-i':
+            INTERACTIVE = True
+        elif arg == '-q': sys.exit()
         else:
-            print("= %s"%val)
-        print("")
+            run(arg)
+            INTERACTIVE = False
+            SHOW_HELP = False
+    if sys.stdin.isatty():
+        if SHOW_HELP: help()
+        PROMPT = False
+        while True:
+            run(raw_input("(%s) "%genv.NUMBER.name))
+    elif INTERACTIVE:
+        try:
+            src = sys.stdin.read()
+        except IOError:
+            pass
+        else:
+            run(src)

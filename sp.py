@@ -670,23 +670,19 @@ class Or(Parser):
     def parse(self, s, i, e):
         i1 = self.skipsep(s, i)
         e = e.max(_err(i1))
-        matches = []
+        longest = (None, -1)
         for item in self.items:
             token, rest, e = item.parse(s, i1, e)
             if token is not fail:
                 rest = self.skipsep(s, rest)
                 e = e.max(_err(rest))
-                matches.append((token, rest))
-        if matches:
+                if rest > longest[1]:
+                    longest = (token, rest)
+        if longest[1] > -1:
             # Returns the longest match
-            return max(matches, key=(lambda t: t[1])) + (e,)
+            return longest + (e,)
         else:
             return fail, i, e
-
-# Python 2.4 fallback
-if sys.version_info[:2] < (2,5):
-    def max(xs, key=(lambda x:x), max=max):
-        return max((key(x), x) for x in xs)[1]
 
 class Rule(Parser):
     """ returns an empty parser that can be later enriched.
@@ -1230,6 +1226,18 @@ def _compile_string(source, frame):
 
     return grammar(source).gen(frame)
 
+def _exc():
+    exc = getattr(sys, 'exc_value', None)       # for Python 2.6
+    if exc is None:
+        info = getattr(sys, 'exc_info', None)   # for Python 3.1
+        if info is not None: exc = info()[1]
+    if exc is None:
+        class FakeExc:
+            filename = ""
+            lineno = 0
+        exc = FakeExc()
+    return exc
+
 def compile(source):
     frame = sys._getframe(1)
     try:
@@ -1243,13 +1251,9 @@ def compile(source):
             index = python_source.find(source)
             if index >= 0:
                 # if found, update the filename and the error line number
-                err = getattr(sys, 'exc_value', None)       # for Python 2.6
-                if err is None:
-                    info = getattr(sys, 'exc_info', None)   # for Python 3.1
-                    if info is not None: err = info()[1]
-                if err:
-                    err.filename = filename
-                    err.lineno += python_source[:index].count('\n')
+                err = _exc()
+                err.filename = filename
+                err.lineno += python_source[:index].count('\n')
         raise
 
 def compile_file(filename):
@@ -1257,7 +1261,7 @@ def compile_file(filename):
     try:
         return _compile_string(open(filename).read(), frame)
     except SyntaxError:
-        sys.exc_value.filename = filename
+        _exc().filename = filename
         raise
 
 if __name__ == '__main__':

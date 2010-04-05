@@ -6,7 +6,7 @@
 <meta name="generator" content="Docutils 0.5: http://docutils.sourceforge.net/" />
 <title>Simple Parser</title>
 <meta name="author" content="Christophe Delord" />
-<meta name="date" content="Friday 12 March 2010" />
+<meta name="date" content="Monday 05 April 2010" />
 <style type="text/css">
 
 /*
@@ -279,7 +279,7 @@ div.footer, div.header {
 <tr class="field"><th class="docinfo-name">Web site:</th><td class="field-body"><a class="reference external" href="http://www.cdsoft.fr/sp.html">http://www.cdsoft.fr/sp.html</a></td>
 </tr>
 <tr><th class="docinfo-name">Date:</th>
-<td>Friday 12 March 2010</td></tr>
+<td>Monday 05 April 2010</td></tr>
 <tr class="field"><th class="docinfo-name">License:</th><td class="field-body">This software is released under the LGPL license.</td>
 </tr>
 </tbody>
@@ -407,7 +407,7 @@ See the <a class="reference internal" href="#older-python-versions">Older Python
 <div class="section" id="id5">
 <h3>Introduction</h3>
 <p>This short tutorial presents how to make a simple calculator.
-The calculator will compute basic mathematical expressions (<tt class="docutils literal"><span class="pre">+</span></tt>, <tt class="docutils literal"><span class="pre">-</span></tt>, <tt class="docutils literal"><span class="pre">*</span></tt>, <tt class="docutils literal"><span class="pre">|</span></tt>) possibly nested in parenthesis.
+The calculator will compute basic mathematical expressions (<tt class="docutils literal"><span class="pre">+</span></tt>, <tt class="docutils literal"><span class="pre">-</span></tt>, <tt class="docutils literal"><span class="pre">*</span></tt>, <tt class="docutils literal"><span class="pre">/</span></tt>) possibly nested in parenthesis.
 We assume the reader is familiar with regular expressions.</p>
 </div>
 <div class="section" id="defining-the-grammar">
@@ -1369,14 +1369,23 @@ class Leaf:
     def nb_leaves(self): return 1
 
 class Internal:
-    def __init__(self, subtrees, name): self.subtrees, self.name = subtrees, name
-    def __str__(self): return &quot;(%s)%s&quot; % (','.join(str(st) for st in self.subtrees), self.name)
-    def nb_leaves(self): return sum(st.nb_leaves() for st in self.subtrees)
+    def __init__(self, subtrees, name):
+        self.subtrees, self.name = subtrees, name
+    def __str__(self):
+        return &quot;(%s)%s&quot;%(
+            ','.join(str(st) for st in self.subtrees),
+            self.name
+        )
+    def nb_leaves(self):
+        return sum(st.nb_leaves() for st in self.subtrees)
 
 class Branch:
-    def __init__(self, subtree, length): self.subtree, self.length = subtree, length
-    def __str__(self): return &quot;%s:%s&quot;%(self.subtree, self.length)
-    def nb_leaves(self): return self.subtree.nb_leaves()
+    def __init__(self, subtree, length):
+        self.subtree, self.length = subtree, length
+    def __str__(self):
+        return &quot;%s:%s&quot;%(self.subtree, self.length)
+    def nb_leaves(self):
+        return self.subtree.nb_leaves()
 
 parser = sp.compile(r&quot;&quot;&quot;
     !Tree = Subtree ';' | Branch ';' ;
@@ -1433,7 +1442,7 @@ return strings containing the representation of the node in infix, prefix and po
 <div class="section" id="lexical-definitions">
 <h4>Lexical definitions</h4>
 <pre class="literal-block">
-ident = r'\w+' : `Atom` ;
+ident = r'\b(?!sin|cos|tan|min|max)\w+\b' : `Atom` ;
 
 func1 = r'sin' | r'cos' | r'tan' ;
 func2 = r'min' | r'max' ;
@@ -1518,7 +1527,7 @@ expr_post = ident
 <h3>Source code</h3>
 <p>Here is the complete source code (notation.py):</p>
 <pre class="literal-block">
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #coding: UTF-8
 
 # Simple Parser
@@ -1605,7 +1614,7 @@ def red(x, fs):
 
 parser = sp.compile(r&quot;&quot;&quot;
 
-    ident = r'\w+' : `Atom` ;
+    ident = ident.r'\b(?!sin|cos|tan|min|max)\w+\b' : `Atom` ;
 
     func1 = r'sin' | r'cos' | r'tan' ;
     func2 = r'min' | r'max' ;
@@ -1680,11 +1689,22 @@ A memory cell is identified by a name.
 For example, if the user types <tt class="docutils literal"><span class="pre">pi</span> <span class="pre">=</span> <span class="pre">3.14</span></tt>,
 the memory cell named <tt class="docutils literal"><span class="pre">pi</span></tt> will contain the value of <tt class="docutils literal"><span class="pre">pi</span></tt>
 and <tt class="docutils literal"><span class="pre">2*pi</span></tt> will return <tt class="docutils literal"><span class="pre">6.28</span></tt>.</p>
-<p>The variables are saved in a dictionnary.</p>
+<p>The memory can also contain functions.
+For instance <tt class="docutils literal"><span class="pre">fact(n)</span> <span class="pre">=</span> <span class="pre">(n&gt;0)</span> <span class="pre">?</span> <span class="pre">n*fact(n-1)</span> <span class="pre">:</span> <span class="pre">1</span></tt> defines
+the factorial function. <tt class="docutils literal"><span class="pre">fact(5)</span></tt> returns <tt class="docutils literal"><span class="pre">120</span></tt>.</p>
+<p>Most of the functions of the <tt class="docutils literal"><span class="pre">math</span></tt> module are also available.</p>
 </div>
 <div class="section" id="id14">
 <h3>Source code</h3>
-<p>The complete source code is available in the example directory of the archive.</p>
+<p>The complete source code is quite big and is available in the example directory of the archive.</p>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p>This calculator was initially a basic calculator example for Simple Parser
+but it has been improved to fit programmers' needs.
+I now use it every day at work.</p>
+<p class="last">In the future it may become a separate project
+when I have time to write some documentation.</p>
+</div>
 </div>
 </div>
 </div>
