@@ -20,25 +20,26 @@
 # along with Simple Parser.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-+-------------------------------+-------------------------------------+
-|            C A L C            | Powered by Python and Simple Parser |
-+-------------------------------+-+-----------------------------------+
+.---------------------------------------------------------------------.
+|                              C A L C                                |
+.---------------------------------.-----------------------------------.
 | Modes:                          | Numbers:                          |
 |     num flt32 flt64 rat         |     binary: b... or ...b          |
 |     int int8 int16 int32 int64  |     octal : o... or ...o          |
-+---------------------------------+     hexa  : h... or ...h or 0x... |
+.---------------------------------.     hexa  : h... or ...h or 0x... |
 | Variable and function:          |     float : 1.2e-3                |
-|     variable = expression       +-----------------------------------+
+|     variable = expression       .-----------------------------------.
 |     function(x, y) = expression | Operators:                        |
-+---------------------------------+     or xor and not                |
+.---------------------------------.     or xor and not                |
 | Builtin functions:              |     < <= > >= == !=               |
 |     fact, fib, rev, ...         |     cond?expr:expr                |
 | type help to list all functions |     + - | ^ * / % & >> << ~ **    |
-+---------------------------------+-----------------------------------+
-| Commands:                       | Copyright (c) 2010 C. Delord      |
-|     ? help bye                  | http://www.cdsoft.fr/sp.html      |
-+---------------------------------+-----------------------------------+
+.---------------------------------.-----------------------------------.
+| Commands: ? help bye                                                |
+.---------------------------------------------------------------------.
 """
+
+from __future__ import division
 
 HELP = """
 Functions from math (Python package):
@@ -74,6 +75,12 @@ Other specific functions:
 
 The mode commands (num, int, rat, ...) can be used as variables in
 expression to test the current mode.
+
+Credits:
+--------
+
+This calculator is a Simple Parser example.
+See http://www.cdsoft.fr/sp.html
 """
 
 BUILTIN = r"""
