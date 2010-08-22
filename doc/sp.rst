@@ -1,6 +1,6 @@
 ..  Simple Parser
     Copyright (C) 2009-2010 Christophe Delord
-    http://www.cdsoft.fr/sp.html
+    http://www.cdsoft.fr/sp
 
 ..  This file is part of Simple Parser.
 
@@ -26,9 +26,10 @@
 
 :Author:    Christophe Delord
 :Contact:   cdelord@cdsoft.fr
-:Web site:  http://www.cdsoft.fr/sp.html
+:Web site:  http://www.cdsoft.fr/sp
 :Date:      |date|
 :License:   This software is released under the LGPL license.
+:Download:  http://www.cdsoft.fr/sp/sp-v2.2.2.tgz
 
 .. |date| date:: %A %d %B %Y
 
@@ -95,7 +96,7 @@ Installation
 Getting SP
 ~~~~~~~~~~
 
-SP is freely available on its web page (http://www.cdsoft.fr/sp.html).
+SP is freely available on its web page (http://www.cdsoft.fr/sp).
 
 Requirements
 ~~~~~~~~~~~~
@@ -203,7 +204,7 @@ This function returns ``expr`` which is the *axiom* [#axiom]_ of the grammer.
 They are first declared as empty rules (``expr = Rule()``) and alternatives are later added (``expr |= ...``).
 
 Slices are used to implement repetitions.
-``foo[:]`` parses ``foo`` zero or more times, which is equivalent to ``foo*`` is a classical grammar notation.
+``foo[:]`` parses ``foo`` zero or more times, which is equivalent to ``foo*`` in a classical grammar notation.
 
 The grammar can also be defined with the mini grammar language provided by SP::
 
@@ -1060,7 +1061,7 @@ Complete interactive calculator
 -------------------------------
 
 This chapter presents an extention of the calculator described in the `tutorial`_.
-This calculator has more functions and a memory.
+This calculator has a memory.
 
 The grammar has been rewritten using the SP language.
 
@@ -1073,22 +1074,17 @@ For example, if the user types ``pi = 3.14``,
 the memory cell named ``pi`` will contain the value of ``pi``
 and ``2*pi`` will return ``6.28``.
 
-The memory can also contain functions.
-For instance ``fact(n) = (n>0) ? n*fact(n-1) : 1`` defines
-the factorial function. ``fact(5)`` returns ``120``.
-
-Most of the functions of the ``math`` module are also available.
-
 Source code
 ~~~~~~~~~~~
 
-The complete source code is quite big and is available in the example directory of the archive.
-
 .. note::
 
-    This calculator was initially a basic calculator example for Simple Parser
-    but it has been improved to fit programmers' needs.
-    I now use it every day at work.
+    Another calculator is available as a separate package.
+    `Calc <http://www.cdsoft.fr/calc.html>`_ is a full featured programmers' calculator.
+    It is scriptable and allows user functions.
 
-    In the future it may become a separate project
-    when I have time to write some documentation.
+Here is the complete source code (calc.py):
+
+.. include:: calc.py
+    :literal:
+

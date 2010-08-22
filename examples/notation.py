@@ -3,7 +3,7 @@
 
 # Simple Parser
 # Copyright (C) 2009-2010 Christophe Delord
-# http://www.cdsoft.fr/sp.html
+# http://www.cdsoft.fr/sp
 
 # This file is part of Simple Parser.
 # 

@@ -3,10 +3,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.5: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.6: http://docutils.sourceforge.net/" />
 <title>Simple Parser</title>
 <meta name="author" content="Christophe Delord" />
-<meta name="date" content="Monday 05 April 2010" />
+<meta name="date" content="Sunday 22 August 2010" />
 <style type="text/css">
 
 /*
@@ -276,17 +276,19 @@ div.footer, div.header {
 <td>Christophe Delord</td></tr>
 <tr><th class="docinfo-name">Contact:</th>
 <td><a class="first last reference external" href="mailto:cdelord&#37;&#52;&#48;cdsoft&#46;fr">cdelord<span>&#64;</span>cdsoft<span>&#46;</span>fr</a></td></tr>
-<tr class="field"><th class="docinfo-name">Web site:</th><td class="field-body"><a class="reference external" href="http://www.cdsoft.fr/sp.html">http://www.cdsoft.fr/sp.html</a></td>
+<tr class="field"><th class="docinfo-name">Web site:</th><td class="field-body"><a class="reference external" href="http://www.cdsoft.fr/sp">http://www.cdsoft.fr/sp</a></td>
 </tr>
 <tr><th class="docinfo-name">Date:</th>
-<td>Monday 05 April 2010</td></tr>
+<td>Sunday 22 August 2010</td></tr>
 <tr class="field"><th class="docinfo-name">License:</th><td class="field-body">This software is released under the LGPL license.</td>
+</tr>
+<tr class="field"><th class="docinfo-name">Download:</th><td class="field-body"><a class="reference external" href="http://www.cdsoft.fr/sp/sp-v2.2.2.tgz">http://www.cdsoft.fr/sp/sp-v2.2.2.tgz</a></td>
 </tr>
 </tbody>
 </table>
 <!-- Simple Parser
 Copyright (C) 2009-2010 Christophe Delord
-http://www.cdsoft.fr/sp.html -->
+http://www.cdsoft.fr/sp -->
 <!-- This file is part of Simple Parser. -->
 <!-- Simple Parser is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published
@@ -385,7 +387,7 @@ I think this tutorial may be sufficent to start with SP.</dd>
 <h2><a class="toc-backref" href="#id17">1.2&nbsp;&nbsp;&nbsp;Installation</a></h2>
 <div class="section" id="getting-sp">
 <h3>Getting SP</h3>
-<p>SP is freely available on its web page (<a class="reference external" href="http://www.cdsoft.fr/sp.html">http://www.cdsoft.fr/sp.html</a>).</p>
+<p>SP is freely available on its web page (<a class="reference external" href="http://www.cdsoft.fr/sp">http://www.cdsoft.fr/sp</a>).</p>
 </div>
 <div class="section" id="requirements">
 <h3>Requirements</h3>
@@ -407,7 +409,7 @@ See the <a class="reference internal" href="#older-python-versions">Older Python
 <div class="section" id="id5">
 <h3>Introduction</h3>
 <p>This short tutorial presents how to make a simple calculator.
-The calculator will compute basic mathematical expressions (<tt class="docutils literal"><span class="pre">+</span></tt>, <tt class="docutils literal"><span class="pre">-</span></tt>, <tt class="docutils literal"><span class="pre">*</span></tt>, <tt class="docutils literal"><span class="pre">/</span></tt>) possibly nested in parenthesis.
+The calculator will compute basic mathematical expressions (<tt class="docutils literal">+</tt>, <tt class="docutils literal">-</tt>, <tt class="docutils literal">*</tt>, <tt class="docutils literal">/</tt>) possibly nested in parenthesis.
 We assume the reader is familiar with regular expressions.</p>
 </div>
 <div class="section" id="defining-the-grammar">
@@ -432,18 +434,18 @@ The decomposition of a symbol is symbolized with <tt class="docutils literal"><s
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td><tt class="docutils literal"><span class="pre">expr</span> <span class="pre">-&gt;</span> <span class="pre">term</span> <span class="pre">(('+'|'-')</span> <span class="pre">term)*</span></tt></td>
+<tr><td><tt class="docutils literal">expr <span class="pre">-&gt;</span> term <span class="pre">(('+'|'-')</span> term)*</tt></td>
 <td>An expression is a term eventually followed
-with a plus (<tt class="docutils literal"><span class="pre">+</span></tt>) or a minus (<tt class="docutils literal"><span class="pre">-</span></tt>) sign
+with a plus (<tt class="docutils literal">+</tt>) or a minus (<tt class="docutils literal">-</tt>) sign
 and an other term any number of times
-(<tt class="docutils literal"><span class="pre">*</span></tt> is a repetition of an expression 0 or more times).</td>
+(<tt class="docutils literal">*</tt> is a repetition of an expression 0 or more times).</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">term</span> <span class="pre">-&gt;</span> <span class="pre">fact</span> <span class="pre">(('*'|'/')</span> <span class="pre">fact)*</span></tt></td>
+<tr><td><tt class="docutils literal">term <span class="pre">-&gt;</span> fact <span class="pre">(('*'|'/')</span> fact)*</tt></td>
 <td>A term is a factor eventually followed
-with a <tt class="docutils literal"><span class="pre">*</span></tt> or <tt class="docutils literal"><span class="pre">/</span></tt> sign
+with a <tt class="docutils literal">*</tt> or <tt class="docutils literal">/</tt> sign
 and an other factor any number of times.</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">fact</span> <span class="pre">-&gt;</span> <span class="pre">('+'|'-')</span> <span class="pre">fact</span> <span class="pre">|</span> <span class="pre">number</span> <span class="pre">|</span> <span class="pre">'('</span> <span class="pre">expr</span> <span class="pre">')'</span></tt></td>
+<tr><td><tt class="docutils literal">fact <span class="pre">-&gt;</span> <span class="pre">('+'|'-')</span> fact | number | '(' expr ')'</tt></td>
 <td>A factor is either a factor precedeed by a sign, a number
 or an expression in parenthesis.</td>
 </tr>
@@ -452,8 +454,8 @@ or an expression in parenthesis.</td>
 <p>We have defined here the grammar rules (i.e. the sentences of the language).
 We now need to describe the lexical items (i.e. the words of the language).
 These words - also called <em>terminal symbols</em> - are described using regular expressions.
-In the rules we have written some of these terminal symbols (<tt class="docutils literal"><span class="pre">+</span></tt>, <tt class="docutils literal"><span class="pre">-</span></tt>, <tt class="docutils literal"><span class="pre">*</span></tt>, <tt class="docutils literal"><span class="pre">/</span></tt>, <tt class="docutils literal"><span class="pre">(</span></tt>, <tt class="docutils literal"><span class="pre">)</span></tt>).
-We have to define <tt class="docutils literal"><span class="pre">number</span></tt>.
+In the rules we have written some of these terminal symbols (<tt class="docutils literal">+</tt>, <tt class="docutils literal">-</tt>, <tt class="docutils literal">*</tt>, <tt class="docutils literal">/</tt>, <tt class="docutils literal">(</tt>, <tt class="docutils literal">)</tt>).
+We have to define <tt class="docutils literal">number</tt>.
 For sake of simplicity numbers are integers composed of digits (the corresponding regular expression can be <tt class="docutils literal"><span class="pre">[0-9]+</span></tt>).
 To simplify the grammar and then the Python script we define two terminal symbols to group the operators (additive and multiplicative operators).
 We can also define a special symbol that is ignored by SP.
@@ -473,20 +475,20 @@ This is generaly useful for white spaces and comments.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td><tt class="docutils literal"><span class="pre">number</span></tt></td>
-<td><tt class="docutils literal"><span class="pre">[0-9]+</span> <span class="pre">or</span> <span class="pre">\d+</span></tt></td>
+<tr><td><tt class="docutils literal">number</tt></td>
+<td><tt class="docutils literal"><span class="pre">[0-9]+</span> or \d+</tt></td>
 <td>One or more digits</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">addop</span></tt></td>
+<tr><td><tt class="docutils literal">addop</tt></td>
 <td><tt class="docutils literal"><span class="pre">[+-]</span></tt></td>
-<td>a <tt class="docutils literal"><span class="pre">+</span></tt> or a <tt class="docutils literal"><span class="pre">-</span></tt></td>
+<td>a <tt class="docutils literal">+</tt> or a <tt class="docutils literal">-</tt></td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">mulop</span></tt></td>
+<tr><td><tt class="docutils literal">mulop</tt></td>
 <td><tt class="docutils literal"><span class="pre">[*/]</span></tt></td>
-<td>a <tt class="docutils literal"><span class="pre">*</span></tt> or a <tt class="docutils literal"><span class="pre">/</span></tt></td>
+<td>a <tt class="docutils literal">*</tt> or a <tt class="docutils literal">/</tt></td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">spaces</span></tt></td>
-<td><tt class="docutils literal"><span class="pre">\s+</span></tt></td>
+<tr><td><tt class="docutils literal">spaces</tt></td>
+<td><tt class="docutils literal">\s+</tt></td>
 <td>One or more spaces</td>
 </tr>
 </tbody>
@@ -512,12 +514,12 @@ def Calc():
 
     return expr
 </pre>
-<p><tt class="docutils literal"><span class="pre">Calc</span></tt> is the name of the Python function that returns a parser.
-This function returns <tt class="docutils literal"><span class="pre">expr</span></tt> which is the <em>axiom</em> <a class="footnote-reference" href="#axiom" id="id6">[3]</a> of the grammer.</p>
-<p><tt class="docutils literal"><span class="pre">expr</span></tt> and <tt class="docutils literal"><span class="pre">fact</span></tt> are recursive rules.
-They are first declared as empty rules (<tt class="docutils literal"><span class="pre">expr</span> <span class="pre">=</span> <span class="pre">Rule()</span></tt>) and alternatives are later added (<tt class="docutils literal"><span class="pre">expr</span> <span class="pre">|=</span> <span class="pre">...</span></tt>).</p>
+<p><tt class="docutils literal">Calc</tt> is the name of the Python function that returns a parser.
+This function returns <tt class="docutils literal">expr</tt> which is the <em>axiom</em> <a class="footnote-reference" href="#axiom" id="id6">[3]</a> of the grammer.</p>
+<p><tt class="docutils literal">expr</tt> and <tt class="docutils literal">fact</tt> are recursive rules.
+They are first declared as empty rules (<tt class="docutils literal">expr = Rule()</tt>) and alternatives are later added (<tt class="docutils literal">expr |= ...</tt>).</p>
 <p>Slices are used to implement repetitions.
-<tt class="docutils literal"><span class="pre">foo[:]</span></tt> parses <tt class="docutils literal"><span class="pre">foo</span></tt> zero or more times, which is equivalent to <tt class="docutils literal"><span class="pre">foo*</span></tt> is a classical grammar notation.</p>
+<tt class="docutils literal"><span class="pre">foo[:]</span></tt> parses <tt class="docutils literal">foo</tt> zero or more times, which is equivalent to <tt class="docutils literal">foo*</tt> in a classical grammar notation.</p>
 <p>The grammar can also be defined with the mini grammar language provided by SP:</p>
 <pre class="literal-block">
 def Calc():
@@ -535,7 +537,7 @@ def Calc():
         fact = number ;
     &quot;&quot;&quot;)
 </pre>
-<p>Here the <em>axiom</em> <a class="footnote-reference" href="#axiom" id="id7">[3]</a> is identified by <tt class="docutils literal"><span class="pre">!</span></tt>.</p>
+<p>Here the <em>axiom</em> <a class="footnote-reference" href="#axiom" id="id7">[3]</a> is identified by <tt class="docutils literal">!</tt>.</p>
 <p>With this small grammar we can only recognize a correct expression.
 We will see in the next sections how to read the actual expression and to compute its value.</p>
 <table class="docutils footnote" frame="void" id="axiom" rules="none">
@@ -551,14 +553,14 @@ We will see in the next sections how to read the actual expression and to comput
 To do something useful we need to read this string in order to transform it into an expected result.</p>
 <p>This string can be read by catching the return value of terminal symbols.
 By default any terminal symbol returns a string containing the current token.
-So the token <tt class="docutils literal"><span class="pre">'('</span></tt> always returns the string <tt class="docutils literal"><span class="pre">'('</span></tt>.
+So the token <tt class="docutils literal">'('</tt> always returns the string <tt class="docutils literal">'('</tt>.
 For some tokens it may be useful to compute a Python object from the token.
-For example <tt class="docutils literal"><span class="pre">number</span></tt> should return an integer instead of a string,
-<tt class="docutils literal"><span class="pre">addop</span></tt> and <tt class="docutils literal"><span class="pre">mulop</span></tt>, followed by a number, should return a function corresponding to the operator.
+For example <tt class="docutils literal">number</tt> should return an integer instead of a string,
+<tt class="docutils literal">addop</tt> and <tt class="docutils literal">mulop</tt>, followed by a number, should return a function corresponding to the operator.
 That's why we will add a function to the token and rule definitions.
-So we associate <tt class="docutils literal"><span class="pre">int</span></tt> to <tt class="docutils literal"><span class="pre">number</span></tt> and <tt class="docutils literal"><span class="pre">op1</span></tt> and <tt class="docutils literal"><span class="pre">op2</span></tt> to unary and binary operators.</p>
-<p><tt class="docutils literal"><span class="pre">int</span></tt> is a Python function converting objects to integers and <tt class="docutils literal"><span class="pre">op1</span></tt> and <tt class="docutils literal"><span class="pre">op2</span></tt> are user defined functions.</p>
-<p><tt class="docutils literal"><span class="pre">op1</span></tt> and <tt class="docutils literal"><span class="pre">op2</span></tt> functions:</p>
+So we associate <tt class="docutils literal">int</tt> to <tt class="docutils literal">number</tt> and <tt class="docutils literal">op1</tt> and <tt class="docutils literal">op2</tt> to unary and binary operators.</p>
+<p><tt class="docutils literal">int</tt> is a Python function converting objects to integers and <tt class="docutils literal">op1</tt> and <tt class="docutils literal">op2</tt> are user defined functions.</p>
+<p><tt class="docutils literal">op1</tt> and <tt class="docutils literal">op2</tt> functions:</p>
 <pre class="literal-block">
 op1 = lambda f,x: {'+':pos, '-':neg}[f](x)
 op2 = lambda f,y: lambda x: {'+': add, '-': sub, '*': mul, '/': div}[f](x,y)
@@ -569,10 +571,10 @@ def red(x, fs):
     return x
 </pre>
 <dl class="docutils">
-<dt>To associate a function to a token or a rule it must be applyed using <tt class="docutils literal"><span class="pre">/</span></tt> or <tt class="docutils literal"><span class="pre">*</span></tt> operators:</dt>
+<dt>To associate a function to a token or a rule it must be applyed using <tt class="docutils literal">/</tt> or <tt class="docutils literal">*</tt> operators:</dt>
 <dd><ul class="first last simple">
-<li><tt class="docutils literal"><span class="pre">/</span></tt> applyies a function to an object returned by a (sub)parser.</li>
-<li><tt class="docutils literal"><span class="pre">*</span></tt> applyies a function to an tuple of objects returned by a sequence of (sub) parsers.</li>
+<li><tt class="docutils literal">/</tt> applyies a function to an object returned by a (sub)parser.</li>
+<li><tt class="docutils literal">*</tt> applyies a function to an tuple of objects returned by a sequence of (sub) parsers.</li>
 </ul>
 </dd>
 </dl>
@@ -625,8 +627,8 @@ term = fact (mulop fact :: `op2`)* :: `red` ;
 # will return red(42, [(lambda x:mul(x, 43)), (lambda x:mul(x, 44))])
 # i.e. 42*43*44
 </pre>
-<p>In the SP language, <tt class="docutils literal"><span class="pre">:</span></tt> (as <tt class="docutils literal"><span class="pre">/</span></tt>) applies a Python function (more generally a callable object)
-to a value returned by a sequence and <tt class="docutils literal"><span class="pre">::</span></tt> (as <tt class="docutils literal"><span class="pre">*</span></tt>) applies a Python function to several values
+<p>In the SP language, <tt class="docutils literal">:</tt> (as <tt class="docutils literal">/</tt>) applies a Python function (more generally a callable object)
+to a value returned by a sequence and <tt class="docutils literal">::</tt> (as <tt class="docutils literal">*</tt>) applies a Python function to several values
 returned by a sequence.</p>
 <p>Here is finally the complete parser.</p>
 <p>Expression recognizer and evaluator:</p>
@@ -765,9 +767,9 @@ print x
 SP grammars may contain two parts:</p>
 <dl class="docutils">
 <dt>Tokens</dt>
-<dd>are built by the <tt class="docutils literal"><span class="pre">R</span></tt> or <tt class="docutils literal"><span class="pre">K</span></tt> keywords.</dd>
+<dd>are built by the <tt class="docutils literal">R</tt> or <tt class="docutils literal">K</tt> keywords.</dd>
 <dt>Rules</dt>
-<dd>are described after tokens in a <tt class="docutils literal"><span class="pre">Separator</span></tt> context.</dd>
+<dd>are described after tokens in a <tt class="docutils literal">Separator</tt> context.</dd>
 </dl>
 <p>Example of SP grammar structure:</p>
 <pre class="literal-block">
@@ -811,7 +813,7 @@ For further information about <em>re</em> you can read <a class="reference exter
 </div>
 <div class="section" id="predefined-tokens">
 <h3>Predefined tokens</h3>
-<p>Tokens can be explicitely defined by the <tt class="docutils literal"><span class="pre">R</span></tt>, <tt class="docutils literal"><span class="pre">K</span></tt> and <tt class="docutils literal"><span class="pre">Separator</span></tt> keywords.</p>
+<p>Tokens can be explicitely defined by the <tt class="docutils literal">R</tt>, <tt class="docutils literal">K</tt> and <tt class="docutils literal">Separator</tt> keywords.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="17%" />
@@ -823,19 +825,19 @@ For further information about <em>re</em> you can read <a class="reference exter
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td><tt class="docutils literal"><span class="pre">R</span></tt></td>
+<tr><td><tt class="docutils literal">R</tt></td>
 <td>defines a regular token.
 The token is defined with a regular expression and returns a string
 (or a tuple of strings if the regular expression defines groups).</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">K</span></tt></td>
+<tr><td><tt class="docutils literal">K</tt></td>
 <td>defines a token that returns nothing (useful for keywords for instance).
 The keyword is defined by an identifier (in this case word boundaries
 are expected around the keyword) or another string (in this case the
 pattern is not considered as a regular expression).
 The token just recognizes a keyword and returns nothing.</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">Separator</span></tt></td>
+<tr><td><tt class="docutils literal">Separator</tt></td>
 <td>is a context manager used to define separators for the rules defined
 in the context.
 The token is defined with a regular expression and returns nothing.</td>
@@ -870,10 +872,10 @@ with Separator(spaces|comments):
     atom = '(' &amp; expr &amp; ')'
 </pre>
 <p>There are two kinds of tokens.
-Tokens defined by the <tt class="docutils literal"><span class="pre">R</span></tt> or <tt class="docutils literal"><span class="pre">K</span></tt> keywords are parsed by the parser
-and tokens defined by the <tt class="docutils literal"><span class="pre">Separator</span></tt> keyword are considered as separators
+Tokens defined by the <tt class="docutils literal">R</tt> or <tt class="docutils literal">K</tt> keywords are parsed by the parser
+and tokens defined by the <tt class="docutils literal">Separator</tt> keyword are considered as separators
 (white spaces or comments for example) and are wiped out by the lexer.</p>
-<p>The word boundary <tt class="docutils literal"><span class="pre">\b</span></tt> can be used to avoid recognizing &quot;True&quot; at the beginning of &quot;Truexyz&quot;.</p>
+<p>The word boundary <tt class="docutils literal">\b</tt> can be used to avoid recognizing &quot;True&quot; at the beginning of &quot;Truexyz&quot;.</p>
 <p>If the regular expression defines groups,
 the parser returns a tuple containing these groups:</p>
 <pre class="literal-block">
@@ -894,27 +896,27 @@ first(&quot;&lt;42-43&gt;&quot;) == '42'
 couple = R('&lt;(\d+)-(\d+)&gt;', name=&quot;couple&quot;)
 </pre>
 <p>Regular expressions can be compiled using specific compilation options.
-Options are defined in the <tt class="docutils literal"><span class="pre">re</span></tt> module:</p>
+Options are defined in the <tt class="docutils literal">re</tt> module:</p>
 <pre class="literal-block">
 token = R('...', flags=re.IGNORECASE|re.DOTALL)
 </pre>
-<p><tt class="docutils literal"><span class="pre">re</span></tt> defines the following flags:</p>
+<p><tt class="docutils literal">re</tt> defines the following flags:</p>
 <dl class="docutils">
 <dt>I (IGNORECASE)</dt>
 <dd>Perform case-insensitive matching.</dd>
 <dt>L (LOCALE)</dt>
-<dd>Make <tt class="docutils literal"><span class="pre">\w</span></tt>, <tt class="docutils literal"><span class="pre">\W</span></tt>, <tt class="docutils literal"><span class="pre">\b</span></tt>, <tt class="docutils literal"><span class="pre">\B</span></tt>, dependent on the current locale.</dd>
+<dd>Make <tt class="docutils literal">\w</tt>, <tt class="docutils literal">\W</tt>, <tt class="docutils literal">\b</tt>, <tt class="docutils literal">\B</tt>, dependent on the current locale.</dd>
 <dt>M (MULTILINE)</dt>
-<dd><tt class="docutils literal"><span class="pre">&quot;^&quot;</span></tt> matches the beginning of lines (after a newline)
+<dd><tt class="docutils literal">&quot;^&quot;</tt> matches the beginning of lines (after a newline)
 as well as the string.
-<tt class="docutils literal"><span class="pre">&quot;$&quot;</span></tt> matches the end of lines (before a newline) as well
+<tt class="docutils literal">&quot;$&quot;</tt> matches the end of lines (before a newline) as well
 as the end of the string.</dd>
 <dt>S (DOTALL)</dt>
-<dd><tt class="docutils literal"><span class="pre">&quot;.&quot;</span></tt> matches any character at all, including the newline.</dd>
+<dd><tt class="docutils literal">&quot;.&quot;</tt> matches any character at all, including the newline.</dd>
 <dt>X (VERBOSE)</dt>
 <dd>Ignore whitespace and comments for nicer looking RE's.</dd>
 <dt>U (UNICODE)</dt>
-<dd>Make <tt class="docutils literal"><span class="pre">\w</span></tt>, <tt class="docutils literal"><span class="pre">\W</span></tt>, <tt class="docutils literal"><span class="pre">\b</span></tt>, <tt class="docutils literal"><span class="pre">\B</span></tt>, dependent on the Unicode locale</dd>
+<dd>Make <tt class="docutils literal">\w</tt>, <tt class="docutils literal">\W</tt>, <tt class="docutils literal">\b</tt>, <tt class="docutils literal">\B</tt>, dependent on the Unicode locale</dd>
 </dl>
 </div>
 <div class="section" id="inline-tokens">
@@ -922,8 +924,8 @@ as the end of the string.</dd>
 <p>Tokens can also be defined on the fly.
 Their definition are then inlined in the grammar rules.
 This feature may be useful for keywords or punctuation signs.</p>
-<p>In this case tokens can be written without the <tt class="docutils literal"><span class="pre">R</span></tt> or <tt class="docutils literal"><span class="pre">K</span></tt> keywords.
-They are considered as keywords (as defined by <tt class="docutils literal"><span class="pre">K</span></tt>).</p>
+<p>In this case tokens can be written without the <tt class="docutils literal">R</tt> or <tt class="docutils literal">K</tt> keywords.
+They are considered as keywords (as defined by <tt class="docutils literal">K</tt>).</p>
 <p>Inline token definition examples:</p>
 <pre class="literal-block">
 IfThenElse = 'if' &amp; Cond &amp;
@@ -943,7 +945,7 @@ IfThenElse = 'if' &amp; Cond &amp;
 <p>Rule declarations have two parts.
 The left side declares the symbol associated to the rule.
 The right side describes the decomposition of the rule.
-Both parts of the declaration are separated with an equal sign (<tt class="docutils literal"><span class="pre">=</span></tt>).</p>
+Both parts of the declaration are separated with an equal sign (<tt class="docutils literal">=</tt>).</p>
 <p>Rule declaration example:</p>
 <pre class="literal-block">
 SYMBOL = (A &amp; B) * (lambda a, b: f(a, b))
@@ -952,8 +954,8 @@ SYMBOL = (A &amp; B) * (lambda a, b: f(a, b))
 <div class="section" id="sequences">
 <h3>Sequences</h3>
 <p>Sequences in grammar rules describe in which order symbols should appear in the input string.
-For example the sequence <tt class="docutils literal"><span class="pre">A</span> <span class="pre">&amp;</span> <span class="pre">B</span></tt> recognizes an <tt class="docutils literal"><span class="pre">A</span></tt> followed by a <tt class="docutils literal"><span class="pre">B</span></tt>.</p>
-<p>For example to say that a <tt class="docutils literal"><span class="pre">sum</span></tt> is a <tt class="docutils literal"><span class="pre">term</span></tt> plus another <tt class="docutils literal"><span class="pre">term</span></tt> you can write:</p>
+For example the sequence <tt class="docutils literal">A &amp; B</tt> recognizes an <tt class="docutils literal">A</tt> followed by a <tt class="docutils literal">B</tt>.</p>
+<p>For example to say that a <tt class="docutils literal">sum</tt> is a <tt class="docutils literal">term</tt> plus another <tt class="docutils literal">term</tt> you can write:</p>
 <pre class="literal-block">
 Sum = Term &amp; '+' &amp; Term
 </pre>
@@ -961,12 +963,12 @@ Sum = Term &amp; '+' &amp; Term
 <div class="section" id="alternatives">
 <h3>Alternatives</h3>
 <p>Alternatives in grammar rules describe several possible decompositions of a symbol.
-The infix pipe operator (<tt class="docutils literal"><span class="pre">|</span></tt>) is used to separate alternatives.
-<tt class="docutils literal"><span class="pre">A</span> <span class="pre">|</span> <span class="pre">B</span></tt> recognizes either an <tt class="docutils literal"><span class="pre">A</span></tt> or a <tt class="docutils literal"><span class="pre">B</span></tt>.
-If both <tt class="docutils literal"><span class="pre">A</span></tt> and <tt class="docutils literal"><span class="pre">B</span></tt> can be matched only the first longest match is considered.
+The infix pipe operator (<tt class="docutils literal">|</tt>) is used to separate alternatives.
+<tt class="docutils literal">A | B</tt> recognizes either an <tt class="docutils literal">A</tt> or a <tt class="docutils literal">B</tt>.
+If both <tt class="docutils literal">A</tt> and <tt class="docutils literal">B</tt> can be matched only the first longest match is considered.
 So the order of alternatives may be very important
 when two alternatives can match texts of the same size.</p>
-<p>For example to say that an <tt class="docutils literal"><span class="pre">atom</span></tt> is an <em>integer</em> or an <em>expression in paranthesis</em>
+<p>For example to say that an <tt class="docutils literal">atom</tt> is an <em>integer</em> or an <em>expression in paranthesis</em>
 you can write:</p>
 <pre class="literal-block">
 Atom = integer | '(' &amp; Expr &amp; ')'
@@ -987,19 +989,19 @@ Atom = integer | '(' &amp; Expr &amp; ')'
 </thead>
 <tbody valign="top">
 <tr><td><tt class="docutils literal"><span class="pre">A[:1]</span></tt></td>
-<td>recognizes zero or one <tt class="docutils literal"><span class="pre">A</span></tt>.</td>
+<td>recognizes zero or one <tt class="docutils literal">A</tt>.</td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">A[:]</span></tt></td>
-<td>recognizes zero or more <tt class="docutils literal"><span class="pre">A</span></tt>.</td>
+<td>recognizes zero or more <tt class="docutils literal">A</tt>.</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">A[1:]</span></tt></td>
-<td>recognizes one or more <tt class="docutils literal"><span class="pre">A</span></tt>.</td>
+<tr><td><tt class="docutils literal">A[1:]</tt></td>
+<td>recognizes one or more <tt class="docutils literal">A</tt>.</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">A[m:n]</span></tt></td>
-<td>recognizes at least m and at most n <tt class="docutils literal"><span class="pre">A</span></tt>.</td>
+<tr><td><tt class="docutils literal">A[m:n]</tt></td>
+<td>recognizes at least m and at most n <tt class="docutils literal">A</tt>.</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">A[m:n:s]</span></tt></td>
-<td>recognizes at least m and at most n <tt class="docutils literal"><span class="pre">A</span></tt> using <tt class="docutils literal"><span class="pre">s</span></tt> as a separator.</td>
+<tr><td><tt class="docutils literal">A[m:n:s]</tt></td>
+<td>recognizes at least m and at most n <tt class="docutils literal">A</tt> using <tt class="docutils literal">s</tt> as a separator.</td>
 </tr>
 </tbody>
 </table>
@@ -1026,19 +1028,19 @@ To override the default precedence you can group expressions with parenthesis.</
 </thead>
 <tbody valign="top">
 <tr><td rowspan="2">Alternative</td>
-<td rowspan="2"><tt class="docutils literal"><span class="pre">A</span> <span class="pre">|</span> <span class="pre">B</span></tt></td>
+<td rowspan="2"><tt class="docutils literal">A | B</tt></td>
 </tr>
 <tr></tr>
 <tr><td rowspan="2">Sequence</td>
-<td rowspan="2"><tt class="docutils literal"><span class="pre">A</span> <span class="pre">&amp;</span> <span class="pre">B</span></tt></td>
+<td rowspan="2"><tt class="docutils literal">A &amp; B</tt></td>
 </tr>
 <tr></tr>
 <tr><td rowspan="2">Repetitions</td>
-<td rowspan="2"><tt class="docutils literal"><span class="pre">A[x:y]</span></tt></td>
+<td rowspan="2"><tt class="docutils literal">A[x:y]</tt></td>
 </tr>
 <tr></tr>
 <tr><td rowspan="2">Symbol and grouping</td>
-<td rowspan="2"><tt class="docutils literal"><span class="pre">A</span></tt> and <tt class="docutils literal"><span class="pre">(</span> <span class="pre">...</span> <span class="pre">)</span></tt></td>
+<td rowspan="2"><tt class="docutils literal">A</tt> and <tt class="docutils literal">( ... )</tt></td>
 </tr>
 <tr></tr>
 </tbody>
@@ -1047,7 +1049,7 @@ To override the default precedence you can group expressions with parenthesis.</
 <div class="section" id="actions">
 <h3>Actions</h3>
 <p>Grammar rules can contain actions as Python functions.</p>
-<p>Functions are applyied to parsed objects using <tt class="docutils literal"><span class="pre">/</span></tt> or <tt class="docutils literal"><span class="pre">*</span></tt>.</p>
+<p>Functions are applyied to parsed objects using <tt class="docutils literal">/</tt> or <tt class="docutils literal">*</tt>.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="23%" />
@@ -1059,15 +1061,15 @@ To override the default precedence you can group expressions with parenthesis.</
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td><tt class="docutils literal"><span class="pre">parser</span> <span class="pre">/</span> <span class="pre">function</span></tt></td>
+<tr><td><tt class="docutils literal">parser / function</tt></td>
 <td>returns <em>function(result of parser)</em>.</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">parser</span> <span class="pre">*</span> <span class="pre">function</span></tt></td>
+<tr><td><tt class="docutils literal">parser * function</tt></td>
 <td>returns <em>function(*result of parser)</em>.</td>
 </tr>
 </tbody>
 </table>
-<p><tt class="docutils literal"><span class="pre">*</span></tt> can be used to analyse the result of a sequence.</p>
+<p><tt class="docutils literal">*</tt> can be used to analyse the result of a sequence.</p>
 </div>
 <div class="section" id="abstract-syntax-trees">
 <h3>Abstract syntax trees</h3>
@@ -1089,7 +1091,7 @@ def Foo():
 <div class="section" id="constants">
 <h3>Constants</h3>
 <p>It is sometimes useful to return a constant.
-<tt class="docutils literal"><span class="pre">C</span></tt> defines a parser that matches an empty input and returns a constant.</p>
+<tt class="docutils literal">C</tt> defines a parser that matches an empty input and returns a constant.</p>
 <p>Constant example:</p>
 <pre class="literal-block">
 number = (  '1' &amp; C(&quot;one&quot;)
@@ -1101,10 +1103,10 @@ number = (  '1' &amp; C(&quot;one&quot;)
 <div class="section" id="position-in-the-input-string">
 <h3>Position in the input string</h3>
 <p>To know the current position in the input string,
-the <tt class="docutils literal"><span class="pre">At()</span></tt> parser returns an object containing
-the current index (attribute <tt class="docutils literal"><span class="pre">index</span></tt>) and the
+the <tt class="docutils literal">At()</tt> parser returns an object containing
+the current index (attribute <tt class="docutils literal">index</tt>) and the
 corresponding line and column numbers (attributes
-<tt class="docutils literal"><span class="pre">line</span></tt> and <tt class="docutils literal"><span class="pre">column</span></tt>):</p>
+<tt class="docutils literal">line</tt> and <tt class="docutils literal">column</tt>):</p>
 <pre class="literal-block">
 position = At() / `lambda p: (p.line, p.column)`
 rule = ... &amp; pos &amp; ...
@@ -1120,7 +1122,7 @@ This drastically fasten the parser but requires more memory.
 If a lot of string are parsed in a single script this mechanism can slow down
 the computer because of heavy swap disk usage or even lead to a memory error.</p>
 <p>To avoid such problems it is recommanded to clean the memoization cache
-by calling the <tt class="docutils literal"><span class="pre">sp.clean</span></tt> function:</p>
+by calling the <tt class="docutils literal">sp.clean</tt> function:</p>
 <pre class="literal-block">
 import sp
 
@@ -1140,10 +1142,10 @@ Grammars need some adaptations to work with Python 2.5. or older.</p>
 <h2><a class="toc-backref" href="#id26">3.1&nbsp;&nbsp;&nbsp;Separators</a></h2>
 <p>Separators use context managers which don't exist in Python 2.4.
 Context managers have been introduced in Python 2.5
-(<tt class="docutils literal"><span class="pre">from</span> <span class="pre">__future__</span> <span class="pre">import</span> <span class="pre">with_statement</span></tt>)
+(<tt class="docutils literal">from __future__ import with_statement</tt>)
 and in Python 2.6 (as a standard feature).
 When the context managers are not available, it may be possible
-to call the <tt class="docutils literal"><span class="pre">__enter__</span></tt> and <tt class="docutils literal"><span class="pre">__exit__</span></tt> method explicitly
+to call the <tt class="docutils literal">__enter__</tt> and <tt class="docutils literal">__exit__</tt> method explicitly
 (tested for Python 2.4).</p>
 <p>Python 2.6 and later:</p>
 <pre class="literal-block">
@@ -1151,7 +1153,7 @@ number = R(r'\d+') / int
 with Separator('\s+'):
     coord = number &amp; ',' &amp; number
 </pre>
-<p>Python 2.5 with <tt class="docutils literal"><span class="pre">with_statement</span></tt>:</p>
+<p>Python 2.5 with <tt class="docutils literal">with_statement</tt>:</p>
 <pre class="literal-block">
 from __future__ import with_statement
 
@@ -1159,7 +1161,7 @@ number = R(r'\d+') / int
 with Separator('\s+'):
     coord = number &amp; ',' &amp; number
 </pre>
-<p>Python 2.5 or 2.4 (or older but not tested) without <tt class="docutils literal"><span class="pre">with_statement</span></tt>:</p>
+<p>Python 2.5 or 2.4 (or older but not tested) without <tt class="docutils literal">with_statement</tt>:</p>
 <pre class="literal-block">
 sep = Separator('\s+')
 
@@ -1174,8 +1176,8 @@ sep.__exit__()
 <h1><a class="toc-backref" href="#id27">4&nbsp;&nbsp;&nbsp;SP mini language</a></h1>
 <p>Instead of using Python expressions that can sometimes be difficult to read,
 it's possible to write grammars in a cleaner syntax and compile these
-grammar with the <tt class="docutils literal"><span class="pre">sp.compile</span></tt> function. This function takes the grammar as
-a string parameter.  The <tt class="docutils literal"><span class="pre">sp.compile_file</span></tt> function reads the grammar in a
+grammar with the <tt class="docutils literal">sp.compile</tt> function. This function takes the grammar as
+a string parameter.  The <tt class="docutils literal">sp.compile_file</tt> function reads the grammar in a
 separate file.</p>
 <p>Here the equivalence between Python expressions and the SP mini language:</p>
 <table border="1" class="docutils">
@@ -1192,58 +1194,58 @@ separate file.</p>
 </thead>
 <tbody valign="top">
 <tr><td><div class="first last line-block">
-<div class="line"><tt class="docutils literal"><span class="pre">R(&quot;regular</span> <span class="pre">expression&quot;)</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">R(&quot;regular</span> expression&quot;)</tt></div>
 <div class="line"><tt class="docutils literal"><span class="pre">R(&quot;regexpr&quot;,</span> <span class="pre">name=&quot;name&quot;)</span></tt></div>
 </div>
 </td>
 <td><div class="first last line-block">
-<div class="line"><tt class="docutils literal"><span class="pre">r&quot;regular</span> <span class="pre">expression&quot;</span></tt></div>
-<div class="line"><tt class="docutils literal"><span class="pre">name.r&quot;regexpr&quot;</span></tt></div>
+<div class="line"><tt class="docutils literal">r&quot;regular expression&quot;</tt></div>
+<div class="line"><tt class="docutils literal">name.r&quot;regexpr&quot;</tt></div>
 </div>
 </td>
 <td>Token defined by a
 regular expression</td>
 </tr>
 <tr><td><div class="first last line-block">
-<div class="line"><tt class="docutils literal"><span class="pre">K(&quot;plain</span> <span class="pre">text&quot;)</span></tt></div>
-<div class="line"><tt class="docutils literal"><span class="pre">K(&quot;plain</span> <span class="pre">text&quot;,</span> <span class="pre">name=&quot;name&quot;)</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">K(&quot;plain</span> text&quot;)</tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">K(&quot;plain</span> text&quot;, <span class="pre">name=&quot;name&quot;)</span></tt></div>
 </div>
 </td>
 <td><div class="first last line-block">
-<div class="line"><tt class="docutils literal"><span class="pre">&quot;plain</span> <span class="pre">text&quot;</span></tt></div>
-<div class="line"><tt class="docutils literal"><span class="pre">name.&quot;plain</span> <span class="pre">text&quot;</span></tt></div>
+<div class="line"><tt class="docutils literal">&quot;plain text&quot;</tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">name.&quot;plain</span> text&quot;</tt></div>
 </div>
 </td>
 <td>Keyword defined by a non
 interpreted string</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">t</span> <span class="pre">=</span> <span class="pre">R('...',</span> <span class="pre">flags=re.I|re.S)</span></tt></td>
-<td><tt class="docutils literal"><span class="pre">lexer:</span> <span class="pre">I</span> <span class="pre">S;</span> <span class="pre">t</span> <span class="pre">=</span> <span class="pre">r'...'</span></tt></td>
+<tr><td><tt class="docutils literal">t = <span class="pre">R('...',</span> flags=re.I|re.S)</tt></td>
+<td><tt class="docutils literal">lexer: I S; t = <span class="pre">r'...'</span></tt></td>
 <td>Regular expression options</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">with</span> <span class="pre">Separator(...):</span></tt></td>
-<td><tt class="docutils literal"><span class="pre">separator:</span> <span class="pre">...</span> <span class="pre">;</span></tt></td>
+<tr><td><tt class="docutils literal">with <span class="pre">Separator(...):</span></tt></td>
+<td><tt class="docutils literal">separator: ... ;</tt></td>
 <td>Separator definition</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">C(object)</span></tt></td>
-<td><tt class="docutils literal"><span class="pre">`object`</span></tt></td>
+<tr><td><tt class="docutils literal">C(object)</tt></td>
+<td><tt class="docutils literal">`object`</tt></td>
 <td>Parses nothing and
-returns <tt class="docutils literal"><span class="pre">object</span></tt></td>
+returns <tt class="docutils literal">object</tt></td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">...</span> <span class="pre">/</span> <span class="pre">function</span></tt></td>
-<td><tt class="docutils literal"><span class="pre">...</span> <span class="pre">:</span> <span class="pre">`function`</span></tt></td>
+<tr><td><tt class="docutils literal">... / function</tt></td>
+<td><tt class="docutils literal">... : `function`</tt></td>
 <td>Parses ... and apply the result
-to <tt class="docutils literal"><span class="pre">function</span></tt>
+to <tt class="docutils literal">function</tt>
 (<tt class="docutils literal"><span class="pre">function(...)</span></tt>)</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">...</span> <span class="pre">*</span> <span class="pre">function</span></tt></td>
-<td><tt class="docutils literal"><span class="pre">...</span> <span class="pre">::</span> <span class="pre">`function`</span></tt></td>
+<tr><td><tt class="docutils literal">... * function</tt></td>
+<td><tt class="docutils literal">... :: `function`</tt></td>
 <td>Parses ... and apply the result
-(multiple values) to <tt class="docutils literal"><span class="pre">function</span></tt>
+(multiple values) to <tt class="docutils literal">function</tt>
 (<tt class="docutils literal"><span class="pre">function(*...)</span></tt>)</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">...</span> <span class="pre">&amp;</span> <span class="pre">At()</span> <span class="pre">&amp;</span> <span class="pre">...</span></tt></td>
-<td><tt class="docutils literal"><span class="pre">...</span> <span class="pre">&#64;</span> <span class="pre">...</span></tt></td>
+<tr><td><tt class="docutils literal">... &amp; At() &amp; ...</tt></td>
+<td><tt class="docutils literal">... &#64; ...</tt></td>
 <td>Position in the input string</td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">(...)[:]</span></tt></td>
@@ -1261,31 +1263,31 @@ to <tt class="docutils literal"><span class="pre">function</span></tt>
 <tr><td><tt class="docutils literal"><span class="pre">(...)[::S]</span></tt></td>
 <td><tt class="docutils literal"><span class="pre">[.../S]*</span></tt></td>
 <td>Zero or more matches
-separated by <tt class="docutils literal"><span class="pre">S</span></tt></td>
+separated by <tt class="docutils literal">S</tt></td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">(...)[1::S]</span></tt></td>
 <td><tt class="docutils literal"><span class="pre">[.../S]+</span></tt></td>
 <td>One or more matches
-separated by <tt class="docutils literal"><span class="pre">S</span></tt></td>
+separated by <tt class="docutils literal">S</tt></td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">A</span> <span class="pre">&amp;</span> <span class="pre">B</span> <span class="pre">&amp;</span> <span class="pre">C</span></tt></td>
-<td><tt class="docutils literal"><span class="pre">A</span> <span class="pre">B</span> <span class="pre">C</span></tt></td>
+<tr><td><tt class="docutils literal">A &amp; B &amp; C</tt></td>
+<td><tt class="docutils literal">A B C</tt></td>
 <td>Sequence</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">A</span> <span class="pre">|</span> <span class="pre">B</span> <span class="pre">|</span> <span class="pre">C</span></tt></td>
-<td><tt class="docutils literal"><span class="pre">A</span> <span class="pre">|</span> <span class="pre">B</span> <span class="pre">|</span> <span class="pre">C</span></tt></td>
+<tr><td><tt class="docutils literal">A | B | C</tt></td>
+<td><tt class="docutils literal">A | B | C</tt></td>
 <td>Alternative</td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">(...)</span></tt></td>
 <td><tt class="docutils literal"><span class="pre">(...)</span></tt></td>
 <td>Grouping</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">rule_name</span> <span class="pre">=</span> <span class="pre">...</span></tt></td>
-<td><tt class="docutils literal"><span class="pre">rule_name</span> <span class="pre">=</span> <span class="pre">...</span> <span class="pre">;</span></tt></td>
+<tr><td><tt class="docutils literal">rule_name = ...</tt></td>
+<td><tt class="docutils literal">rule_name = ... ;</tt></td>
 <td>Rule definition</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">axiom_name</span> <span class="pre">=</span> <span class="pre">...</span></tt></td>
-<td><tt class="docutils literal"><span class="pre">!axiom_name</span> <span class="pre">=</span> <span class="pre">...</span> <span class="pre">;</span></tt></td>
+<tr><td><tt class="docutils literal">axiom_name = ...</tt></td>
+<td><tt class="docutils literal">!axiom_name = ... ;</tt></td>
 <td>Axiom definition</td>
 </tr>
 </tbody>
@@ -1315,7 +1317,7 @@ Name --&gt; empty | string
 Length --&gt; empty | &quot;:&quot; number
 </pre>
 <p>With very few transformation, this grammar can be converted to a Simple Parser grammar.
-Only <tt class="docutils literal"><span class="pre">BranchSet</span></tt> is rewritten to use a comma separated list parser:</p>
+Only <tt class="docutils literal">BranchSet</tt> is rewritten to use a comma separated list parser:</p>
 <pre class="literal-block">
 Tree = Subtree ';' | Branch ';' ;
 Subtree = Leaf | Internal ;
@@ -1331,7 +1333,7 @@ Length = '' | ':' r'[0-9.]+' ;
 
 # Simple Parser
 # Copyright (C) 2009-2010 Christophe Delord
-# http://www.cdsoft.fr/sp.html
+# http://www.cdsoft.fr/sp
 
 # This file is part of Simple Parser.
 # 
@@ -1427,7 +1429,7 @@ prefix or postfix notation, we just need to walk throught the tree in a particul
 <p>The AST of this converter has three types of node:</p>
 <dl class="docutils">
 <dt>class Op</dt>
-<dd>is used to store operators (<tt class="docutils literal"><span class="pre">+</span></tt>, <tt class="docutils literal"><span class="pre">-</span></tt>, <tt class="docutils literal"><span class="pre">*</span></tt>, <tt class="docutils literal"><span class="pre">/</span></tt>, <tt class="docutils literal"><span class="pre">^</span></tt>).
+<dd>is used to store operators (<tt class="docutils literal">+</tt>, <tt class="docutils literal">-</tt>, <tt class="docutils literal">*</tt>, <tt class="docutils literal">/</tt>, <tt class="docutils literal">^</tt>).
 It has two sons associated to the sub expressions.</dd>
 <dt>class Atom</dt>
 <dd>is an atomic expression (a number or a symbolic name).</dd>
@@ -1465,7 +1467,7 @@ atom = '(' expr ')' ;
 atom = func1 '(' expr ')' :: `Func` ;
 atom = func2 '(' expr ',' expr ')' :: `Func` ;
 </pre>
-<p><tt class="docutils literal"><span class="pre">red</span></tt> is a function that applies a list of functions to a value:</p>
+<p><tt class="docutils literal">red</tt> is a function that applies a list of functions to a value:</p>
 <pre class="literal-block">
 def red(x, fs):
     for f in fs:
@@ -1502,9 +1504,9 @@ expr_post_rest =
 expr_post_rest = `lambda x: x` ;
 </pre>
 <p>The parser searches for an atomic expression and builds the AST corresponding to the remaining
-subexpression. <tt class="docutils literal"><span class="pre">expr_post_rest</span></tt> returns a function that builds the complete AST when applied
+subexpression. <tt class="docutils literal">expr_post_rest</tt> returns a function that builds the complete AST when applied
 to the first atomic expression. This is a way to simulate inherited attributes.</p>
-<p>Using the previous <tt class="docutils literal"><span class="pre">red</span></tt> function and the repetitions, this rule can be rewritten as:</p>
+<p>Using the previous <tt class="docutils literal">red</tt> function and the repetitions, this rule can be rewritten as:</p>
 <pre class="literal-block">
 expr_post = ident expr_post_rest* :: `red` ;
 expr_post_rest =
@@ -1532,7 +1534,7 @@ expr_post = ident
 
 # Simple Parser
 # Copyright (C) 2009-2010 Christophe Delord
-# http://www.cdsoft.fr/sp.html
+# http://www.cdsoft.fr/sp
 
 # This file is part of Simple Parser.
 # 
@@ -1680,31 +1682,136 @@ while 1:
 <div class="section" id="complete-interactive-calculator">
 <h2><a class="toc-backref" href="#id31">5.3&nbsp;&nbsp;&nbsp;Complete interactive calculator</a></h2>
 <p>This chapter presents an extention of the calculator described in the <a class="reference internal" href="#tutorial">tutorial</a>.
-This calculator has more functions and a memory.</p>
+This calculator has a memory.</p>
 <p>The grammar has been rewritten using the SP language.</p>
 <div class="section" id="new-functions">
 <h3>New functions</h3>
 <p>The calculator has memories.
 A memory cell is identified by a name.
-For example, if the user types <tt class="docutils literal"><span class="pre">pi</span> <span class="pre">=</span> <span class="pre">3.14</span></tt>,
-the memory cell named <tt class="docutils literal"><span class="pre">pi</span></tt> will contain the value of <tt class="docutils literal"><span class="pre">pi</span></tt>
-and <tt class="docutils literal"><span class="pre">2*pi</span></tt> will return <tt class="docutils literal"><span class="pre">6.28</span></tt>.</p>
-<p>The memory can also contain functions.
-For instance <tt class="docutils literal"><span class="pre">fact(n)</span> <span class="pre">=</span> <span class="pre">(n&gt;0)</span> <span class="pre">?</span> <span class="pre">n*fact(n-1)</span> <span class="pre">:</span> <span class="pre">1</span></tt> defines
-the factorial function. <tt class="docutils literal"><span class="pre">fact(5)</span></tt> returns <tt class="docutils literal"><span class="pre">120</span></tt>.</p>
-<p>Most of the functions of the <tt class="docutils literal"><span class="pre">math</span></tt> module are also available.</p>
+For example, if the user types <tt class="docutils literal">pi = 3.14</tt>,
+the memory cell named <tt class="docutils literal">pi</tt> will contain the value of <tt class="docutils literal">pi</tt>
+and <tt class="docutils literal">2*pi</tt> will return <tt class="docutils literal">6.28</tt>.</p>
 </div>
 <div class="section" id="id14">
 <h3>Source code</h3>
-<p>The complete source code is quite big and is available in the example directory of the archive.</p>
 <div class="note">
 <p class="first admonition-title">Note</p>
-<p>This calculator was initially a basic calculator example for Simple Parser
-but it has been improved to fit programmers' needs.
-I now use it every day at work.</p>
-<p class="last">In the future it may become a separate project
-when I have time to write some documentation.</p>
+<p class="last">Another calculator is available as a separate package.
+<a class="reference external" href="http://www.cdsoft.fr/calc.html">Calc</a> is a full featured programmers' calculator.
+It is scriptable and allows user functions.</p>
 </div>
+<p>Here is the complete source code (calc.py):</p>
+<pre class="literal-block">
+#!/usr/bin/env python
+
+# Simple Parser
+# Copyright (C) 2009-2010 Christophe Delord
+# http://www.cdsoft.fr/sp
+
+# This file is part of Simple Parser.
+# 
+# Simple Parser is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# Simple Parser is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public License
+# along with Simple Parser.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+
+from __future__ import division
+
+import sys
+import sp
+
+try:
+    import readline
+except ImportError:
+    pass
+
+class Calc(dict):
+
+    def __init__(self):
+        dict.__init__(self)
+        _fy = lambda f, y: lambda x: f(x, y)
+        fx = lambda f, x: f(x)
+        def reduce(x, fs):
+            for f in fs: x = f(x)
+            return x
+        self.parser = sp.compile(r&quot;&quot;&quot;
+
+            ident = r'[a-zA-Z_]\w*' ;
+
+            real = r'(?:\d+\.\d*|\d*\.\d+)(?:[eE][-+]?\d+)?|\d+[eE][-+]?\d+' : `float` ;
+            int = r'\d+' : `int` ;
+            var = ident : `self.__getitem__`;
+
+            add_op = '+'    `lambda x, y: x + y` ;
+            add_op = '-'    `lambda x, y: x - y` ;
+            add_op = '|'    `lambda x, y: x | y` ;
+            add_op = '^'    `lambda x, y: x ^ y` ;
+
+            mul_op = '*'    `lambda x, y: x * y` ;
+            mul_op = '/'    `lambda x, y: x / y` ;
+            mul_op = '%'    `lambda x, y: x % y` ;
+            mul_op = '&amp;'    `lambda x, y: x &amp; y` ;
+            mul_op = '&gt;&gt;'   `lambda x, y: x &lt;&lt; y` ;
+            mul_op = '&lt;&lt;'   `lambda x, y: x &gt;&gt; y` ;
+
+            pow_op = '**'   `lambda x, y: x ** y` ;
+
+            un_op = '+'     `lambda x: +x` ;
+            un_op = '-'     `lambda x: -x` ;
+            un_op = '~'     `lambda x: ~x` ;
+
+            separator: r'\s+';
+
+            !S = ident '=' expr :: `self.__setitem__`
+               | expr
+               ;
+
+            expr = term (add_op term :: `_fy`)* :: `reduce` ;
+            term = fact (mul_op fact :: `_fy`)* :: `reduce` ;
+            fact = un_op fact :: `fx` | pow ;
+            pow = atom (pow_op fact :: `_fy`)? :: `reduce` ;
+
+            atom = '(' expr ')' ;
+            atom = real | int ;
+            atom = var ;
+
+        &quot;&quot;&quot;)
+
+    def __call__(self, input):
+        return self.parser(input)
+
+def exc():
+    e = getattr(sys, 'exc_value', None)
+    if e is None:
+        info = getattr(sys, 'exc_info', None)
+        if info is not None: e = info()[1]
+    return e
+
+try: raw_input
+except NameError: raw_input = input
+
+calc = Calc()
+
+while True:
+    expr = raw_input(&quot;: &quot;)
+    sp.clean()
+    try:
+        val = calc(expr)
+        if val is not None:
+            print(&quot;= %s&quot;%calc(expr))
+    except:
+        print(&quot;! %s&quot;%exc())
+    print(&quot;&quot;)
+
+</pre>
 </div>
 </div>
 </div>
