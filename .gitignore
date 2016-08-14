@@ -1,0 +1,7 @@
+*.toc
+*.pyc
+examples/calc-mingw
+examples/cx_freeze
+examples/old
+*.swp
+test_error_reporting.py

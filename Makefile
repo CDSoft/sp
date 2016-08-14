@@ -1,5 +1,5 @@
 # Simple Parser
-# Copyright (C) 2009-2010 Christophe Delord
+# Copyright (C) 2009-2016 Christophe Delord
 # http://www.cdsoft.fr/sp
 
 # This file is part of Simple Parser.
@@ -17,7 +17,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Simple Parser.  If not, see <http://www.gnu.org/licenses/>.
 
-all: doc/sp.html doc/sp.pdf
+all: doc/sp.html doc/sp.pdf README.rst
+
+test: sp.py
+	$^
 
 # Only the documentation is generated.
 # The archive is built by the release script.
@@ -34,3 +37,9 @@ doc/sp.pdf: doc/sp.rst doc/*.py
 	rm -f doc/sp.log
 	rm -f doc/sp.out
 	rm -f doc/sp.tex
+
+README.rst: doc/sp.rst doc/*.py
+	cat $< | \
+		sed '1,19d' | \
+		sed "/^:Date:/d" | \
+	pandoc -f rst -t rst -o $@

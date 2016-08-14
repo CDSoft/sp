@@ -3,10 +3,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.6: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.12: http://docutils.sourceforge.net/" />
 <title>Simple Parser</title>
 <meta name="author" content="Christophe Delord" />
-<meta name="date" content="Sunday 22 August 2010" />
+<meta name="date" content="Sunday 14 August 2016" />
 <style type="text/css">
 
 /*
@@ -274,12 +274,10 @@ div.footer, div.header {
 <tbody valign="top">
 <tr><th class="docinfo-name">Author:</th>
 <td>Christophe Delord</td></tr>
-<tr><th class="docinfo-name">Contact:</th>
-<td><a class="first last reference external" href="mailto:cdelord&#37;&#52;&#48;cdsoft&#46;fr">cdelord<span>&#64;</span>cdsoft<span>&#46;</span>fr</a></td></tr>
 <tr class="field"><th class="docinfo-name">Web site:</th><td class="field-body"><a class="reference external" href="http://www.cdsoft.fr/sp">http://www.cdsoft.fr/sp</a></td>
 </tr>
 <tr><th class="docinfo-name">Date:</th>
-<td>Sunday 22 August 2010</td></tr>
+<td>Sunday 14 August 2016</td></tr>
 <tr class="field"><th class="docinfo-name">License:</th><td class="field-body">This software is released under the LGPL license.</td>
 </tr>
 <tr class="field"><th class="docinfo-name">Download:</th><td class="field-body"><a class="reference external" href="http://www.cdsoft.fr/sp/sp-v2.2.2.tgz">http://www.cdsoft.fr/sp/sp-v2.2.2.tgz</a></td>
@@ -287,7 +285,7 @@ div.footer, div.header {
 </tbody>
 </table>
 <!-- Simple Parser
-Copyright (C) 2009-2010 Christophe Delord
+Copyright (C) 2009-2016 Christophe Delord
 http://www.cdsoft.fr/sp -->
 <!-- This file is part of Simple Parser. -->
 <!-- Simple Parser is free software: you can redistribute it and/or modify
@@ -1027,22 +1025,18 @@ To override the default precedence you can group expressions with parenthesis.</
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td rowspan="2">Alternative</td>
-<td rowspan="2"><tt class="docutils literal">A | B</tt></td>
+<tr><td>Alternative</td>
+<td><tt class="docutils literal">A | B</tt></td>
 </tr>
-<tr></tr>
-<tr><td rowspan="2">Sequence</td>
-<td rowspan="2"><tt class="docutils literal">A &amp; B</tt></td>
+<tr><td>Sequence</td>
+<td><tt class="docutils literal">A &amp; B</tt></td>
 </tr>
-<tr></tr>
-<tr><td rowspan="2">Repetitions</td>
-<td rowspan="2"><tt class="docutils literal">A[x:y]</tt></td>
+<tr><td>Repetitions</td>
+<td><tt class="docutils literal">A[x:y]</tt></td>
 </tr>
-<tr></tr>
-<tr><td rowspan="2">Symbol and grouping</td>
-<td rowspan="2"><tt class="docutils literal">A</tt> and <tt class="docutils literal">( ... )</tt></td>
+<tr><td>Symbol and grouping</td>
+<td><tt class="docutils literal">A</tt> and <tt class="docutils literal">( ... )</tt></td>
 </tr>
-<tr></tr>
 </tbody>
 </table>
 </div>
@@ -1297,14 +1291,15 @@ separated by <tt class="docutils literal">S</tt></td>
 <h1><a class="toc-backref" href="#id28">5&nbsp;&nbsp;&nbsp;Some examples to illustrate SP</a></h1>
 <div class="section" id="newick-format">
 <h2><a class="toc-backref" href="#id29">5.1&nbsp;&nbsp;&nbsp;Newick format</a></h2>
-<blockquote class="epigraph">
-<p>In mathematics, Newick tree format (or Newick notation or New Hampshire tree format)
+<pre class="literal-block">
+In mathematics, Newick tree format (or Newick notation or New Hampshire tree format)
 is a way to represent graph-theoretical trees with edge lengths using parentheses and
 commas. It was created by James Archie, William H. E. Day, Joseph Felsenstein, Wayne
 Maddison, Christopher Meacham, F. James Rohlf, and David Swofford, at two meetings in
-1986, the second of which was at Newick's restaurant in Dover, New Hampshire, USA.</p>
-<p class="attribution">&mdash;Wikipedia, the free encyclopedia</p>
-</blockquote>
+1986, the second of which was at Newick's restaurant in Dover, New Hampshire, USA.
+
+-- Wikipedia, the free encyclopedia
+</pre>
 <p>The grammar given by Wikipedia is:</p>
 <pre class="literal-block">
 Tree --&gt; Subtree &quot;;&quot; | Branch &quot;;&quot;
@@ -1725,6 +1720,7 @@ It is scriptable and allows user functions.</p>
 
 from __future__ import division
 
+import math
 import sys
 import sp
 
@@ -1738,7 +1734,10 @@ class Calc(dict):
     def __init__(self):
         dict.__init__(self)
         _fy = lambda f, y: lambda x: f(x, y)
+        _fg = lambda f, g: lambda x: g(f(x))
+        _ = lambda x: x
         fx = lambda f, x: f(x)
+        xf = lambda x, f: f(x)
         def reduce(x, fs):
             for f in fs: x = f(x)
             return x
@@ -1768,6 +1767,8 @@ class Calc(dict):
             un_op = '-'     `lambda x: -x` ;
             un_op = '~'     `lambda x: ~x` ;
 
+            post_un_op = '!'    `math.factorial` ;
+
             separator: r'\s+';
 
             !S = ident '=' expr :: `self.__setitem__`
@@ -1777,7 +1778,11 @@ class Calc(dict):
             expr = term (add_op term :: `_fy`)* :: `reduce` ;
             term = fact (mul_op fact :: `_fy`)* :: `reduce` ;
             fact = un_op fact :: `fx` | pow ;
-            pow = atom (pow_op fact :: `_fy`)? :: `reduce` ;
+            pow = postfix (pow_op fact :: `_fy`)? :: `reduce` ;
+
+            #postfix = atom post_un_op :: `xf` | atom ;
+            postfix = atom _postfix :: `xf` ;
+            _postfix = post_un_op _postfix :: `_fg` | `_` ;
 
             atom = '(' expr ')' ;
             atom = real | int ;

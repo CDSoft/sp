@@ -1,5 +1,5 @@
 ..  Simple Parser
-    Copyright (C) 2009-2010 Christophe Delord
+    Copyright (C) 2009-2016 Christophe Delord
     http://www.cdsoft.fr/sp
 
 ..  This file is part of Simple Parser.
@@ -25,7 +25,6 @@
 ---------------------------------------
 
 :Author:    Christophe Delord
-:Contact:   cdelord@cdsoft.fr
 :Web site:  http://www.cdsoft.fr/sp
 :Date:      |date|
 :License:   This software is released under the LGPL license.
@@ -695,13 +694,13 @@ Precedence in SP expressions:
 +-----------------------+-----------------------+
 | Structure             | Example               |
 +=======================+=======================+
-+ Alternative           | ``A | B``             |
+| Alternative           | ``A | B``             |
 +-----------------------+-----------------------+
-+ Sequence              | ``A & B``             |
+| Sequence              | ``A & B``             |
 +-----------------------+-----------------------+
-+ Repetitions           | ``A[x:y]``            |
+| Repetitions           | ``A[x:y]``            |
 +-----------------------+-----------------------+
-+ Symbol and grouping   | ``A`` and ``( ... )`` |
+| Symbol and grouping   | ``A`` and ``( ... )`` |
 +-----------------------+-----------------------+
 
 Actions
@@ -891,7 +890,7 @@ Some examples to illustrate SP
 Newick format
 -------------
 
-.. epigraph::
+::
 
     In mathematics, Newick tree format (or Newick notation or New Hampshire tree format)
     is a way to represent graph-theoretical trees with edge lengths using parentheses and

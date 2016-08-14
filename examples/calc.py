@@ -21,6 +21,7 @@
 
 from __future__ import division
 
+import math
 import sys
 import sp
 
@@ -34,7 +35,10 @@ class Calc(dict):
     def __init__(self):
         dict.__init__(self)
         _fy = lambda f, y: lambda x: f(x, y)
+        _fg = lambda f, g: lambda x: g(f(x))
+        _ = lambda x: x
         fx = lambda f, x: f(x)
+        xf = lambda x, f: f(x)
         def reduce(x, fs):
             for f in fs: x = f(x)
             return x
@@ -64,6 +68,8 @@ class Calc(dict):
             un_op = '-'     `lambda x: -x` ;
             un_op = '~'     `lambda x: ~x` ;
 
+            post_un_op = '!'    `math.factorial` ;
+
             separator: r'\s+';
 
             !S = ident '=' expr :: `self.__setitem__`
@@ -73,7 +79,11 @@ class Calc(dict):
             expr = term (add_op term :: `_fy`)* :: `reduce` ;
             term = fact (mul_op fact :: `_fy`)* :: `reduce` ;
             fact = un_op fact :: `fx` | pow ;
-            pow = atom (pow_op fact :: `_fy`)? :: `reduce` ;
+            pow = postfix (pow_op fact :: `_fy`)? :: `reduce` ;
+
+            #postfix = atom post_un_op :: `xf` | atom ;
+            postfix = atom _postfix :: `xf` ;
+            _postfix = post_un_op _postfix :: `_fg` | `_` ;
 
             atom = '(' expr ')' ;
             atom = real | int ;
