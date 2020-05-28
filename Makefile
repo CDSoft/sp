@@ -1,6 +1,6 @@
 # Simple Parser
 # Copyright (C) 2009-2016 Christophe Delord
-# http://www.cdsoft.fr/sp
+# http://cdelord.fr/sp
 
 # This file is part of Simple Parser.
 #
@@ -20,7 +20,7 @@
 all: doc/sp.html doc/sp.pdf README.rst
 
 test: sp.py
-	$^
+	./$^
 
 # Only the documentation is generated.
 # The archive is built by the release script.

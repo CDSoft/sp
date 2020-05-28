@@ -1,6 +1,6 @@
 ..  Simple Parser
     Copyright (C) 2009-2016 Christophe Delord
-    http://www.cdsoft.fr/sp
+    http://cdelord.fr/sp
 
 ..  This file is part of Simple Parser.
 
@@ -25,10 +25,10 @@
 ---------------------------------------
 
 :Author:    Christophe Delord
-:Web site:  http://www.cdsoft.fr/sp
+:Web site:  http://cdelord.fr/sp
 :Date:      |date|
 :License:   This software is released under the LGPL license.
-:Download:  http://www.cdsoft.fr/sp/sp-v2.2.2.tgz
+:Download:  http://cdelord.fr/sp/sp-v2.2.3.tgz
 
 .. |date| date:: %A %d %B %Y
 
@@ -83,7 +83,7 @@ Structure of the document
 
 `Introduction and tutorial`_
     starts smoothly with a gentle tutorial as an introduction.
-    I think this tutorial may be sufficent to start with SP.
+    I think this tutorial may be sufficient to start with SP.
 `SP reference`_
     is a reference documentation. It will detail SP as much as possible.
 `Some examples to illustrate SP`_
@@ -95,7 +95,7 @@ Installation
 Getting SP
 ~~~~~~~~~~
 
-SP is freely available on its web page (http://www.cdsoft.fr/sp).
+SP is freely available on its web page (http://cdelord.fr/sp).
 
 Requirements
 ~~~~~~~~~~~~
@@ -145,7 +145,7 @@ Grammar for expressions:
 |                                                    | with a ``*`` or ``/`` sign                                    |
 |                                                    | and an other factor any number of times.                      |
 +----------------------------------------------------+---------------------------------------------------------------+
-| ``fact -> ('+'|'-') fact | number | '(' expr ')'`` | A factor is either a factor precedeed by a sign, a number     |
+| ``fact -> ('+'|'-') fact | number | '(' expr ')'`` | A factor is either a factor preceded by a sign, a number      |
 |                                                    | or an expression in parenthesis.                              |
 +----------------------------------------------------+---------------------------------------------------------------+
 
@@ -158,7 +158,7 @@ For sake of simplicity numbers are integers composed of digits (the correspondin
 To simplify the grammar and then the Python script we define two terminal symbols to group the operators (additive and multiplicative operators).
 We can also define a special symbol that is ignored by SP.
 This symbol is used as a separator.
-This is generaly useful for white spaces and comments.
+This is generally useful for white spaces and comments.
 
 Terminal symbol definition for expressions:
 
@@ -197,7 +197,7 @@ Grammar of the expression recognizer::
         return expr
 
 ``Calc`` is the name of the Python function that returns a parser.
-This function returns ``expr`` which is the *axiom* [#axiom]_ of the grammer.
+This function returns ``expr`` which is the *axiom* [#axiom]_ of the grammar.
 
 ``expr`` and ``fact`` are recursive rules.
 They are first declared as empty rules (``expr = Rule()``) and alternatives are later added (``expr |= ...``).
@@ -256,9 +256,9 @@ So we associate ``int`` to ``number`` and ``op1`` and ``op2`` to unary and binar
         for f in fs: x = f(x)
         return x
 
-To associate a function to a token or a rule it must be applyed using ``/`` or ``*`` operators:
-    * ``/`` applyies a function to an object returned by a (sub)parser.
-    * ``*`` applyies a function to an tuple of objects returned by a sequence of (sub) parsers.
+To associate a function to a token or a rule it must be applied using ``/`` or ``*`` operators:
+    * ``/`` applies a function to an object returned by a (sub)parser.
+    * ``*`` applies a function to an tuple of objects returned by a sequence of (sub) parsers.
 
 Token and rule definitions with functions::
 
@@ -376,14 +376,14 @@ Or with SP language::
         """)
 
 
-Embeding the parser in a script
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Embedding the parser in a script
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A parser is a simple Python object.
 This example show how to write a function that returns a parser.
-The parser can be applyied to strings by simply calling the parser.
+The parser can be applied to strings by simply calling the parser.
 
-Writting SP grammars in Python::
+Writing SP grammars in Python::
 
     from sp import *
 
@@ -399,7 +399,7 @@ Writting SP grammars in Python::
     # and use it
     parsed_object = my_parser(string_to_be_parsed)
 
-To use this parser you now just need to instanciate an object.
+To use this parser you now just need to instantiate an object.
 
 Complete Python script with expression parser::
 
@@ -435,7 +435,7 @@ SP is a package which main function is to provide basic objects to build a compl
 
 The grammar is a Python object.
 
-Grammar embeding example::
+Grammar embedding example::
 
     def Foo():
         bar = R('bar')
@@ -499,7 +499,7 @@ You can use the syntax of regular expressions as expected by the *re* [#]_ modul
 Predefined tokens
 ~~~~~~~~~~~~~~~~~
 
-Tokens can be explicitely defined by the ``R``, ``K`` and ``Separator`` keywords.
+Tokens can be explicitly defined by the ``R``, ``K`` and ``Separator`` keywords.
 
 +---------------+---------------------------------------------------------------------------+
 | Expression    | Usage                                                                     |
@@ -708,7 +708,7 @@ Actions
 
 Grammar rules can contain actions as Python functions.
 
-Functions are applyied to parsed objects using ``/`` or ``*``.
+Functions are applied to parsed objects using ``/`` or ``*``.
 
 +-----------------------+---------------------------------------------------------------------------+
 | Expression            | Value                                                                     |
@@ -768,12 +768,12 @@ Performances and memory consumption
 
 Backtracking has a cost.
 The parser may often try to parse again the same string at the same position.
-To improve the speed of the parser, some time consumming functions are *memoized*.
+To improve the speed of the parser, some time consuming functions are *memoized*.
 This drastically fasten the parser but requires more memory.
 If a lot of string are parsed in a single script this mechanism can slow down
 the computer because of heavy swap disk usage or even lead to a memory error.
 
-To avoid such problems it is recommanded to clean the memoization cache
+To avoid such problems it is recommended to clean the memoization cache
 by calling the ``sp.clean`` function::
 
     import sp
@@ -935,12 +935,12 @@ Introduction
 
 In the previous example, the parser computes the value of the expression on the fly, while parsing.
 It is also possible to build an abstract syntax tree to store an abstract representation of the input.
-This may be usefull when several passes are necessary.
+This may be useful when several passes are necessary.
 
 This example shows how to parse an expression (infix, prefix or postfix) and convert it in infix,
 prefix and postfix notation. The expression is saved in a tree. Each node of the tree correspond
 to an operator in the expression. Each leaf is a number. Then to write the expression in infix,
-prefix or postfix notation, we just need to walk throught the tree in a particular order.
+prefix or postfix notation, we just need to walk through the tree in a particular order.
 
 Abstract syntax trees
 ~~~~~~~~~~~~~~~~~~~~~
@@ -957,7 +957,7 @@ class Atom
 class Func
     is used to store functions.
 
-These classes are instanciated by the init method. The infix, prefix and postfix methods
+These classes are instantiated by the init method. The infix, prefix and postfix methods
 return strings containing the representation of the node in infix, prefix and postfix notation.
 
 Grammar
@@ -1059,7 +1059,7 @@ Here is the complete source code (notation.py):
 Complete interactive calculator
 -------------------------------
 
-This chapter presents an extention of the calculator described in the `tutorial`_.
+This chapter presents an extension of the calculator described in the `tutorial`_.
 This calculator has a memory.
 
 The grammar has been rewritten using the SP language.
@@ -1079,7 +1079,7 @@ Source code
 .. note::
 
     Another calculator is available as a separate package.
-    `Calc <http://www.cdsoft.fr/calc.html>`_ is a full featured programmers' calculator.
+    `Calc <http://cdelord.fr/calc.html>`_ is a full featured programmers' calculator.
     It is scriptable and allows user functions.
 
 Here is the complete source code (calc.py):

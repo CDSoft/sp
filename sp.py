@@ -2,7 +2,7 @@
 
 # Simple Parser
 # Copyright (C) 2009-2010 Christophe Delord
-# http://cdsoft.fr/sp
+# http://cdelord.fr/sp
 
 """ Simple Parser
 
