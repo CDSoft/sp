@@ -8,7 +8,7 @@ Author
    Christophe Delord
 
 Web site
-   http://cdelord.fr/sp, https://github.com/CDSoft/sp
+   http://cdelord.fr/sp, https://codeberg.org/cdsoft/sp
 
 License
    This software is released under the LGPL license.
@@ -76,7 +76,7 @@ Installation
 Getting SP
 ''''''''''
 
-SP is freely available on its web page (https://github.com/CDSoft/sp).
+SP is freely available on its web page (https://codeberg.org/cdsoft/sp).
 
 Requirements
 ''''''''''''
